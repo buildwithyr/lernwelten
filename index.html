@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Lernwelt" />
+  <meta name="theme-color" content="#FFF8F0" />
+  <meta name="description" content="Lernwelt – das Lernspiel für Volksschulkinder" />
+
+  <title>Lernwelt 🌟</title>
+
+  <!-- Preload Nunito font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/village.css" />
+  <link rel="stylesheet" href="css/workshop.css" />
+</head>
+<body>
+  <!-- App-Root: alle Screens werden hier per JavaScript gerendert -->
+  <div id="app" role="main">
+    <!-- Ladeindikator (wird sofort durch JS ersetzt) -->
+    <div style="
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      font-size:48px;
+    ">🌟</div>
+  </div>
+
+  <!--
+    Script-Ladereihenfolge:
+      1. storage.js   — Persistenz-Schicht
+      2. profile.js   — Profil-Logik
+      3. math.js      — Mathe-Modul
+      4. app.js       — Haupt-Controller (startet die App)
+
+    Neues Modul hinzufügen:
+      <script src="js/modules/deutsch.js"></script>
+      und in app.js im BUILDINGS-Array registrieren.
+  -->
+  <script src="js/storage.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/modules/math.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
