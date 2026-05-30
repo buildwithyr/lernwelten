@@ -21,7 +21,7 @@ const Oskar = (() => {
   // ─── Pose-Registry ────────────────────────────────────────────────────────
   // Weitere Posen: Datei in assets/ ablegen und hier eintragen.
   const POSES = {
-    default:  'assets/oskar-default.png',
+    default:  'assets/oskar-cartoon.png',
     // happy:    'assets/oskar-happy.png',    // zukünftig: für Erfolgserlebnisse
     // thinking: 'assets/oskar-think.png',    // zukünftig: für Aufgabenintro
     // wave:     'assets/oskar-wave.png',     // zukünftig: für Begrüßung
