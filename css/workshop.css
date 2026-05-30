@@ -1,103 +1,90 @@
 /* ============================================================
-   workshop.css — Rechenwerkstatt und Aufgaben-Screen
+   workshop.css — Rechenwerkstatt & Aufgaben-Screen
    ============================================================ */
 
-/* ---------- Workshop Header ---------- */
+/* ─── Workshop-Header ────────────────────────────────────────── */
 .workshop-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-md) var(--space-lg);
+  gap: var(--sp-sm);
+  padding: var(--sp-md) var(--sp-lg);
   background: var(--cream-card);
   border-bottom: 2px solid var(--cream-dark);
   position: sticky;
   top: 0;
   z-index: 10;
-  gap: var(--space-sm);
-}
-
-.back-btn {
-  font-size: 22px;
-  color: var(--text-mid);
-  background: var(--cream-dark);
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
-}
-
-.back-btn:hover {
-  background: var(--orange-light);
-  color: var(--orange-dark);
 }
 
 .workshop-title-block {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--sp-sm);
   flex: 1;
+  min-width: 0; /* verhindert Overflow */
 }
-
-.workshop-icon {
-  font-size: 26px;
-}
-
+.workshop-icon { font-size: 24px; flex-shrink: 0; }
 .workshop-title-block h1 {
-  font-size: var(--font-size-lg);
+  font-size: var(--text-lg);
   font-weight: 900;
   color: var(--text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* ---------- Exercise Menu ---------- */
+/* ─── Übungsauswahl-Menü ─────────────────────────────────────── */
 .workshop-screen {
   background:
-    radial-gradient(ellipse at top left, rgba(255,209,102,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at top left, rgba(255, 209, 102, 0.12) 0%, transparent 60%),
     var(--cream);
 }
 
 .exercise-menu {
   flex: 1;
-  padding: var(--space-lg);
-  max-width: 560px;
+  padding: var(--sp-lg);
+  max-width: 520px;
   margin: 0 auto;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-lg);
 }
 
 .menu-intro {
   text-align: center;
-  font-size: var(--font-size-md);
+  font-size: var(--text-md);
   color: var(--text-mid);
-  margin-bottom: var(--space-lg);
   font-weight: 600;
 }
 
 .exercise-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-md);
+  gap: var(--sp-md);
 }
 
 .exercise-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-lg) var(--space-md);
+  gap: var(--sp-sm);
+  padding: var(--sp-lg) var(--sp-md);
   background: var(--cream-card);
   border: 2px solid var(--cream-dark);
-  border-radius: var(--radius-xl);
+  border-radius: var(--r-xl);
   cursor: pointer;
   text-align: center;
-  transition: transform var(--transition-bounce), box-shadow var(--transition),
-              border-color var(--transition), background var(--transition);
   box-shadow: var(--shadow-sm);
+  transition: transform var(--ease-bounce), box-shadow var(--ease),
+              border-color var(--ease), background var(--ease);
   animation: popIn 0.4s both;
   -webkit-tap-highlight-color: transparent;
+  min-height: 130px;
 }
-
-.exercise-card:nth-child(2) { animation-delay: 0.05s; }
-.exercise-card:nth-child(3) { animation-delay: 0.1s; }
-.exercise-card:nth-child(4) { animation-delay: 0.15s; }
+.exercise-card:nth-child(2) { animation-delay: 0.06s; }
+.exercise-card:nth-child(3) { animation-delay: 0.12s; }
+.exercise-card:nth-child(4) { animation-delay: 0.18s; }
 
 .exercise-card:hover {
   transform: translateY(-4px) scale(1.02);
@@ -105,33 +92,16 @@
   background: var(--orange-light);
   box-shadow: var(--shadow-md);
 }
+.exercise-card:active { transform: scale(0.95); }
 
-.exercise-card:active {
-  transform: scale(0.96);
-}
+.ex-icon  { font-size: 36px; line-height: 1; }
+.ex-title { font-size: var(--text-base); font-weight: 800; color: var(--text-dark); }
+.ex-desc  { font-size: var(--text-xs); font-weight: 600; color: var(--text-light); line-height: 1.4; }
 
-.ex-icon {
-  font-size: 40px;
-  line-height: 1;
-}
-
-.ex-title {
-  font-size: var(--font-size-base);
-  font-weight: 800;
-  color: var(--text-dark);
-}
-
-.ex-desc {
-  font-size: var(--font-size-xs);
-  color: var(--text-light);
-  font-weight: 600;
-  line-height: 1.4;
-}
-
-/* ---------- Task Screen ---------- */
+/* ─── Aufgaben-Screen ────────────────────────────────────────── */
 .task-screen {
   background:
-    radial-gradient(ellipse at 80% 10%, rgba(109, 182, 138, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 8%, rgba(109, 182, 138, 0.08) 0%, transparent 55%),
     var(--cream);
 }
 
@@ -141,179 +111,211 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--space-lg);
-  gap: var(--space-lg);
+  padding: var(--sp-lg);
+  gap: var(--sp-lg);
 }
 
 .task-card {
   background: var(--cream-card);
-  border-radius: var(--radius-xl);
-  padding: var(--space-xl);
-  max-width: 500px;
+  border: 2px solid var(--cream-dark);
+  border-radius: var(--r-xl);
+  padding: var(--sp-xl);
+  max-width: 480px;
   width: 100%;
   box-shadow: var(--shadow-md);
-  border: 2px solid var(--cream-dark);
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
-  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  gap: var(--sp-lg);
+  animation: slideUp 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* Kategorie-Zeile oben in der Aufgaben-Karte */
 .task-category {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  font-size: var(--font-size-sm);
+  gap: var(--sp-sm);
+  font-size: var(--text-sm);
   font-weight: 700;
   color: var(--text-light);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
+.difficulty-indicator {
+  margin-left: auto;
+  font-size: var(--text-xs);
+  letter-spacing: -1px;
+  opacity: 0.7;
+}
+
+/* ─── Frage-Bereich ──────────────────────────────────────────── */
+/* Klare visuelle Hierarchie:
+   - q-label: kleiner, beschreibender Text oben (was soll ich tun?)
+   - q-word / math-eq: groß, das eigentliche Lernziel            */
 .task-question {
-  font-size: var(--font-size-xl);
-  font-weight: 800;
-  color: var(--text-dark);
-  text-align: center;
-  line-height: 1.5;
-  min-height: 80px;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: var(--sp-sm);
+  text-align: center;
+  padding: var(--sp-sm) 0;
+  min-height: 110px;
   justify-content: center;
 }
 
-/* Dot display for counting exercise */
-.dot-display {
-  display: block;
-  margin-top: var(--space-sm);
-  font-size: var(--font-size-xl);
-  letter-spacing: 4px;
-  color: var(--orange-dark);
-  word-break: break-word;
-  line-height: 1.6;
+.q-label {
+  font-size: var(--text-base);
+  color: var(--text-light);
+  font-weight: 600;
+  line-height: 1.4;
 }
 
-/* Math equation styling */
-.math-eq {
-  font-size: var(--font-size-2xl);
+/* Das Zahlwort bei "Zahlen erkennen" — groß und klar */
+.q-word {
+  font-size: var(--text-2xl);
   font-weight: 900;
-  letter-spacing: 2px;
+  color: var(--text-dark);
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+
+/* Rechnung bei Plus/Minus */
+.math-eq {
+  font-size: var(--text-2xl);
+  font-weight: 900;
+  color: var(--text-dark);
+  letter-spacing: 3px;
+  line-height: 1.2;
 }
 
 .math-blank {
   display: inline-block;
-  min-width: 48px;
+  min-width: 52px;
   border-bottom: 4px solid var(--orange);
   color: var(--orange);
-  padding: 0 8px;
+  padding: 0 6px;
 }
 
-/* Answer input row */
+/* Punkte-Anzeige beim Zählen */
+.dot-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 220px;
+  padding-top: var(--sp-sm);
+}
+
+.dot {
+  font-size: 24px;
+  color: var(--orange-dark);
+  line-height: 1;
+}
+
+/* ─── Eingabe-Bereich ────────────────────────────────────────── */
 .task-input-row {
   display: flex;
-  gap: var(--space-sm);
+  gap: var(--sp-sm);
   align-items: stretch;
 }
 
 .task-input {
   flex: 1;
   border: 3px solid var(--cream-dark);
-  border-radius: var(--radius-md);
-  padding: 14px 18px;
-  font-family: var(--font-main);
-  font-size: var(--font-size-xl);
-  font-weight: 800;
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  font-family: var(--font);
+  font-size: var(--text-2xl);
+  font-weight: 900;
   color: var(--text-dark);
   text-align: center;
   background: var(--cream);
   outline: none;
-  transition: border-color var(--transition), box-shadow var(--transition);
-  /* Remove number spinner */
+  transition: border-color var(--ease), box-shadow var(--ease);
+  /* Spinner entfernen */
   -moz-appearance: textfield;
 }
-
 .task-input::-webkit-outer-spin-button,
-.task-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-}
+.task-input::-webkit-inner-spin-button { -webkit-appearance: none; }
 
 .task-input:focus {
   border-color: var(--orange);
-  box-shadow: 0 0 0 3px rgba(244, 164, 53, 0.2);
+  box-shadow: 0 0 0 3px rgba(244, 164, 53, 0.18);
 }
-
 .task-input:disabled {
   background: var(--cream-dark);
   color: var(--text-light);
+  border-color: var(--cream-dark);
 }
 
-/* Feedback */
+/* Placeholder nur sehr schwach sichtbar — Cursor ist der visuelle Fokus */
+.task-input::placeholder {
+  color: var(--text-dark);
+  opacity: 0.12;
+}
+.task-input:focus::placeholder {
+  opacity: 0;
+}
+
+/* ─── Feedback ───────────────────────────────────────────────── */
 .task-feedback {
-  border-radius: var(--radius-md);
-  padding: var(--space-md) var(--space-lg);
-  font-size: var(--font-size-md);
+  border-radius: var(--r-md);
+  padding: var(--sp-md) var(--sp-lg);
+  font-size: var(--text-md);
   font-weight: 700;
   text-align: center;
-  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: popIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  line-height: 1.4;
 }
 
 .feedback-correct {
-  background: #E8F5EE;
-  color: var(--green-dark);
-  border: 2px solid #C3E6D0;
+  background: #E5F5EE;
+  color: var(--green);
+  border: 2px solid #BEE3CF;
 }
-
 .feedback-wrong {
-  background: #FFF3DC;
+  background: var(--orange-light);
   color: var(--brown);
-  border: 2px solid var(--orange-light);
+  border: 2px solid #F4C870;
 }
-
 .feedback-hint {
   background: var(--yellow-light);
   color: var(--brown);
   border: 2px solid var(--yellow);
 }
 
-/* Task action buttons */
+/* ─── Aktions-Buttons unter der Karte ────────────────────────── */
 .task-actions {
   display: flex;
-  gap: var(--space-sm);
+  gap: var(--sp-sm);
   justify-content: center;
   flex-wrap: wrap;
 }
 
-/* Session stats */
+/* ─── Session-Statistik ──────────────────────────────────────── */
 .session-stats {
   display: flex;
-  gap: var(--space-lg);
+  gap: var(--sp-lg);
   justify-content: center;
   background: var(--cream-card);
-  border-radius: var(--radius-full);
-  padding: var(--space-sm) var(--space-xl);
-  box-shadow: var(--shadow-sm);
   border: 2px solid var(--cream-dark);
-  font-size: var(--font-size-sm);
+  border-radius: var(--r-full);
+  padding: 8px var(--sp-xl);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--text-sm);
   color: var(--text-light);
 }
+.session-stats strong { color: var(--text-dark); font-weight: 800; }
 
-.session-stats strong {
-  color: var(--text-dark);
-  font-weight: 800;
+/* ─── Responsive ─────────────────────────────────────────────── */
+@media (min-width: 560px) {
+  .task-question { min-height: 130px; }
+  .q-word, .math-eq { font-size: 44px; }
+  .task-input { font-size: 44px; }
 }
 
-/* ---------- Responsive ---------- */
-@media (min-width: 600px) {
-  .task-question {
-    font-size: var(--font-size-2xl);
-    min-height: 100px;
-  }
-
-  .math-eq {
-    font-size: 48px;
-  }
-
-  .task-input {
-    font-size: var(--font-size-2xl);
-  }
+@media (max-width: 380px) {
+  .task-card { padding: var(--sp-lg) var(--sp-md); }
+  .math-eq, .q-word { font-size: var(--text-xl); }
+  .task-input { font-size: var(--text-xl); }
 }

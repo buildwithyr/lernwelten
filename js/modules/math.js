@@ -1,142 +1,219 @@
 /**
  * modules/math.js
- * Rechenwerkstatt — Mathematik-Modul für Klasse 1 & 2.
+ * Rechenwerkstatt — Mathematik für Klasse 1 & 2.
  *
- * Erweiterung: Weitere Module (deutsch.js, sachkunde.js …) nach gleichem Muster anlegen
- * und in app.js registrieren.
+ * Neues Fach hinzufügen: js/modules/deutsch.js nach gleichem Muster anlegen,
+ * dann in app.js im BUILDINGS-Array registrieren.
  */
 
 const MathModule = (() => {
-  // ---------- Aufgaben-Generatoren ----------
 
-  const exercises = {
-    /**
-     * Zahlen erkennen: Zeige eine Zahl als Wort, Nutzer tippt die Ziffer.
-     */
-    numberRecognition: {
-      id: 'numberRecognition',
-      title: 'Zahlen erkennen',
-      icon: '🔢',
-      description: 'Erkenne die Zahlen von 1 bis 20',
-      generate() {
-        const NUMBER_WORDS = [
-          '', 'eins', 'zwei', 'drei', 'vier', 'fünf',
-          'sechs', 'sieben', 'acht', 'neun', 'zehn',
-          'elf', 'zwölf', 'dreizehn', 'vierzehn', 'fünfzehn',
-          'sechzehn', 'siebzehn', 'achtzehn', 'neunzehn', 'zwanzig',
-        ];
-        const n = Math.floor(Math.random() * 20) + 1;
-        return {
-          question: `Wie schreibt man <strong>${NUMBER_WORDS[n]}</strong> als Zahl?`,
-          answer: String(n),
-          hint: `Die Zahl liegt zwischen 1 und 20.`,
-          type: 'input',
-        };
-      },
-    },
+  // ─── Hilfsfunktionen ──────────────────────────────────────────────────────
 
-    /**
-     * Zählen: Zeige Punkte, Nutzer gibt die Anzahl ein.
-     */
-    counting: {
-      id: 'counting',
-      title: 'Zählen',
-      icon: '🔵',
-      description: 'Zähle die Punkte richtig',
-      generate() {
-        const n = Math.floor(Math.random() * 15) + 1;
-        const dots = Array(n).fill('●').join(' ');
-        return {
-          question: `Wie viele Punkte siehst du?<br><span class="dot-display">${dots}</span>`,
-          answer: String(n),
-          hint: `Zähle jeden Punkt einzeln.`,
-          type: 'input',
-        };
-      },
-    },
-
-    /**
-     * Addition bis 20.
-     */
-    addition: {
-      id: 'addition',
-      title: 'Plusrechnen',
-      icon: '➕',
-      description: 'Rechne Plus bis 20',
-      generate() {
-        const a = Math.floor(Math.random() * 10) + 1;
-        const maxB = Math.min(20 - a, 10);
-        const b = Math.floor(Math.random() * maxB) + 1;
-        return {
-          question: `<span class="math-eq">${a} + ${b} = <span class="math-blank">?</span></span>`,
-          answer: String(a + b),
-          hint: `${a} plus ${b}. Zähle ${b} Schritte weiter von ${a}.`,
-          type: 'input',
-        };
-      },
-    },
-
-    /**
-     * Subtraktion bis 20.
-     */
-    subtraction: {
-      id: 'subtraction',
-      title: 'Minusrechnen',
-      icon: '➖',
-      description: 'Rechne Minus bis 20',
-      generate() {
-        const a = Math.floor(Math.random() * 19) + 2;
-        const b = Math.floor(Math.random() * (a - 1)) + 1;
-        return {
-          question: `<span class="math-eq">${a} − ${b} = <span class="math-blank">?</span></span>`,
-          answer: String(a - b),
-          hint: `${a} minus ${b}. Zähle ${b} Schritte zurück von ${a}.`,
-          type: 'input',
-        };
-      },
-    },
-  };
-
-  // ---------- Session-State ----------
-
-  let currentExerciseId = null;
-  let currentTask = null;
-  let sessionStats = { correct: 0, total: 0 };
-  let hintShown = false;
-
-  // Feedback-Nachrichten
-  const FEEDBACK_CORRECT = [
-    'Super gemacht! ⭐', 'Toll gelöst! 🌟', 'Sehr gut! ✨',
-    'Weiter so! 🎉', 'Fantastisch! 🦊', 'Klasse! 👏',
-    'Du bist großartig! 🌈', 'Prima! 🎈',
-  ];
-  const FEEDBACK_WRONG = [
-    'Fast richtig – versuch es noch einmal! 💪',
-    'Nicht ganz – du schaffst das! 🌟',
-    'Noch ein Versuch! Du kannst das! ✨',
-  ];
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
 
   function randomFrom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  // ---------- Rendering ----------
-
-  function render() {
-    const app = document.getElementById('app');
-    app.innerHTML = `
-      <div class="screen workshop-screen">
-        ${renderHeader()}
-        ${renderExerciseMenu()}
-      </div>
-    `;
+  // Fisher-Yates shuffle — gibt eine neue gemischte Kopie zurück
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
   }
+
+  // ─── Anti-Wiederholungs-Warteschlange ─────────────────────────────────────
+
+  // Pro Übungstyp: die letzten N Antworten, um direkte Wiederholungen zu vermeiden
+  const RECENT_WINDOW = 5;
+  const recentAnswers = {};
+
+  function wasRecentlyAsked(exerciseId, answer) {
+    return (recentAnswers[exerciseId] || []).includes(answer);
+  }
+
+  function markAsked(exerciseId, answer) {
+    if (!recentAnswers[exerciseId]) recentAnswers[exerciseId] = [];
+    const recent = recentAnswers[exerciseId];
+    recent.push(answer);
+    if (recent.length > RECENT_WINDOW) recent.shift();
+  }
+
+  // ─── Aufgaben-Generatoren ─────────────────────────────────────────────────
+
+  const NUMBER_WORDS = [
+    '', 'eins', 'zwei', 'drei', 'vier', 'fünf',
+    'sechs', 'sieben', 'acht', 'neun', 'zehn',
+    'elf', 'zwölf', 'dreizehn', 'vierzehn', 'fünfzehn',
+    'sechzehn', 'siebzehn', 'achtzehn', 'neunzehn', 'zwanzig',
+  ];
+
+  // Gemischtes Kartendeck für Zahlen-Erkennen (stellt sicher, dass alle Zahlen
+  // vorkommen, bevor eine wiederholt wird)
+  let numberDeck = [];
+  function nextFromDeck(max) {
+    const pool = Array.from({ length: max }, (_, i) => i + 1);
+    // Refill wenn leer oder wenn Schwierigkeit den Pool verkleinert
+    if (numberDeck.length === 0 || numberDeck.some(n => n > max)) {
+      numberDeck = shuffle(pool);
+    }
+    return numberDeck.pop();
+  }
+
+  // Dot-Grid für Zähl-Übung: max. 5 Punkte pro Zeile, mit Zeilenumbrüchen
+  function makeDotGrid(n) {
+    const COLS = 5;
+    const dots = [];
+    for (let i = 0; i < n; i++) {
+      if (i > 0 && i % COLS === 0) dots.push('<br>');
+      dots.push('<span class="dot">●</span>');
+    }
+    return `<div class="dot-grid">${dots.join('')}</div>`;
+  }
+
+  // Zahlenraum je nach Schwierigkeitsgrad
+  const DIFFICULTY_RANGE = {
+    1: { min: 1, max: 10 },
+    2: { min: 1, max: 15 },
+    3: { min: 1, max: 20 },
+  };
+
+  const exercises = {
+
+    numberRecognition: {
+      id: 'numberRecognition',
+      title: 'Zahlen erkennen',
+      icon: '🔢',
+      description: 'Zahlen von 1 bis 20',
+      generate(difficulty) {
+        const { max } = DIFFICULTY_RANGE[difficulty] || DIFFICULTY_RANGE[1];
+        const n = nextFromDeck(max);
+        return {
+          questionHtml: `
+            <p class="q-label">Welche Zahl ist das?</p>
+            <p class="q-word">${NUMBER_WORDS[n]}</p>
+          `,
+          answer: String(n),
+          hint: `Die Zahl liegt zwischen 1 und ${max}.`,
+        };
+      },
+    },
+
+    counting: {
+      id: 'counting',
+      title: 'Zählen',
+      icon: '🔵',
+      description: 'Mengen richtig zählen',
+      generate(difficulty) {
+        const { max } = DIFFICULTY_RANGE[difficulty] || DIFFICULTY_RANGE[1];
+        const n = randomInt(1, max);
+        return {
+          questionHtml: `
+            <p class="q-label">Wie viele Punkte siehst du?</p>
+            ${makeDotGrid(n)}
+          `,
+          answer: String(n),
+          hint: 'Zähle jeden Punkt einzeln – Reihe für Reihe.',
+        };
+      },
+    },
+
+    addition: {
+      id: 'addition',
+      title: 'Plusrechnen',
+      icon: '➕',
+      description: 'Plus bis 20',
+      generate(difficulty) {
+        const { max } = DIFFICULTY_RANGE[difficulty] || DIFFICULTY_RANGE[1];
+        const a = randomInt(1, Math.floor(max * 0.7));
+        const b = randomInt(1, Math.min(max - a, Math.floor(max * 0.5)));
+        return {
+          questionHtml: `
+            <p class="q-label">Was ist das Ergebnis?</p>
+            <p class="math-eq">${a} + ${b} = <span class="math-blank">?</span></p>
+          `,
+          answer: String(a + b),
+          hint: `Zähle ${b} Schritte weiter von ${a} an.`,
+        };
+      },
+    },
+
+    subtraction: {
+      id: 'subtraction',
+      title: 'Minusrechnen',
+      icon: '➖',
+      description: 'Minus bis 20',
+      generate(difficulty) {
+        const { max } = DIFFICULTY_RANGE[difficulty] || DIFFICULTY_RANGE[1];
+        const a = randomInt(2, max);
+        const b = randomInt(1, a - 1);
+        return {
+          questionHtml: `
+            <p class="q-label">Was ist das Ergebnis?</p>
+            <p class="math-eq">${a} − ${b} = <span class="math-blank">?</span></p>
+          `,
+          answer: String(a - b),
+          hint: `Zähle ${b} Schritte zurück von ${a} an.`,
+        };
+      },
+    },
+
+  };
+
+  // ─── Aufgabe erzeugen (mit Anti-Wiederholung) ─────────────────────────────
+
+  function generateTask(exerciseId) {
+    const profile = Storage.getActiveProfile();
+    const difficulty = profile
+      ? Adaptive.getDifficulty(profile.id, exerciseId)
+      : 1;
+
+    const ex = exercises[exerciseId];
+    let task;
+    let attempts = 0;
+
+    // Versuche, eine Aufgabe zu erzeugen, die nicht zuletzt gestellt wurde
+    do {
+      task = ex.generate(difficulty);
+      attempts++;
+    } while (wasRecentlyAsked(exerciseId, task.answer) && attempts < 12);
+
+    markAsked(exerciseId, task.answer);
+    return { ...task, difficulty };
+  }
+
+  // ─── Session-State ────────────────────────────────────────────────────────
+
+  let currentExerciseId = null;
+  let currentTask = null;
+  let hintShown = false;
+  let sessionStats = { correct: 0, total: 0 };
+
+  const FEEDBACK_CORRECT = [
+    'Super gemacht! ⭐', 'Toll gelöst! 🌟', 'Sehr gut! ✨',
+    'Weiter so! 🎉', 'Fantastisch! 🏆', 'Klasse! 👏',
+    'Du bist großartig! 🌈', 'Prima! 🎈', 'Ausgezeichnet! 💫',
+  ];
+  const FEEDBACK_WRONG = [
+    'Fast richtig – versuch es noch einmal! 💪',
+    'Nicht ganz – du schaffst das! 🌟',
+    'Noch ein Versuch! Du kannst das! ✨',
+    'Probier es nochmal! 🎯',
+  ];
+
+  // ─── Rendering ────────────────────────────────────────────────────────────
 
   function renderHeader() {
     const profile = Storage.getActiveProfile();
     return `
       <header class="workshop-header">
-        <button class="btn btn-ghost btn-icon back-btn" id="back-to-village" title="Zurück zum Dorfplatz">
+        <button class="btn btn-back" id="back-to-village" title="Zurück zum Dorfplatz">
           ←
         </button>
         <div class="workshop-title-block">
@@ -144,36 +221,51 @@ const MathModule = (() => {
           <h1>Rechenwerkstatt</h1>
         </div>
         <div class="star-badge">
-          <span>⭐</span>
-          <span id="header-stars">${profile ? profile.stars : 0}</span>
+          ⭐ <span id="header-stars">${profile ? profile.stars : 0}</span>
         </div>
       </header>
     `;
   }
 
-  function renderExerciseMenu() {
-    return `
-      <main class="exercise-menu">
-        <p class="menu-intro">Was möchtest du üben?</p>
-        <div class="exercise-grid">
-          ${Object.values(exercises).map(ex => `
-            <button class="exercise-card" data-exercise="${ex.id}">
-              <span class="ex-icon">${ex.icon}</span>
-              <span class="ex-title">${ex.title}</span>
-              <span class="ex-desc">${ex.description}</span>
-            </button>
-          `).join('')}
-        </div>
-      </main>
+  function renderMenu() {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+      <div class="screen workshop-screen">
+        ${renderHeader()}
+        <main class="exercise-menu">
+          <p class="menu-intro">Was möchtest du heute üben?</p>
+          <div class="exercise-grid">
+            ${Object.values(exercises).map(ex => `
+              <button class="exercise-card" data-exercise="${ex.id}">
+                <span class="ex-icon">${ex.icon}</span>
+                <span class="ex-title">${ex.title}</span>
+                <span class="ex-desc">${ex.description}</span>
+              </button>
+            `).join('')}
+          </div>
+        </main>
+      </div>
     `;
+
+    document.querySelectorAll('.exercise-card').forEach(card => {
+      card.addEventListener('click', () => {
+        sessionStats = { correct: 0, total: 0 };
+        currentExerciseId = card.dataset.exercise;
+        renderTask();
+      });
+    });
+    document.getElementById('back-to-village').addEventListener('click', () => {
+      App.showVillage();
+    });
   }
 
-  function renderTask(exerciseId) {
-    currentExerciseId = exerciseId;
-    const ex = exercises[exerciseId];
+  function renderTask() {
+    const ex = exercises[currentExerciseId];
     if (!ex) return;
 
-    currentTask = ex.generate();
+    // total zählt hier — eine neue Aufgabe wird gezeigt
+    sessionStats.total++;
+    currentTask = generateTask(currentExerciseId);
     hintShown = false;
 
     const app = document.getElementById('app');
@@ -185,10 +277,11 @@ const MathModule = (() => {
             <div class="task-category">
               <span>${ex.icon}</span>
               <span>${ex.title}</span>
+              <span class="difficulty-indicator">${renderDifficulty(currentTask.difficulty)}</span>
             </div>
 
-            <div class="task-question" id="task-question">
-              ${currentTask.question}
+            <div class="task-question">
+              ${currentTask.questionHtml}
             </div>
 
             <div class="task-input-row">
@@ -196,11 +289,12 @@ const MathModule = (() => {
                 type="number"
                 id="task-answer"
                 class="task-input"
-                placeholder="?"
+                placeholder=""
                 min="0"
                 max="99"
                 autocomplete="off"
                 inputmode="numeric"
+                pattern="[0-9]*"
               />
               <button class="btn btn-primary" id="check-btn">
                 Prüfen ✓
@@ -211,7 +305,7 @@ const MathModule = (() => {
 
             <div class="task-actions">
               <button class="btn btn-ghost" id="hint-btn">💡 Tipp</button>
-              <button class="btn btn-ghost" id="next-btn">Nächste Aufgabe →</button>
+              <button class="btn btn-ghost" id="next-btn">Nächste →</button>
             </div>
           </div>
 
@@ -226,11 +320,13 @@ const MathModule = (() => {
     bindTaskEvents();
   }
 
+  function renderDifficulty(level) {
+    return ['⭐', '⭐⭐', '⭐⭐⭐'][level - 1] || '⭐';
+  }
+
   function bindTaskEvents() {
     const answerInput = document.getElementById('task-answer');
-    const checkBtn = document.getElementById('check-btn');
-    const hintBtn = document.getElementById('hint-btn');
-    const nextBtn = document.getElementById('next-btn');
+    const checkBtn   = document.getElementById('check-btn');
 
     answerInput.focus();
 
@@ -244,16 +340,15 @@ const MathModule = (() => {
       evaluateAnswer(value);
     });
 
-    hintBtn.addEventListener('click', () => {
+    document.getElementById('hint-btn').addEventListener('click', () => {
       if (!hintShown) {
         showFeedback(currentTask.hint, 'hint');
         hintShown = true;
       }
     });
 
-    nextBtn.addEventListener('click', () => {
-      sessionStats.total++;
-      renderTask(currentExerciseId);
+    document.getElementById('next-btn').addEventListener('click', () => {
+      renderTask();
     });
 
     document.getElementById('back-to-village').addEventListener('click', () => {
@@ -266,68 +361,53 @@ const MathModule = (() => {
     const correct = value === currentTask.answer;
     const profile = Storage.getActiveProfile();
 
+    if (profile) {
+      Storage.recordAttempt(profile.id, currentExerciseId, correct);
+    }
+
     if (correct) {
       sessionStats.correct++;
-      sessionStats.total++;
       if (profile) {
         Storage.addStars(profile.id, 1);
         const updated = Storage.getActiveProfile();
-        const headerStars = document.getElementById('header-stars');
-        if (headerStars) headerStars.textContent = updated.stars;
+        const el = document.getElementById('header-stars');
+        if (el) el.textContent = updated.stars;
       }
+
       showFeedback(randomFrom(FEEDBACK_CORRECT), 'correct');
 
-      const checkBtn = document.getElementById('check-btn');
-      const answerInput = document.getElementById('task-answer');
-      if (checkBtn) checkBtn.disabled = true;
-      if (answerInput) answerInput.disabled = true;
+      document.getElementById('check-btn').disabled = true;
+      document.getElementById('task-answer').disabled = true;
 
-      // Auto-advance nach 1.8 s
-      setTimeout(() => {
-        sessionStats.total++;
-        renderTask(currentExerciseId);
-      }, 1800);
+      // Kurze Pause, damit das Kind das Feedback lesen kann
+      setTimeout(() => renderTask(), 1800);
     } else {
       showFeedback(randomFrom(FEEDBACK_WRONG), 'wrong');
-      const answerInput = document.getElementById('task-answer');
-      if (answerInput) {
-        answerInput.value = '';
-        answerInput.classList.add('shake');
-        setTimeout(() => answerInput.classList.remove('shake'), 400);
-        answerInput.focus();
-      }
+      const input = document.getElementById('task-answer');
+      input.value = '';
+      input.classList.add('shake');
+      setTimeout(() => input.classList.remove('shake'), 400);
+      input.focus();
     }
 
-    // Update session stats display
-    const statCorrect = document.getElementById('stat-correct');
-    const statTotal = document.getElementById('stat-total');
-    if (statCorrect) statCorrect.textContent = sessionStats.correct;
-    if (statTotal) statTotal.textContent = sessionStats.total;
+    const elCorrect = document.getElementById('stat-correct');
+    const elTotal   = document.getElementById('stat-total');
+    if (elCorrect) elCorrect.textContent = sessionStats.correct;
+    if (elTotal)   elTotal.textContent   = sessionStats.total;
   }
 
   function showFeedback(message, type) {
     const fb = document.getElementById('task-feedback');
     if (!fb) return;
-    fb.textContent = '';
     fb.innerHTML = message;
     fb.className = `task-feedback feedback-${type}`;
-    fb.classList.remove('hidden');
   }
 
-  // ---------- Public API ----------
+  // ─── Public API ───────────────────────────────────────────────────────────
 
   function mount() {
-    render();
-    // Bind menu clicks after render
-    document.querySelectorAll('.exercise-card').forEach(card => {
-      card.addEventListener('click', () => {
-        sessionStats = { correct: 0, total: 0 };
-        renderTask(card.dataset.exercise);
-      });
-    });
-    document.getElementById('back-to-village').addEventListener('click', () => {
-      App.showVillage();
-    });
+    sessionStats = { correct: 0, total: 0 };
+    renderMenu();
   }
 
   return { mount };

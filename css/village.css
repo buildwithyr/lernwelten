@@ -1,96 +1,91 @@
 /* ============================================================
-   village.css — Dorfplatz, Setup-Screen, Profil
+   village.css — Dorfplatz & Setup-Screen
    ============================================================ */
 
-/* ---------- Setup Screen ---------- */
+/* ─── Setup Screen ───────────────────────────────────────────── */
 .setup-screen {
-  background: linear-gradient(160deg, var(--cream) 0%, var(--orange-light) 100%);
+  background: linear-gradient(160deg, var(--cream) 0%, #FFE8B8 100%);
   align-items: center;
   justify-content: center;
-  padding: var(--space-lg);
+  padding: var(--sp-lg);
 }
 
 .setup-card {
   background: var(--cream-card);
-  border-radius: var(--radius-xl);
-  padding: var(--space-xl) var(--space-xl);
-  max-width: 480px;
+  border-radius: var(--r-xl);
+  padding: var(--sp-xl);
+  max-width: 460px;
   width: 100%;
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--sp-lg);
   animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .setup-logo {
-  font-size: 56px;
+  font-size: 52px;
   text-align: center;
   animation: popIn 0.5s 0.1s both;
 }
 
 .setup-title {
-  font-size: var(--font-size-xl);
+  font-size: var(--text-xl);
   font-weight: 900;
   color: var(--text-dark);
   text-align: center;
   line-height: 1.3;
 }
-
-.setup-title span {
-  color: var(--orange-dark);
-}
+.setup-title span { color: var(--orange-dark); }
 
 .setup-subtitle {
   text-align: center;
   color: var(--text-mid);
-  font-size: var(--font-size-md);
+  font-size: var(--text-md);
   margin-top: -8px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--sp-sm);
 }
 
 .form-group label {
   font-weight: 700;
   color: var(--text-mid);
-  font-size: var(--font-size-sm);
+  font-size: var(--text-sm);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .name-input {
   border: 2px solid var(--cream-dark);
-  border-radius: var(--radius-md);
+  border-radius: var(--r-md);
   padding: 14px 18px;
-  font-family: var(--font-main);
-  font-size: var(--font-size-lg);
+  font-family: var(--font);
+  font-size: var(--text-lg);
   font-weight: 700;
   color: var(--text-dark);
   background: var(--cream);
-  transition: border-color var(--transition), box-shadow var(--transition);
-  outline: none;
   width: 100%;
+  outline: none;
+  transition: border-color var(--ease), box-shadow var(--ease);
 }
-
 .name-input:focus {
   border-color: var(--orange);
-  box-shadow: 0 0 0 3px rgba(244, 164, 53, 0.2);
+  box-shadow: 0 0 0 3px rgba(244, 164, 53, 0.18);
 }
-
 .name-input::placeholder {
   color: var(--text-light);
   font-weight: 400;
 }
 
-/* Avatar-Grid */
+/* Avatar-Auswahl */
 .avatar-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-sm);
+  gap: var(--sp-sm);
 }
 
 .avatar-btn {
@@ -98,34 +93,26 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: var(--space-sm) 4px;
+  padding: 10px 4px;
   border: 2px solid var(--cream-dark);
-  border-radius: var(--radius-md);
+  border-radius: var(--r-md);
   background: var(--cream);
   cursor: pointer;
-  transition: border-color var(--transition-bounce), transform var(--transition-bounce),
-              background var(--transition);
+  transition: border-color var(--ease-bounce), transform var(--ease-bounce), background var(--ease);
   -webkit-tap-highlight-color: transparent;
 }
-
 .avatar-btn:hover {
   border-color: var(--orange-light);
   background: var(--orange-light);
   transform: scale(1.05);
 }
-
 .avatar-btn.selected {
   border-color: var(--orange);
   background: var(--orange-light);
   transform: scale(1.08);
-  box-shadow: 0 0 0 3px rgba(244, 164, 53, 0.3);
+  box-shadow: 0 0 0 3px rgba(244, 164, 53, 0.25);
 }
-
-.avatar-emoji {
-  font-size: 28px;
-  line-height: 1;
-}
-
+.avatar-emoji { font-size: 28px; line-height: 1; }
 .avatar-label {
   font-size: 10px;
   font-weight: 700;
@@ -133,11 +120,11 @@
   text-align: center;
 }
 
-/* ---------- Village Screen ---------- */
+/* ─── Dorfplatz ──────────────────────────────────────────────── */
 .village-screen {
   background:
-    radial-gradient(ellipse at 20% 20%, rgba(255, 209, 102, 0.15) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 80%, rgba(109, 182, 138, 0.1) 0%, transparent 60%),
+    radial-gradient(ellipse at 15% 15%, rgba(255, 209, 102, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 85%, rgba(109, 182, 138, 0.10) 0%, transparent 55%),
     var(--cream);
 }
 
@@ -145,211 +132,141 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--sp-md) var(--sp-lg);
   background: var(--cream-card);
   border-bottom: 2px solid var(--cream-dark);
   position: sticky;
   top: 0;
   z-index: 10;
+  gap: var(--sp-sm);
 }
 
 .village-title {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  font-size: var(--font-size-lg);
+  gap: var(--sp-sm);
+  font-size: var(--text-lg);
   font-weight: 900;
   color: var(--text-dark);
-}
-
-.village-title-icon {
-  font-size: 28px;
 }
 
 .village-header-right {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-}
-
-.star-counter {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--yellow-light);
-  border: 2px solid var(--yellow);
-  border-radius: var(--radius-full);
-  padding: 4px 12px;
-  font-weight: 800;
-  font-size: var(--font-size-md);
-  color: var(--brown);
-}
-
-.avatar-btn-header {
-  font-size: 28px;
-  width: 48px;
-  height: 48px;
-  padding: 0;
-  border-radius: var(--radius-full);
-  background: var(--cream-dark);
-  border: 2px solid var(--cream-dark);
-  transition: background var(--transition), transform var(--transition-bounce);
-}
-
-.avatar-btn-header:hover {
-  background: var(--orange-light);
-  border-color: var(--orange-light);
-  transform: scale(1.1);
+  gap: var(--sp-sm);
 }
 
 .village-main {
   flex: 1;
-  padding: var(--space-lg);
-  max-width: 680px;
+  padding: var(--sp-lg);
+  max-width: 640px;
   margin: 0 auto;
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--sp-lg);
 }
 
+/* Begrüßungszeile */
 .village-welcome {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--sp-md);
   background: var(--cream-card);
-  border-radius: var(--radius-lg);
-  padding: var(--space-md) var(--space-lg);
-  box-shadow: var(--shadow-sm);
   border: 2px solid var(--cream-dark);
+  border-radius: var(--r-lg);
+  padding: var(--sp-md) var(--sp-lg);
+  box-shadow: var(--shadow-sm);
 }
-
-.welcome-avatar {
-  font-size: 40px;
-  flex-shrink: 0;
-}
-
+.welcome-avatar { font-size: 40px; flex-shrink: 0; }
 .village-welcome p {
-  font-size: var(--font-size-md);
+  font-size: var(--text-md);
   color: var(--text-mid);
-  line-height: 1.4;
+  line-height: 1.45;
 }
+.village-welcome strong { color: var(--text-dark); font-weight: 800; }
 
-.village-welcome strong {
-  color: var(--text-dark);
-  font-weight: 800;
-}
-
-/* Building Grid */
+/* Gebäude-Grid */
 .village-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-md);
+  gap: var(--sp-md);
 }
 
 .building-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-lg) var(--space-md);
+  gap: var(--sp-sm);
+  padding: var(--sp-lg) var(--sp-md);
   background: var(--building-bg, var(--cream-card));
   border: 2px solid transparent;
-  border-radius: var(--radius-xl);
+  border-radius: var(--r-xl);
   cursor: pointer;
-  transition: transform var(--transition-bounce), box-shadow var(--transition),
-              border-color var(--transition);
-  box-shadow: var(--shadow-sm);
   text-align: center;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--ease-bounce), box-shadow var(--ease), border-color var(--ease);
   -webkit-tap-highlight-color: transparent;
+  /* Mindest-Touch-Fläche */
+  min-height: 140px;
 }
-
 .building-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.6), transparent);
+  background: linear-gradient(140deg, rgba(255,255,255,0.55), transparent);
   pointer-events: none;
 }
-
 .building-card:hover:not(.building-locked) {
   transform: translateY(-4px) scale(1.02);
   box-shadow: var(--shadow-md);
   border-color: var(--building-color, var(--orange));
 }
-
-.building-card:active {
-  transform: scale(0.97) !important;
-}
-
-.building-card.building-locked {
-  opacity: 0.6;
-  cursor: default;
-}
+.building-card:active:not(.building-locked) { transform: scale(0.96); }
+.building-card.building-locked { opacity: 0.58; cursor: default; }
 
 .building-icon-wrap {
   width: 72px;
   height: 72px;
-  border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.7);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.75);
+  border: 2px solid rgba(255, 255, 255, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(255,255,255,0.9);
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
-
-.building-icon {
-  font-size: 36px;
-  line-height: 1;
-}
+.building-icon { font-size: 34px; line-height: 1; }
 
 .building-label {
-  font-size: var(--font-size-base);
+  font-size: var(--text-base);
   font-weight: 800;
   color: var(--text-dark);
   line-height: 1.3;
+  /* Deutschen Komposita per CSS umbrechen, kein manueller Bindestrich */
+  hyphens: auto;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .building-soon {
-  font-size: var(--font-size-xs);
+  font-size: var(--text-xs);
   color: var(--text-light);
-  font-weight: 600;
-  background: rgba(255,255,255,0.6);
-  border-radius: var(--radius-full);
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: var(--r-full);
   padding: 3px 10px;
 }
 
-/* Decorative path */
-.village-path-art {
-  display: flex;
-  justify-content: center;
-  opacity: 0.7;
-  pointer-events: none;
+/* ─── Responsive ─────────────────────────────────────────────── */
+@media (min-width: 560px) {
+  .building-icon-wrap { width: 80px; height: 80px; }
+  .building-icon { font-size: 40px; }
+  .building-card { min-height: 160px; }
 }
 
-.path-svg {
-  width: 100%;
-  max-width: 400px;
-  height: 60px;
-}
-
-/* ---------- Responsive: Desktop ---------- */
-@media (min-width: 600px) {
-  .village-grid {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 560px;
-    margin: 0 auto;
-  }
-
-  .building-icon-wrap {
-    width: 80px;
-    height: 80px;
-  }
-
-  .building-icon {
-    font-size: 40px;
-  }
+@media (min-width: 768px) {
+  .village-grid { grid-template-columns: repeat(4, 1fr); }
 }

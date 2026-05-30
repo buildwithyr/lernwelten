@@ -8,11 +8,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Lernwelt" />
   <meta name="theme-color" content="#FFF8F0" />
-  <meta name="description" content="Lernwelt – das Lernspiel für Volksschulkinder" />
+  <meta name="description" content="Lernwelt – das Lernspiel für Volksschulkinder der 1. und 2. Klasse" />
 
   <title>Lernwelt 🌟</title>
 
-  <!-- Preload Nunito font -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -20,36 +19,35 @@
     rel="stylesheet"
   />
 
-  <!-- CSS -->
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/village.css" />
   <link rel="stylesheet" href="css/workshop.css" />
 </head>
 <body>
-  <!-- App-Root: alle Screens werden hier per JavaScript gerendert -->
-  <div id="app" role="main">
-    <!-- Ladeindikator (wird sofort durch JS ersetzt) -->
-    <div style="
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      height:100vh;
-      font-size:48px;
-    ">🌟</div>
+  <!--
+    App-Root: alle Screens werden hier per JavaScript gerendert.
+    Der initiale Inhalt wird sofort durch App.init() ersetzt.
+  -->
+  <div id="app" role="main" aria-label="Lernwelt">
+    <div style="display:flex;align-items:center;justify-content:center;height:100dvh;font-size:52px;">
+      🌟
+    </div>
   </div>
 
   <!--
-    Script-Ladereihenfolge:
-      1. storage.js   — Persistenz-Schicht
-      2. profile.js   — Profil-Logik
-      3. math.js      — Mathe-Modul
-      4. app.js       — Haupt-Controller (startet die App)
+    Ladereihenfolge (Abhängigkeiten beachten):
+      1. storage.js   — Persistenz (keine Abhängigkeiten)
+      2. adaptive.js  — Adaptives System (braucht Storage)
+      3. profile.js   — Profil-Logik (braucht Storage)
+      4. math.js      — Mathe-Modul (braucht Storage, Adaptive)
+      5. app.js       — Controller; startet App nach DOMContentLoaded
 
-    Neues Modul hinzufügen:
+    Neues Fach hinzufügen:
       <script src="js/modules/deutsch.js"></script>
-      und in app.js im BUILDINGS-Array registrieren.
+      und in app.js BUILDINGS-Array registrieren.
   -->
   <script src="js/storage.js"></script>
+  <script src="js/adaptive.js"></script>
   <script src="js/profile.js"></script>
   <script src="js/modules/math.js"></script>
   <script src="js/app.js"></script>
