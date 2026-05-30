@@ -110,6 +110,18 @@ const App = (() => {
     });
 
     document.getElementById('profile-btn').addEventListener('click', showProfileModal);
+
+    // Oskar erscheint am unteren Rand des Dorfplatzes
+    setTimeout(() => {
+      const main = document.querySelector('.village-main');
+      if (main) {
+        Oskar.show(main, {
+          placement: 'inline-right',
+          pool:      'village',
+          chance:    0.65,
+        });
+      }
+    }, 50);
   }
 
   function renderBuilding(b) {

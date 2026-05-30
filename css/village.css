@@ -8,6 +8,8 @@
   align-items: center;
   justify-content: center;
   padding: var(--sp-lg);
+  position: relative; /* Positionierungskontext für Oskar */
+  overflow: hidden;   /* verhindert horizontalen Scroll durch Oskar-Überlapp */
 }
 
 .setup-card {

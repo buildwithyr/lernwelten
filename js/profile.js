@@ -110,6 +110,19 @@ const Profile = (() => {
     });
 
     nameInput.focus();
+
+    // Oskar begrüßt den Nutzer auf dem Setup-Screen
+    // Kleines setTimeout damit der DOM vollständig gemalt ist
+    setTimeout(() => {
+      const screen = document.querySelector('.setup-screen');
+      if (screen) {
+        Oskar.show(screen, {
+          placement: 'setup-peek',
+          pool:      'greeting',
+          chance:    1,
+        });
+      }
+    }, 50);
   }
 
   return {

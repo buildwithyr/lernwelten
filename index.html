@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/village.css" />
   <link rel="stylesheet" href="css/workshop.css" />
+  <link rel="stylesheet" href="css/oskar.css" />
 </head>
 <body>
   <!--
@@ -38,16 +39,18 @@
     Ladereihenfolge (Abhängigkeiten beachten):
       1. storage.js   — Persistenz (keine Abhängigkeiten)
       2. adaptive.js  — Adaptives System (braucht Storage)
-      3. profile.js   — Profil-Logik (braucht Storage)
-      4. math.js      — Mathe-Modul (braucht Storage, Adaptive)
-      5. app.js       — Controller; startet App nach DOMContentLoaded
+      3. oskar.js     — Maskottchen-Modul (braucht Storage)
+      4. profile.js   — Profil-Logik (braucht Storage, Oskar)
+      5. math.js      — Mathe-Modul (braucht Storage, Adaptive, Oskar)
+      6. app.js       — Controller; startet App nach DOMContentLoaded
 
     Neues Fach hinzufügen:
-      <script src="js/modules/deutsch.js"></script>
-      und in app.js BUILDINGS-Array registrieren.
+      Datei js/modules/deutsch.js anlegen, hier einen script-Tag ergänzen,
+      dann in app.js im BUILDINGS-Array registrieren.
   -->
   <script src="js/storage.js"></script>
   <script src="js/adaptive.js"></script>
+  <script src="js/oskar.js"></script>
   <script src="js/profile.js"></script>
   <script src="js/modules/math.js"></script>
   <script src="js/app.js"></script>

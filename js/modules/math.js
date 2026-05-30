@@ -195,11 +195,7 @@ const MathModule = (() => {
   let hintShown = false;
   let sessionStats = { correct: 0, total: 0 };
 
-  const FEEDBACK_CORRECT = [
-    'Super gemacht! ⭐', 'Toll gelöst! 🌟', 'Sehr gut! ✨',
-    'Weiter so! 🎉', 'Fantastisch! 🏆', 'Klasse! 👏',
-    'Du bist großartig! 🌈', 'Prima! 🎈', 'Ausgezeichnet! 💫',
-  ];
+  // Richtige-Antworten-Nachrichten werden von Oskar.MESSAGES.correct geliefert.
   const FEEDBACK_WRONG = [
     'Fast richtig – versuch es noch einmal! 💪',
     'Nicht ganz – du schaffst das! 🌟',
@@ -257,6 +253,18 @@ const MathModule = (() => {
     document.getElementById('back-to-village').addEventListener('click', () => {
       App.showVillage();
     });
+
+    // Oskar begleitet das Menü
+    setTimeout(() => {
+      const menu = document.querySelector('.exercise-menu');
+      if (menu) {
+        Oskar.show(menu, {
+          placement: 'inline-right',
+          pool:      'workshop',
+          chance:    0.7,
+        });
+      }
+    }, 50);
   }
 
   function renderTask() {
@@ -318,6 +326,18 @@ const MathModule = (() => {
     `;
 
     bindTaskEvents();
+
+    // Oskar sitzt unter der Karte — meist still, manchmal mit Aufmunterung
+    setTimeout(() => {
+      const main = document.querySelector('.task-main');
+      if (main) {
+        Oskar.show(main, {
+          placement: 'task-companion',
+          pool:      'taskIntro',
+          chance:    0.3,
+        });
+      }
+    }, 50);
   }
 
   function renderDifficulty(level) {
@@ -374,14 +394,17 @@ const MathModule = (() => {
         if (el) el.textContent = updated.stars;
       }
 
-      showFeedback(randomFrom(FEEDBACK_CORRECT), 'correct');
+      // Oskar feiert — kein separater Feedback-Banner für richtige Antworten
+      Oskar.say(randomFrom(Oskar.MESSAGES.correct));
+      hideFeedback();
 
       document.getElementById('check-btn').disabled = true;
       document.getElementById('task-answer').disabled = true;
 
-      // Kurze Pause, damit das Kind das Feedback lesen kann
-      setTimeout(() => renderTask(), 1800);
+      setTimeout(() => renderTask(), 1900);
     } else {
+      // Oskar bleibt still bei Fehlern — nur der Feedback-Banner spricht
+      Oskar.silence();
       showFeedback(randomFrom(FEEDBACK_WRONG), 'wrong');
       const input = document.getElementById('task-answer');
       input.value = '';
@@ -401,6 +424,11 @@ const MathModule = (() => {
     if (!fb) return;
     fb.innerHTML = message;
     fb.className = `task-feedback feedback-${type}`;
+  }
+
+  function hideFeedback() {
+    const fb = document.getElementById('task-feedback');
+    if (fb) fb.className = 'task-feedback hidden';
   }
 
   // ─── Public API ───────────────────────────────────────────────────────────

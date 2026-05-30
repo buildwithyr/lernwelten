@@ -1,0 +1,132 @@
+/* ============================================================
+   oskar.css — Maskottchen-Styles & Sprechblasensystem
+   ============================================================ */
+
+/* ─── Basisstruktur ──────────────────────────────────────────── */
+.oskar-companion {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  pointer-events: none; /* Oskar blockiert keine Klicks */
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.oskar-img {
+  width: 88px;
+  height: auto;
+  flex-shrink: 0;
+  display: block;
+  /* Weißen PNG-Hintergrund auf warmen Flächen ausblenden */
+  mix-blend-mode: multiply;
+}
+
+/* ─── Sprechblasen ───────────────────────────────────────────── */
+/* Standardmäßig unsichtbar — nur mit .oskar-bubble--visible sichtbar */
+.oskar-bubble {
+  display: none; /* via JS via Klasse gesteuert */
+  background: var(--white);
+  border: 2px solid var(--cream-dark);
+  border-radius: 18px 18px 18px 4px; /* Schwanz unten rechts Richtung Oskar */
+  padding: 10px 14px;
+  box-shadow: 0 4px 18px rgba(90, 60, 20, 0.13);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.45;
+  max-width: 190px;
+  text-align: center;
+  position: relative;
+  word-break: break-word;
+}
+
+.oskar-bubble--visible {
+  display: block;
+}
+
+/* Schwanz der Sprechblase — zeigt nach rechts-unten (Richtung Oskar) */
+.oskar-bubble--visible::after {
+  content: '';
+  position: absolute;
+  bottom: 10px;
+  right: -8px;
+  width: 14px;
+  height: 14px;
+  background: var(--white);
+  border-top: 2px solid var(--cream-dark);
+  border-right: 2px solid var(--cream-dark);
+  border-radius: 0 4px 0 0;
+  transform: rotate(45deg);
+}
+
+/* ─── Placement: inline-right ────────────────────────────────── */
+/* Dorfplatz, Werkstatt-Menü: Oskar rechts, Blase links davon    */
+.oskar--inline-right {
+  justify-content: flex-end;
+  align-self: stretch;         /* volle Breite im flex-parent */
+  padding: 0 var(--sp-sm) var(--sp-sm);
+}
+
+/* ─── Placement: task-companion ──────────────────────────────── */
+/* Unter dem Aufgaben-Karte, rechtsbündig                        */
+.oskar--task-companion {
+  justify-content: flex-end;
+  align-self: stretch;
+  padding: 0 var(--sp-sm);
+}
+
+.oskar--task-companion .oskar-bubble {
+  max-width: 210px;
+  font-size: var(--text-base);
+}
+
+/* ─── Placement: setup-peek ──────────────────────────────────── */
+/* Setup-Screen: Oskar lugt von unten in die Szene               */
+.oskar--setup-peek {
+  position: absolute;
+  bottom: 0;
+  right: var(--sp-xl);
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 5;
+}
+
+.oskar--setup-peek .oskar-img {
+  width: 96px;
+  transform: translateY(10px); /* leicht in den unteren Rand eintauchen */
+}
+
+/* Blase über dem Bild, Schwanz zeigt nach unten-rechts Richtung Oskar */
+.oskar--setup-peek .oskar-bubble {
+  border-radius: 18px 18px 4px 18px;
+  max-width: 180px;
+}
+
+.oskar--setup-peek .oskar-bubble--visible::after {
+  bottom: auto;
+  right: 20px;
+  top: auto;
+  bottom: -8px;
+  transform: rotate(135deg);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 380px) {
+  .oskar-img                        { width: 72px; }
+  .oskar--setup-peek .oskar-img     { width: 78px; }
+  .oskar-bubble                     { font-size: var(--text-xs); max-width: 150px; padding: 8px 10px; }
+  .oskar--setup-peek                { right: var(--sp-md); }
+}
+
+@media (min-width: 600px) {
+  .oskar-img                        { width: 100px; }
+  .oskar--setup-peek .oskar-img     { width: 108px; }
+  .oskar-bubble                     { font-size: var(--text-base); max-width: 210px; }
+  .oskar--task-companion .oskar-bubble { font-size: var(--text-md); max-width: 230px; }
+}
+
+@media (min-width: 900px) {
+  .oskar-img                        { width: 110px; }
+}
