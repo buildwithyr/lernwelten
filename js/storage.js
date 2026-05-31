@@ -112,6 +112,29 @@ const Storage = (() => {
     return (profile && profile.adaptive) || {};
   }
 
+  // ---------- Session Results ----------
+
+  function saveSessionResult(profileId, exerciseId, correct, total) {
+    const profile = getProfile(profileId);
+    if (!profile) return false;
+    if (!profile.sessions) profile.sessions = {};
+    if (!profile.sessions[exerciseId]) {
+      profile.sessions[exerciseId] = { bestScore: 0, sessionsPlayed: 0, lastScore: 0, lastTotal: 0 };
+    }
+    const s = profile.sessions[exerciseId];
+    s.sessionsPlayed++;
+    s.lastScore = correct;
+    s.lastTotal = total;
+    if (correct > s.bestScore) s.bestScore = correct;
+    return saveProfile(profile);
+  }
+
+  function getSessionStats(profileId, exerciseId) {
+    const profile = getProfile(profileId);
+    if (!profile || !profile.sessions) return null;
+    return profile.sessions[exerciseId] || null;
+  }
+
   return {
     getAllProfiles,
     getProfile,
@@ -122,5 +145,7 @@ const Storage = (() => {
     addStars,
     recordAttempt,
     getAdaptiveData,
+    saveSessionResult,
+    getSessionStats,
   };
 })();

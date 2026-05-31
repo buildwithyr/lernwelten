@@ -125,6 +125,10 @@ const App = (() => {
   }
 
   function renderBuilding(b) {
+    let progressHtml = '';
+    if (b.active && b.id === 'math') {
+      progressHtml = getMathProgressBadge();
+    }
     return `
       <button
         class="building-card${b.active ? '' : ' building-locked'}"
@@ -135,9 +139,26 @@ const App = (() => {
           <span class="building-icon">${b.icon}</span>
         </div>
         <span class="building-label">${b.label}</span>
+        ${progressHtml}
         ${b.active ? '' : '<span class="building-soon">Kommt bald</span>'}
       </button>
     `;
+  }
+
+  function getMathProgressBadge() {
+    const profile = Storage.getActiveProfile();
+    if (!profile) return '';
+    const exerciseIds = ['numberRecognition', 'counting', 'addition', 'subtraction'];
+    let totalBest = 0;
+    let played = 0;
+    exerciseIds.forEach(id => {
+      const s = Storage.getSessionStats(profile.id, id);
+      if (s) { played++; totalBest += s.bestScore; }
+    });
+    if (played === 0) return '<span class="building-progress building-progress--new">Noch nicht gespielt</span>';
+    const avg = totalBest / played;
+    const stars = avg >= 9 ? 3 : avg >= 7 ? 2 : 1;
+    return `<span class="building-progress">${'⭐'.repeat(stars)}</span>`;
   }
 
   // ─── Overlays ─────────────────────────────────────────────────────────────

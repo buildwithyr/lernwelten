@@ -1,9 +1,6 @@
 /**
  * modules/math.js
  * Rechenwerkstatt — Mathematik für Klasse 1 & 2.
- *
- * Neues Fach hinzufügen: js/modules/deutsch.js nach gleichem Muster anlegen,
- * dann in app.js im BUILDINGS-Array registrieren.
  */
 
 const MathModule = (() => {
@@ -18,7 +15,6 @@ const MathModule = (() => {
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  // Fisher-Yates shuffle — gibt eine neue gemischte Kopie zurück
   function shuffle(arr) {
     const a = arr.slice();
     for (let i = a.length - 1; i > 0; i--) {
@@ -30,7 +26,6 @@ const MathModule = (() => {
 
   // ─── Anti-Wiederholungs-Warteschlange ─────────────────────────────────────
 
-  // Pro Übungstyp: die letzten N Antworten, um direkte Wiederholungen zu vermeiden
   const RECENT_WINDOW = 5;
   const recentAnswers = {};
 
@@ -54,19 +49,15 @@ const MathModule = (() => {
     'sechzehn', 'siebzehn', 'achtzehn', 'neunzehn', 'zwanzig',
   ];
 
-  // Gemischtes Kartendeck für Zahlen-Erkennen (stellt sicher, dass alle Zahlen
-  // vorkommen, bevor eine wiederholt wird)
   let numberDeck = [];
   function nextFromDeck(max) {
     const pool = Array.from({ length: max }, (_, i) => i + 1);
-    // Refill wenn leer oder wenn Schwierigkeit den Pool verkleinert
     if (numberDeck.length === 0 || numberDeck.some(n => n > max)) {
       numberDeck = shuffle(pool);
     }
     return numberDeck.pop();
   }
 
-  // Dot-Grid für Zähl-Übung: max. 5 Punkte pro Zeile, mit Zeilenumbrüchen
   function makeDotGrid(n) {
     const COLS = 5;
     const dots = [];
@@ -77,7 +68,6 @@ const MathModule = (() => {
     return `<div class="dot-grid">${dots.join('')}</div>`;
   }
 
-  // Zahlenraum je nach Schwierigkeitsgrad
   const DIFFICULTY_RANGE = {
     1: { min: 1, max: 10 },
     2: { min: 1, max: 15 },
@@ -178,7 +168,6 @@ const MathModule = (() => {
     let task;
     let attempts = 0;
 
-    // Versuche, eine Aufgabe zu erzeugen, die nicht zuletzt gestellt wurde
     do {
       task = ex.generate(difficulty);
       attempts++;
@@ -188,20 +177,76 @@ const MathModule = (() => {
     return { ...task, difficulty };
   }
 
-  // ─── Session-State ────────────────────────────────────────────────────────
+  // ─── Session-Konstanten & State ───────────────────────────────────────────
+
+  const SESSION_LENGTH = 10;
 
   let currentExerciseId = null;
   let currentTask = null;
   let hintShown = false;
   let sessionStats = { correct: 0, total: 0 };
 
-  // Richtige-Antworten-Nachrichten werden von Oskar.MESSAGES.correct geliefert.
   const FEEDBACK_WRONG = [
     'Fast richtig – versuch es noch einmal! 💪',
     'Nicht ganz – du schaffst das! 🌟',
     'Noch ein Versuch! Du kannst das! ✨',
     'Probier es nochmal! 🎯',
   ];
+
+  const PRAISE_MESSAGES = [
+    'Super gemacht! 🎉',
+    'Klasse! 🌟',
+    'Oskar ist stolz auf dich! 🐶',
+    'Toll gerechnet! 💫',
+    'Du bist ein Mathe-Star! ⭐',
+    'Fantastische Leistung! 🏆',
+    'Wunderbar! 🎈',
+    'Großartig gerechnet! ✨',
+  ];
+
+  // ─── Hilfsfunktionen für Session-Abschluss ────────────────────────────────
+
+  function getSessionStars(correct, total) {
+    const rate = correct / total;
+    if (rate >= 0.9) return 3;
+    if (rate >= 0.7) return 2;
+    if (rate >= 0.5) return 1;
+    return 0;
+  }
+
+  function getPerformanceText(correct, total) {
+    const rate = correct / total;
+    if (rate === 1)   return 'Perfekte Leistung! 🏆';
+    if (rate >= 0.9)  return 'Sehr starke Leistung! 🌟';
+    if (rate >= 0.7)  return 'Gut gemacht! 👍';
+    if (rate >= 0.5)  return 'Weiter üben! 💪';
+    return 'Nicht aufgeben! Du wirst besser! 🌈';
+  }
+
+  function launchConfetti() {
+    const colors = ['#F4A435', '#6DB68A', '#7EB8D4', '#B07EC8', '#E85D75', '#FFD166', '#FF9A3C'];
+    const container = document.createElement('div');
+    container.className = 'confetti-container';
+    document.body.appendChild(container);
+
+    for (let i = 0; i < 70; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.cssText = [
+        `left:${Math.random() * 100}%`,
+        `background:${colors[Math.floor(Math.random() * colors.length)]}`,
+        `animation-delay:${(Math.random() * 0.9).toFixed(2)}s`,
+        `animation-duration:${(1.2 + Math.random() * 1.4).toFixed(2)}s`,
+        `width:${6 + Math.round(Math.random() * 8)}px`,
+        `height:${6 + Math.round(Math.random() * 8)}px`,
+        `border-radius:${Math.random() > 0.5 ? '50%' : '3px'}`,
+        `transform:rotate(${Math.round(Math.random() * 360)}deg)`,
+      ].join(';');
+      container.appendChild(piece);
+    }
+
+    setTimeout(() => container.remove(), 3500);
+  }
 
   // ─── Rendering ────────────────────────────────────────────────────────────
 
@@ -223,6 +268,29 @@ const MathModule = (() => {
     `;
   }
 
+  function renderExerciseCard(ex) {
+    const profile = Storage.getActiveProfile();
+    const stats = profile ? Storage.getSessionStats(profile.id, ex.id) : null;
+
+    let progressHtml;
+    if (stats) {
+      const stars = getSessionStars(stats.bestScore, SESSION_LENGTH);
+      const starStr = stars > 0 ? '⭐'.repeat(stars) : '–';
+      progressHtml = `<span class="ex-progress">${starStr} Beste: ${stats.bestScore}/${SESSION_LENGTH}</span>`;
+    } else {
+      progressHtml = `<span class="ex-progress ex-not-played">Noch nicht gespielt</span>`;
+    }
+
+    return `
+      <button class="exercise-card" data-exercise="${ex.id}">
+        <span class="ex-icon">${ex.icon}</span>
+        <span class="ex-title">${ex.title}</span>
+        <span class="ex-desc">${ex.description}</span>
+        ${progressHtml}
+      </button>
+    `;
+  }
+
   function renderMenu() {
     const app = document.getElementById('app');
     app.innerHTML = `
@@ -231,13 +299,7 @@ const MathModule = (() => {
         <main class="exercise-menu">
           <p class="menu-intro">Was möchtest du heute üben?</p>
           <div class="exercise-grid">
-            ${Object.values(exercises).map(ex => `
-              <button class="exercise-card" data-exercise="${ex.id}">
-                <span class="ex-icon">${ex.icon}</span>
-                <span class="ex-title">${ex.title}</span>
-                <span class="ex-desc">${ex.description}</span>
-              </button>
-            `).join('')}
+            ${Object.values(exercises).map(renderExerciseCard).join('')}
           </div>
         </main>
       </div>
@@ -254,7 +316,6 @@ const MathModule = (() => {
       App.showVillage();
     });
 
-    // Oskar begleitet das Menü
     setTimeout(() => {
       const menu = document.querySelector('.exercise-menu');
       if (menu) {
@@ -271,7 +332,6 @@ const MathModule = (() => {
     const ex = exercises[currentExerciseId];
     if (!ex) return;
 
-    // total zählt hier — eine neue Aufgabe wird gezeigt
     sessionStats.total++;
     currentTask = generateTask(currentExerciseId);
     hintShown = false;
@@ -286,6 +346,13 @@ const MathModule = (() => {
               <span>${ex.icon}</span>
               <span>${ex.title}</span>
               <span class="difficulty-indicator">${renderDifficulty(currentTask.difficulty)}</span>
+            </div>
+
+            <div class="task-progress">
+              <div class="task-progress-bar">
+                <div class="task-progress-fill" style="width:${((sessionStats.total - 1) / SESSION_LENGTH) * 100}%"></div>
+              </div>
+              <span class="task-progress-label">Aufgabe <strong>${sessionStats.total}</strong> von ${SESSION_LENGTH}</span>
             </div>
 
             <div class="task-question">
@@ -316,18 +383,12 @@ const MathModule = (() => {
               <button class="btn btn-ghost" id="next-btn">Nächste →</button>
             </div>
           </div>
-
-          <div class="session-stats">
-            <span>Richtig: <strong id="stat-correct">${sessionStats.correct}</strong></span>
-            <span>Aufgaben: <strong id="stat-total">${sessionStats.total}</strong></span>
-          </div>
         </main>
       </div>
     `;
 
     bindTaskEvents();
 
-    // Oskar sitzt unter der Karte — meist still, manchmal mit Aufmunterung
     setTimeout(() => {
       const main = document.querySelector('.task-main');
       if (main) {
@@ -338,6 +399,68 @@ const MathModule = (() => {
         });
       }
     }, 50);
+  }
+
+  function renderSessionComplete() {
+    launchConfetti();
+
+    const profile = Storage.getActiveProfile();
+    const correct = sessionStats.correct;
+    const total   = SESSION_LENGTH;
+
+    if (profile) {
+      Storage.saveSessionResult(profile.id, currentExerciseId, correct, total);
+    }
+
+    const praise      = randomFrom(PRAISE_MESSAGES);
+    const performance = getPerformanceText(correct, total);
+    const stars       = getSessionStars(correct, total);
+    const starStr     = stars > 0 ? '⭐'.repeat(stars) : '☆☆☆';
+
+    const app = document.getElementById('app');
+    app.innerHTML = `
+      <div class="screen complete-screen">
+        ${renderHeader()}
+        <main class="complete-main">
+          <div class="complete-card">
+            <div class="complete-trophy">${stars >= 3 ? '🏆' : stars >= 2 ? '🌟' : '👍'}</div>
+            <h2 class="complete-praise">${praise}</h2>
+            <p class="complete-subtitle">Du hast alle <strong>${total} Aufgaben</strong> abgeschlossen.</p>
+            <div class="complete-score-row">
+              <span class="complete-stars">${starStr}</span>
+              <span class="complete-score-text">Richtige Antworten: <strong>${correct} von ${total}</strong></span>
+            </div>
+            <p class="complete-performance">${performance}</p>
+            <div class="complete-actions">
+              <button class="btn btn-primary" id="play-again-btn">🔄 Noch einmal spielen</button>
+              <button class="btn btn-ghost" id="back-to-menu-btn">🏠 Zurück zum Hauptmenü</button>
+            </div>
+          </div>
+        </main>
+      </div>
+    `;
+
+    document.getElementById('play-again-btn').addEventListener('click', () => {
+      sessionStats = { correct: 0, total: 0 };
+      renderTask();
+    });
+    document.getElementById('back-to-menu-btn').addEventListener('click', () => {
+      App.showVillage();
+    });
+    document.getElementById('back-to-village').addEventListener('click', () => {
+      App.showVillage();
+    });
+
+    setTimeout(() => {
+      const main = document.querySelector('.complete-main');
+      if (main) {
+        Oskar.show(main, {
+          placement: 'task-companion',
+          pool:      'correct',
+          chance:    1,
+        });
+      }
+    }, 100);
   }
 
   function renderDifficulty(level) {
@@ -368,7 +491,11 @@ const MathModule = (() => {
     });
 
     document.getElementById('next-btn').addEventListener('click', () => {
-      renderTask();
+      if (sessionStats.total >= SESSION_LENGTH) {
+        renderSessionComplete();
+      } else {
+        renderTask();
+      }
     });
 
     document.getElementById('back-to-village').addEventListener('click', () => {
@@ -394,16 +521,22 @@ const MathModule = (() => {
         if (el) el.textContent = updated.stars;
       }
 
-      // Oskar feiert — kein separater Feedback-Banner für richtige Antworten
       Oskar.say(randomFrom(Oskar.MESSAGES.correct));
       hideFeedback();
 
       document.getElementById('check-btn').disabled = true;
       document.getElementById('task-answer').disabled = true;
 
-      setTimeout(() => renderTask(), 1900);
+      // Update progress bar to full for this task
+      const fill = document.querySelector('.task-progress-fill');
+      if (fill) fill.style.width = `${(sessionStats.total / SESSION_LENGTH) * 100}%`;
+
+      if (sessionStats.total >= SESSION_LENGTH) {
+        setTimeout(() => renderSessionComplete(), 1900);
+      } else {
+        setTimeout(() => renderTask(), 1900);
+      }
     } else {
-      // Oskar bleibt still bei Fehlern — nur der Feedback-Banner spricht
       Oskar.silence();
       showFeedback(randomFrom(FEEDBACK_WRONG), 'wrong');
       const input = document.getElementById('task-answer');
@@ -412,11 +545,6 @@ const MathModule = (() => {
       setTimeout(() => input.classList.remove('shake'), 400);
       input.focus();
     }
-
-    const elCorrect = document.getElementById('stat-correct');
-    const elTotal   = document.getElementById('stat-total');
-    if (elCorrect) elCorrect.textContent = sessionStats.correct;
-    if (elTotal)   elTotal.textContent   = sessionStats.total;
   }
 
   function showFeedback(message, type) {
