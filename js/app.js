@@ -20,15 +20,17 @@ const App = (() => {
       bgColor: '#FFF3DC',
       active: true,
       mount: () => MathModule.mount(),
+      exerciseIds: ['numberRecognition', 'counting', 'addition', 'subtraction'],
     },
     {
       id: 'reading',
-      label: 'Bücherhaus',
-      icon: '📚',
+      label: 'Wörterhaus',
+      icon: '📖',
       color: '#6DB68A',
       bgColor: '#E8F5EE',
-      active: false,
-      mount: null,
+      active: true,
+      mount: () => WordsModule.mount(),
+      exerciseIds: ['missingLetter', 'sortLetters', 'wordCategory', 'opposites'],
     },
     {
       id: 'science',
@@ -36,8 +38,9 @@ const App = (() => {
       icon: '🔬',
       color: '#7EB8D4',
       bgColor: '#E3F2F9',
-      active: false,
-      mount: null,
+      active: true,
+      mount: () => ScienceModule.mount(),
+      exerciseIds: ['knowledgeQuiz', 'trueFalse', 'matching'],
     },
     {
       id: 'puzzles',
@@ -45,8 +48,9 @@ const App = (() => {
       icon: '🗝️',
       color: '#B07EC8',
       bgColor: '#F3EAF8',
-      active: false,
-      mount: null,
+      active: true,
+      mount: () => PuzzlesModule.mount(),
+      exerciseIds: ['numberPattern', 'shapePattern', 'oddOneOut', 'memoryTask', 'miniSudoku'],
     },
   ];
 
@@ -125,10 +129,7 @@ const App = (() => {
   }
 
   function renderBuilding(b) {
-    let progressHtml = '';
-    if (b.active && b.id === 'math') {
-      progressHtml = getMathProgressBadge();
-    }
+    const progressHtml = b.active ? getBuildingProgressBadge(b) : '';
     return `
       <button
         class="building-card${b.active ? '' : ' building-locked'}"
@@ -145,13 +146,13 @@ const App = (() => {
     `;
   }
 
-  function getMathProgressBadge() {
+  function getBuildingProgressBadge(b) {
     const profile = Storage.getActiveProfile();
     if (!profile) return '';
-    const exerciseIds = ['numberRecognition', 'counting', 'addition', 'subtraction'];
+    const ids = b.exerciseIds || [];
     let totalBest = 0;
     let played = 0;
-    exerciseIds.forEach(id => {
+    ids.forEach(id => {
       const s = Storage.getSessionStats(profile.id, id);
       if (s) { played++; totalBest += s.bestScore; }
     });

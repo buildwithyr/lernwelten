@@ -70,6 +70,30 @@ const Oskar = (() => {
       'Ausgezeichnet! 💫',
       'Das war richtig stark!',
       'Du wirst immer besser!',
+      'Oskar ist stolz auf dich! 🐶',
+      'Heute warst du richtig schlau! 🧠',
+      '10 von 10 – perfekt! 🏆',
+    ],
+    words: [
+      'Wörter machen Spaß! 📖',
+      'Du lernst so viel!',
+      'Buchstaben sind toll! 🔤',
+      null,
+      null,
+    ],
+    puzzles: [
+      'Zeit zum Rätseln! 🗝️',
+      'Denk genau nach!',
+      'Das schaffst du! 🧠',
+      null,
+      null,
+    ],
+    science: [
+      'Lass uns forschen! 🔬',
+      'Was wirst du heute lernen?',
+      'Wissen macht schlau! 🌍',
+      null,
+      null,
     ],
   };
 
