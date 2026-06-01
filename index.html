@@ -3,15 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <!-- PWA / Android -->
   <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#F4A435" />
+
+  <!-- PWA / iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Lernwelt" />
-  <meta name="theme-color" content="#FFF8F0" />
-  <meta name="description" content="Lernwelt – das Lernspiel für Volksschulkinder der 1. und 2. Klasse" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Lernwelten" />
 
-  <title>Lernwelt 🌟</title>
+  <!-- General -->
+  <meta name="description" content="Spielerische Lern-App für Volksschulkinder" />
+  <meta name="application-name" content="Lernwelten" />
+  <meta name="format-detection" content="telephone=no" />
 
+  <title>Lernwelten 🌟</title>
+
+  <!-- Manifest -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/icon-16x16.png" />
+  <link rel="shortcut icon" href="favicon.ico" />
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="assets/icons/icon-152x152.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png" />
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -24,16 +46,66 @@
   <link rel="stylesheet" href="css/workshop.css" />
   <link rel="stylesheet" href="css/oskar.css" />
   <link rel="stylesheet" href="css/modules.css" />
+
+  <style>
+    /* ── PWA Install Banner ───────────────────────────────────────── */
+    #pwa-install-banner {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 400px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      padding: 16px 18px;
+      z-index: 9999;
+      font-family: Nunito, sans-serif;
+      animation: slideUpBanner 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    #pwa-install-banner.visible { display: flex; align-items: center; gap: 12px; }
+    @keyframes slideUpBanner {
+      from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+      to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+    }
+    #pwa-install-banner .banner-icon { font-size: 36px; flex-shrink: 0; }
+    #pwa-install-banner .banner-text { flex: 1; }
+    #pwa-install-banner .banner-title { font-weight: 800; font-size: 15px; color: #2D1F0F; margin: 0 0 2px; }
+    #pwa-install-banner .banner-hint  { font-size: 13px; color: #7A5C1E; margin: 0; line-height: 1.4; }
+    #pwa-install-banner .banner-btn   {
+      background: #F4A435; color: #fff; border: none; border-radius: 12px;
+      padding: 8px 14px; font-family: Nunito, sans-serif; font-weight: 800;
+      font-size: 14px; cursor: pointer; flex-shrink: 0; white-space: nowrap;
+    }
+    #pwa-install-banner .banner-close {
+      background: none; border: none; font-size: 18px; cursor: pointer;
+      color: #aaa; padding: 4px; flex-shrink: 0; line-height: 1;
+    }
+    #pwa-install-banner .banner-close:hover { color: #666; }
+  </style>
 </head>
 <body>
   <!--
     App-Root: alle Screens werden hier per JavaScript gerendert.
     Der initiale Inhalt wird sofort durch App.init() ersetzt.
   -->
-  <div id="app" role="main" aria-label="Lernwelt">
+  <div id="app" role="main" aria-label="Lernwelten">
     <div style="display:flex;align-items:center;justify-content:center;height:100dvh;font-size:52px;">
       🌟
     </div>
+  </div>
+
+  <!-- PWA Install Banner (hidden by default, shown by JS when appropriate) -->
+  <div id="pwa-install-banner" role="banner" aria-label="App installieren">
+    <span class="banner-icon">🌟</span>
+    <div class="banner-text">
+      <p class="banner-title">Lernwelten installieren</p>
+      <p class="banner-hint" id="pwa-install-hint">Tippe auf „Zum Home-Bildschirm".</p>
+    </div>
+    <button class="banner-btn" id="pwa-install-btn" style="display:none">Installieren</button>
+    <button class="banner-close" id="pwa-install-close" aria-label="Schließen">✕</button>
   </div>
 
   <!--
@@ -44,10 +116,6 @@
       4. profile.js   — Profil-Logik (braucht Storage, Oskar)
       5. math.js      — Mathe-Modul (braucht Storage, Adaptive, Oskar)
       6. app.js       — Controller; startet App nach DOMContentLoaded
-
-    Neues Fach hinzufügen:
-      Datei js/modules/deutsch.js anlegen, hier einen script-Tag ergänzen,
-      dann in app.js im BUILDINGS-Array registrieren.
   -->
   <script src="js/storage.js"></script>
   <script src="js/adaptive.js"></script>
@@ -58,5 +126,6 @@
   <script src="js/modules/puzzles.js"></script>
   <script src="js/modules/science.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/pwa.js"></script>
 </body>
 </html>
