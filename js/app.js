@@ -82,7 +82,7 @@ const App = (() => {
             <div class="star-badge">
               ⭐ <span id="village-stars">${profile.stars}</span>
             </div>
-            <button class="btn-avatar" id="profile-btn" title="Profil anzeigen">
+            <button class="btn-avatar" id="profile-btn" title="Profil öffnen">
               ${Profile.getAvatarEmoji(profile.avatarId)}
             </button>
           </div>
@@ -194,13 +194,13 @@ const App = (() => {
         </div>
       </div>
       <div class="star-progress-wrap">
-        <div class="star-progress-label">Nächstes Level in ${starsToNextLevel} Stern${starsToNextLevel === 1 ? '' : 'en'}</div>
+        <div class="star-progress-label">Noch ${starsToNextLevel} Stern${starsToNextLevel === 1 ? '' : 'en'}</div>
         <div class="star-progress-bar">
           <div class="star-progress-fill" style="width:${progressPct}%"></div>
         </div>
       </div>
-      <button class="btn btn-primary" id="close-profile">Weiter spielen 🎮</button>
-      <button class="btn btn-ghost btn-sm" id="new-profile-btn">Neues Profil erstellen</button>
+      <button class="btn btn-primary" id="close-profile">Weiterspielen 🎮</button>
+      <button class="btn btn-ghost btn-sm" id="new-profile-btn">Neues Profil</button>
     `);
 
     document.getElementById('close-profile').addEventListener('click', () => overlay.remove());

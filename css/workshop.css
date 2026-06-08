@@ -8,7 +8,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-sm);
-  padding: var(--sp-md) var(--sp-lg);
+  padding: calc(var(--sp-md) + env(safe-area-inset-top, 0px)) var(--sp-lg) var(--sp-md);
   background: var(--cream-card);
   border-bottom: 2px solid var(--cream-dark);
   position: sticky;
@@ -32,6 +32,50 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
+/* ─── Spiellänge-Auswahl ─────────────────────────────────────── */
+.session-mode {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-sm);
+  flex-wrap: wrap;
+  background: var(--cream-card);
+  border: 2px solid var(--cream-dark);
+  border-radius: var(--r-full);
+  padding: var(--sp-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.session-mode-label {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--text-mid);
+}
+
+.session-mode-btn {
+  border: 2px solid var(--cream-dark);
+  border-radius: var(--r-full);
+  background: var(--cream);
+  color: var(--text-mid);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  font-weight: 800;
+  min-height: 40px;
+  padding: 8px 14px;
+  transition: background var(--ease), border-color var(--ease), color var(--ease), transform var(--ease-bounce);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.session-mode-btn.selected {
+  background: var(--orange-light);
+  border-color: var(--orange);
+  color: var(--orange-dark);
+}
+
+.session-mode-btn:active { transform: scale(0.95); }
 
 /* ─── Übungsauswahl-Menü ─────────────────────────────────────── */
 .workshop-screen {

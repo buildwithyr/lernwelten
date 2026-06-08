@@ -179,7 +179,8 @@ const MathModule = (() => {
 
   // ─── Session-Konstanten & State ───────────────────────────────────────────
 
-  const SESSION_LENGTH = 10;
+  const DEFAULT_SESSION_LENGTH = 10;
+  let sessionLength = DEFAULT_SESSION_LENGTH;
 
   let currentExerciseId = null;
   let currentTask = null;
@@ -268,15 +269,37 @@ const MathModule = (() => {
     `;
   }
 
+
+  function renderSessionModeSelector() {
+    return `
+      <div class="session-mode" role="group" aria-label="Spiellänge wählen">
+        <span class="session-mode-label">Wie lange?</span>
+        <button class="session-mode-btn${sessionLength === 5 ? ' selected' : ''}" data-session-length="5" type="button">Kurz: 5</button>
+        <button class="session-mode-btn${sessionLength === 10 ? ' selected' : ''}" data-session-length="10" type="button">Normal: 10</button>
+      </div>
+    `;
+  }
+
+  function bindSessionModeEvents() {
+    document.querySelectorAll('.session-mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const len = Number(btn.dataset.sessionLength);
+        sessionLength = len === 5 ? 5 : DEFAULT_SESSION_LENGTH;
+        renderMenu();
+      });
+    });
+  }
+
   function renderExerciseCard(ex) {
     const profile = Storage.getActiveProfile();
     const stats = profile ? Storage.getSessionStats(profile.id, ex.id) : null;
 
     let progressHtml;
     if (stats) {
-      const stars = getSessionStars(stats.bestScore, SESSION_LENGTH);
+      const bestTotal = stats.bestTotal || DEFAULT_SESSION_LENGTH;
+      const stars = getSessionStars(stats.bestScore, bestTotal);
       const starStr = stars > 0 ? '⭐'.repeat(stars) : '–';
-      progressHtml = `<span class="ex-progress">${starStr} Beste: ${stats.bestScore}/${SESSION_LENGTH}</span>`;
+      progressHtml = `<span class="ex-progress">${starStr} Beste: ${stats.bestScore}/${bestTotal}</span>`;
     } else {
       progressHtml = `<span class="ex-progress ex-not-played">Noch nicht gespielt</span>`;
     }
@@ -297,13 +320,16 @@ const MathModule = (() => {
       <div class="screen workshop-screen">
         ${renderHeader()}
         <main class="exercise-menu">
-          <p class="menu-intro">Was möchtest du heute üben?</p>
+          <p class="menu-intro">Such dir ein Spiel aus.</p>
+          ${renderSessionModeSelector()}
           <div class="exercise-grid">
             ${Object.values(exercises).map(renderExerciseCard).join('')}
           </div>
         </main>
       </div>
     `;
+
+    bindSessionModeEvents();
 
     document.querySelectorAll('.exercise-card').forEach(card => {
       card.addEventListener('click', () => {
@@ -350,9 +376,9 @@ const MathModule = (() => {
 
             <div class="task-progress">
               <div class="task-progress-bar">
-                <div class="task-progress-fill" style="width:${((sessionStats.total - 1) / SESSION_LENGTH) * 100}%"></div>
+                <div class="task-progress-fill" style="width:${((sessionStats.total - 1) / sessionLength) * 100}%"></div>
               </div>
-              <span class="task-progress-label">Aufgabe <strong>${sessionStats.total}</strong> von ${SESSION_LENGTH}</span>
+              <span class="task-progress-label">Aufgabe <strong>${sessionStats.total}</strong> von ${sessionLength}</span>
             </div>
 
             <div class="task-question">
@@ -372,7 +398,7 @@ const MathModule = (() => {
                 pattern="[0-9]*"
               />
               <button class="btn btn-primary" id="check-btn">
-                Prüfen ✓
+                Fertig ✓
               </button>
             </div>
 
@@ -380,7 +406,7 @@ const MathModule = (() => {
 
             <div class="task-actions">
               <button class="btn btn-ghost" id="hint-btn">💡 Tipp</button>
-              <button class="btn btn-ghost" id="next-btn">Nächste →</button>
+              <button class="btn btn-ghost" id="next-btn" style="display:none">Weiter →</button>
             </div>
           </div>
         </main>
@@ -406,7 +432,7 @@ const MathModule = (() => {
 
     const profile = Storage.getActiveProfile();
     const correct = sessionStats.correct;
-    const total   = SESSION_LENGTH;
+    const total   = sessionLength;
 
     if (profile) {
       Storage.saveSessionResult(profile.id, currentExerciseId, correct, total);
@@ -425,15 +451,15 @@ const MathModule = (() => {
           <div class="complete-card">
             <div class="complete-trophy">${stars >= 3 ? '🏆' : stars >= 2 ? '🌟' : '👍'}</div>
             <h2 class="complete-praise">${praise}</h2>
-            <p class="complete-subtitle">Du hast alle <strong>${total} Aufgaben</strong> abgeschlossen.</p>
+            <p class="complete-subtitle">Du hast <strong>${total} Aufgaben</strong> gespielt.</p>
             <div class="complete-score-row">
               <span class="complete-stars">${starStr}</span>
-              <span class="complete-score-text">Richtige Antworten: <strong>${correct} von ${total}</strong></span>
+              <span class="complete-score-text">Geschafft: <strong>${correct} von ${total}</strong></span>
             </div>
             <p class="complete-performance">${performance}</p>
             <div class="complete-actions">
-              <button class="btn btn-primary" id="play-again-btn">🔄 Noch einmal spielen</button>
-              <button class="btn btn-ghost" id="back-to-menu-btn">🏠 Zurück zum Hauptmenü</button>
+              <button class="btn btn-primary" id="play-again-btn">🔄 Nochmal spielen</button>
+              <button class="btn btn-ghost" id="back-to-menu-btn">🏠 Zur Lernwelt</button>
             </div>
           </div>
         </main>
@@ -471,8 +497,6 @@ const MathModule = (() => {
     const answerInput = document.getElementById('task-answer');
     const checkBtn   = document.getElementById('check-btn');
 
-    answerInput.focus();
-
     answerInput.addEventListener('keydown', e => {
       if (e.key === 'Enter') checkBtn.click();
     });
@@ -491,7 +515,7 @@ const MathModule = (() => {
     });
 
     document.getElementById('next-btn').addEventListener('click', () => {
-      if (sessionStats.total >= SESSION_LENGTH) {
+      if (sessionStats.total >= sessionLength) {
         renderSessionComplete();
       } else {
         renderTask();
@@ -529,9 +553,9 @@ const MathModule = (() => {
 
       // Update progress bar to full for this task
       const fill = document.querySelector('.task-progress-fill');
-      if (fill) fill.style.width = `${(sessionStats.total / SESSION_LENGTH) * 100}%`;
+      if (fill) fill.style.width = `${(sessionStats.total / sessionLength) * 100}%`;
 
-      if (sessionStats.total >= SESSION_LENGTH) {
+      if (sessionStats.total >= sessionLength) {
         setTimeout(() => renderSessionComplete(), 1900);
       } else {
         setTimeout(() => renderTask(), 1900);
@@ -543,7 +567,6 @@ const MathModule = (() => {
       input.value = '';
       input.classList.add('shake');
       setTimeout(() => input.classList.remove('shake'), 400);
-      input.focus();
     }
   }
 

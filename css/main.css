@@ -217,7 +217,7 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: var(--sp-lg);
+  padding: calc(var(--sp-lg) + env(safe-area-inset-top, 0px)) var(--sp-lg) calc(var(--sp-lg) + env(safe-area-inset-bottom, 0px));
   animation: fadeIn 0.18s ease;
 }
 

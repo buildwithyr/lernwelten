@@ -33,7 +33,7 @@ const WordsModule = (() => {
     if (recentKeys[id].length > RECENT_WINDOW) recentKeys[id].shift();
   }
 
-  // ─── Daten: Fehlender Buchstabe ───────────────────────────────────────────
+  // ─── Daten: Welcher Buchstabe? ───────────────────────────────────────────
   // Format: [masked, answer, full, difficulty(1=leicht/2=mittel/3=schwer)]
 
   const MISSING_LETTER_DATA = [
@@ -139,7 +139,7 @@ const WordsModule = (() => {
     'BIBLIOTHEK','KÜNSTLER','SCHULBUCH','HAUSAUFGABE','MITTAGESSEN',
   ];
 
-  // ─── Daten: Wortkategorien ────────────────────────────────────────────────
+  // ─── Daten: Was passt dazu? ────────────────────────────────────────────────
 
   const CATEGORY_ITEMS = [
     // Tier
@@ -254,7 +254,7 @@ const WordsModule = (() => {
 
     missingLetter: {
       id: 'missingLetter',
-      title: 'Fehlender Buchstabe',
+      title: 'Welcher Buchstabe?',
       icon: '🔤',
       description: 'Welcher Buchstabe fehlt?',
       generate(difficulty) {
@@ -285,7 +285,7 @@ const WordsModule = (() => {
 
     sortLetters: {
       id: 'sortLetters',
-      title: 'Buchstaben ordnen',
+      title: 'Wort bauen',
       icon: '🔀',
       description: 'Bringe die Buchstaben in die richtige Reihenfolge',
       generate(difficulty) {
@@ -310,7 +310,7 @@ const WordsModule = (() => {
         const display = shuffled.join(' ');
         return {
           questionHtml: `
-            <p class="q-label">Ordne die Buchstaben zum richtigen Wort:</p>
+            <p class="q-label">Mach ein Wort daraus:</p>
             <p class="letter-scramble">${display}</p>
             <p class="q-sub">(${word.length} Buchstaben)</p>
           `,
@@ -326,7 +326,7 @@ const WordsModule = (() => {
 
     wordCategory: {
       id: 'wordCategory',
-      title: 'Wortkategorie',
+      title: 'Was passt dazu?',
       icon: '🏷️',
       description: 'Welches Wort gehört zur Gruppe?',
       generate(difficulty) {
@@ -344,7 +344,7 @@ const WordsModule = (() => {
         } while (wasRecent('wordCategory', correct) && attempts < 15);
         markRecent('wordCategory', correct);
         return {
-          questionHtml: `<p class="q-label">Welches Wort ist ein <strong>${category}</strong>?</p>`,
+          questionHtml: `<p class="q-label">Was passt zu <strong>${category}</strong>?</p>`,
           answer: correct,
           hint: `Ein ${category} ist ein Lebewesen oder Gegenstand aus dieser Gruppe.`,
           taskType: 'choice',
@@ -389,7 +389,8 @@ const WordsModule = (() => {
 
   // ─── Session-State & Konstanten ───────────────────────────────────────────
 
-  const SESSION_LENGTH = 10;
+  const DEFAULT_SESSION_LENGTH = 10;
+  let sessionLength = DEFAULT_SESSION_LENGTH;
   let currentExerciseId = null;
   let currentTask = null;
   let sessionStats = { correct: 0, total: 0 };
@@ -468,12 +469,39 @@ const WordsModule = (() => {
     `;
   }
 
+
+  function renderSessionModeSelector() {
+    return `
+      <div class="session-mode" role="group" aria-label="Spiellänge wählen">
+        <span class="session-mode-label">Wie lange?</span>
+        <button class="session-mode-btn${sessionLength === 5 ? ' selected' : ''}" data-session-length="5" type="button">Kurz: 5</button>
+        <button class="session-mode-btn${sessionLength === 10 ? ' selected' : ''}" data-session-length="10" type="button">Normal: 10</button>
+      </div>
+    `;
+  }
+
+  function bindSessionModeEvents() {
+    document.querySelectorAll('.session-mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const len = Number(btn.dataset.sessionLength);
+        sessionLength = len === 5 ? 5 : DEFAULT_SESSION_LENGTH;
+        renderMenu();
+      });
+    });
+  }
+
   function renderExerciseCard(ex) {
     const profile = Storage.getActiveProfile();
     const stats = profile ? Storage.getSessionStats(profile.id, ex.id) : null;
-    let progressHtml = stats
-      ? `<span class="ex-progress">${getSessionStars(stats.bestScore,SESSION_LENGTH)>0?'⭐'.repeat(getSessionStars(stats.bestScore,SESSION_LENGTH)):'–'} Beste: ${stats.bestScore}/${SESSION_LENGTH}</span>`
-      : `<span class="ex-progress ex-not-played">Noch nicht gespielt</span>`;
+    let progressHtml;
+    if (stats) {
+      const bestTotal = stats.bestTotal || DEFAULT_SESSION_LENGTH;
+      const stars = getSessionStars(stats.bestScore, bestTotal);
+      const starStr = stars > 0 ? '⭐'.repeat(stars) : '–';
+      progressHtml = `<span class="ex-progress">${starStr} Beste: ${stats.bestScore}/${bestTotal}</span>`;
+    } else {
+      progressHtml = `<span class="ex-progress ex-not-played">Noch nicht gespielt</span>`;
+    }
     return `
       <button class="exercise-card" data-exercise="${ex.id}">
         <span class="ex-icon">${ex.icon}</span>
@@ -490,13 +518,16 @@ const WordsModule = (() => {
       <div class="screen workshop-screen">
         ${renderHeader()}
         <main class="exercise-menu">
-          <p class="menu-intro">Was möchtest du heute üben?</p>
+          <p class="menu-intro">Such dir ein Spiel aus.</p>
+          ${renderSessionModeSelector()}
           <div class="exercise-grid">
             ${Object.values(exercises).map(renderExerciseCard).join('')}
           </div>
         </main>
       </div>
     `;
+    bindSessionModeEvents();
+
     document.querySelectorAll('.exercise-card').forEach(card => {
       card.addEventListener('click', () => {
         sessionStats = { correct: 0, total: 0 };
@@ -537,7 +568,7 @@ const WordsModule = (() => {
              placeholder="${currentTask.placeholder || ''}"
              maxlength="${currentTask.inputMaxLength || 20}"
              autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" />
-           <button class="btn btn-primary" id="check-btn">Prüfen ✓</button>
+           <button class="btn btn-primary" id="check-btn">Fertig ✓</button>
          </div>`;
 
     const app = document.getElementById('app');
@@ -552,16 +583,16 @@ const WordsModule = (() => {
             </div>
             <div class="task-progress">
               <div class="task-progress-bar">
-                <div class="task-progress-fill" style="width:${((sessionStats.total-1)/SESSION_LENGTH)*100}%"></div>
+                <div class="task-progress-fill" style="width:${((sessionStats.total-1)/sessionLength)*100}%"></div>
               </div>
-              <span class="task-progress-label">Aufgabe <strong>${sessionStats.total}</strong> von ${SESSION_LENGTH}</span>
+              <span class="task-progress-label">Aufgabe <strong>${sessionStats.total}</strong> von ${sessionLength}</span>
             </div>
             <div class="task-question">${currentTask.questionHtml}</div>
             ${inputSection}
             <div class="task-feedback hidden" id="task-feedback"></div>
             <div class="task-actions">
               <button class="btn btn-ghost" id="hint-btn">💡 Tipp</button>
-              <button class="btn btn-ghost" id="next-btn" ${isChoice ? 'style="display:none"' : ''}>Nächste →</button>
+              <button class="btn btn-ghost" id="next-btn" style="display:none">Weiter →</button>
             </div>
           </div>
         </main>
@@ -588,7 +619,6 @@ const WordsModule = (() => {
       const input = document.getElementById('task-answer');
       const checkBtn = document.getElementById('check-btn');
       if (input) {
-        input.focus();
         input.addEventListener('keydown', e => { if (e.key === 'Enter') checkBtn.click(); });
       }
       if (checkBtn) {
@@ -599,7 +629,7 @@ const WordsModule = (() => {
         });
       }
       document.getElementById('next-btn').addEventListener('click', () => {
-        if (sessionStats.total >= SESSION_LENGTH) renderSessionComplete();
+        if (sessionStats.total >= sessionLength) renderSessionComplete();
         else renderTask();
       });
     }
@@ -638,12 +668,12 @@ const WordsModule = (() => {
       Oskar.say(randomFrom(Oskar.MESSAGES.correct));
 
       const fill = document.querySelector('.task-progress-fill');
-      if (fill) fill.style.width = `${(sessionStats.total/SESSION_LENGTH)*100}%`;
+      if (fill) fill.style.width = `${(sessionStats.total/sessionLength)*100}%`;
 
       if (currentTask.taskType === 'choice') {
         highlightChoices(value, true);
         setTimeout(() => {
-          if (sessionStats.total >= SESSION_LENGTH) renderSessionComplete();
+          if (sessionStats.total >= sessionLength) renderSessionComplete();
           else renderTask();
         }, 1600);
       } else {
@@ -653,7 +683,7 @@ const WordsModule = (() => {
         if (input) input.disabled = true;
         hideFeedback();
         setTimeout(() => {
-          if (sessionStats.total >= SESSION_LENGTH) renderSessionComplete();
+          if (sessionStats.total >= sessionLength) renderSessionComplete();
           else renderTask();
         }, 1600);
       }
@@ -667,7 +697,7 @@ const WordsModule = (() => {
         answered = true;
         const nextBtn = document.getElementById('next-btn');
         if (nextBtn) { nextBtn.style.display = ''; nextBtn.addEventListener('click', () => {
-          if (sessionStats.total >= SESSION_LENGTH) renderSessionComplete();
+          if (sessionStats.total >= sessionLength) renderSessionComplete();
           else renderTask();
         }); }
       } else {
@@ -676,8 +706,7 @@ const WordsModule = (() => {
           input.value = '';
           input.classList.add('shake');
           setTimeout(() => input.classList.remove('shake'), 400);
-          input.focus();
-        }
+          }
       }
     }
   }
@@ -707,7 +736,7 @@ const WordsModule = (() => {
     launchConfetti();
     const profile = Storage.getActiveProfile();
     const correct = sessionStats.correct;
-    const total   = SESSION_LENGTH;
+    const total   = sessionLength;
 
     if (profile) Storage.saveSessionResult(profile.id, currentExerciseId, correct, total);
 
@@ -724,15 +753,15 @@ const WordsModule = (() => {
           <div class="complete-card">
             <div class="complete-trophy">${stars>=3?'🏆':stars>=2?'🌟':'👍'}</div>
             <h2 class="complete-praise">${praise}</h2>
-            <p class="complete-subtitle">Du hast alle <strong>${total} Aufgaben</strong> abgeschlossen.</p>
+            <p class="complete-subtitle">Du hast <strong>${total} Aufgaben</strong> gespielt.</p>
             <div class="complete-score-row">
               <span class="complete-stars">${starStr}</span>
-              <span class="complete-score-text">Richtige Antworten: <strong>${correct} von ${total}</strong></span>
+              <span class="complete-score-text">Geschafft: <strong>${correct} von ${total}</strong></span>
             </div>
             <p class="complete-performance">${performance}</p>
             <div class="complete-actions">
-              <button class="btn btn-primary" id="play-again-btn">🔄 Noch einmal spielen</button>
-              <button class="btn btn-ghost" id="back-to-menu-btn">🏠 Zurück zum Hauptmenü</button>
+              <button class="btn btn-primary" id="play-again-btn">🔄 Nochmal spielen</button>
+              <button class="btn btn-ghost" id="back-to-menu-btn">🏠 Zur Lernwelt</button>
             </div>
           </div>
         </main>
