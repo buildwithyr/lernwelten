@@ -119,13 +119,16 @@ const Storage = (() => {
     if (!profile) return false;
     if (!profile.sessions) profile.sessions = {};
     if (!profile.sessions[exerciseId]) {
-      profile.sessions[exerciseId] = { bestScore: 0, sessionsPlayed: 0, lastScore: 0, lastTotal: 0 };
+      profile.sessions[exerciseId] = { bestScore: 0, bestTotal: 0, sessionsPlayed: 0, lastScore: 0, lastTotal: 0 };
     }
     const s = profile.sessions[exerciseId];
     s.sessionsPlayed++;
     s.lastScore = correct;
     s.lastTotal = total;
-    if (correct > s.bestScore) s.bestScore = correct;
+    if (correct > s.bestScore) {
+      s.bestScore = correct;
+      s.bestTotal = total;
+    }
     return saveProfile(profile);
   }
 

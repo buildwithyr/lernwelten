@@ -45,7 +45,7 @@ const Profile = (() => {
         <div class="setup-card">
           <div class="setup-logo">🌟</div>
           <h1 class="setup-title">Willkommen in der<br><span>Lernwelt!</span></h1>
-          <p class="setup-subtitle">Erstelle dein Profil, um loszulegen.</p>
+          <p class="setup-subtitle">Wie heißt du? Such dir ein Tier aus.</p>
 
           <div class="form-group">
             <label for="player-name">Dein Name</label>
@@ -60,7 +60,7 @@ const Profile = (() => {
           </div>
 
           <div class="form-group">
-            <label>Wähle deinen Begleiter</label>
+            <label>Such dir ein Tier aus</label>
             <div class="avatar-grid">
               ${AVATARS.map(a => `
                 <button
@@ -77,7 +77,7 @@ const Profile = (() => {
           </div>
 
           <button class="btn btn-primary btn-large" id="start-btn" disabled>
-            Abenteuer starten! 🚀
+            Los geht’s! 🚀
           </button>
         </div>
       </div>
@@ -108,8 +108,6 @@ const Profile = (() => {
       createProfile(name, selectedAvatarId);
       App.showVillage();
     });
-
-    nameInput.focus();
 
     // Oskar begrüßt den Nutzer auf dem Setup-Screen
     // Kleines setTimeout damit der DOM vollständig gemalt ist
