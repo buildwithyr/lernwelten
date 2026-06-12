@@ -58,11 +58,11 @@ const MathModule = (() => {
     return numberDeck.pop();
   }
 
+  // Punkte in festen 5er-Reihen (Kraft der Fünf) — das CSS-Grid sorgt
+  // dafür, dass Kinder die Menge reihenweise abzählen können.
   function makeDotGrid(n) {
-    const COLS = 5;
     const dots = [];
     for (let i = 0; i < n; i++) {
-      if (i > 0 && i % COLS === 0) dots.push('<br>');
       dots.push('<span class="dot">●</span>');
     }
     return `<div class="dot-grid">${dots.join('')}</div>`;
@@ -180,12 +180,34 @@ const MathModule = (() => {
   // ─── Session-Konstanten & State ───────────────────────────────────────────
 
   const DEFAULT_SESSION_LENGTH = 10;
+  const MAX_WRONG_ATTEMPTS = 3; // danach wird die Lösung gezeigt
   let sessionLength = DEFAULT_SESSION_LENGTH;
 
   let currentExerciseId = null;
   let currentTask = null;
   let hintShown = false;
   let sessionStats = { correct: 0, total: 0 };
+  let wrongAttempts = 0;
+  let retryQueue = []; // falsch gelöste Aufgaben kommen später noch einmal
+
+  function resetSession() {
+    sessionStats = { correct: 0, total: 0 };
+    retryQueue = [];
+  }
+
+  function queueRetry() {
+    if (currentTask._retry || sessionStats.total >= sessionLength) return;
+    retryQueue.push({ ...currentTask, _retry: true, _notBefore: sessionStats.total + 2 });
+  }
+
+  function nextTask() {
+    if (retryQueue.length &&
+        (retryQueue[0]._notBefore <= sessionStats.total ||
+         sessionStats.total >= sessionLength)) {
+      return retryQueue.shift();
+    }
+    return generateTask(currentExerciseId);
+  }
 
   const FEEDBACK_WRONG = [
     'Fast richtig – versuch es noch einmal! 💪',
@@ -333,7 +355,7 @@ const MathModule = (() => {
 
     document.querySelectorAll('.exercise-card').forEach(card => {
       card.addEventListener('click', () => {
-        sessionStats = { correct: 0, total: 0 };
+        resetSession();
         currentExerciseId = card.dataset.exercise;
         renderTask();
       });
@@ -359,8 +381,9 @@ const MathModule = (() => {
     if (!ex) return;
 
     sessionStats.total++;
-    currentTask = generateTask(currentExerciseId);
+    currentTask = nextTask();
     hintShown = false;
+    wrongAttempts = 0;
 
     const app = document.getElementById('app');
     app.innerHTML = `
@@ -433,15 +456,20 @@ const MathModule = (() => {
     const profile = Storage.getActiveProfile();
     const correct = sessionStats.correct;
     const total   = sessionLength;
+    const isPerfect = correct === total;
 
     if (profile) {
       Storage.saveSessionResult(profile.id, currentExerciseId, correct, total);
+      if (isPerfect) Storage.addStars(profile.id, 2); // Bonus für eine fehlerfreie Runde
     }
 
     const praise      = randomFrom(PRAISE_MESSAGES);
     const performance = getPerformanceText(correct, total);
     const stars       = getSessionStars(correct, total);
     const starStr     = stars > 0 ? '⭐'.repeat(stars) : '☆☆☆';
+    const bonusHtml   = isPerfect
+      ? '<p class="complete-performance">🎁 +2 Bonus-Sterne für eine fehlerfreie Runde!</p>'
+      : '';
 
     const app = document.getElementById('app');
     app.innerHTML = `
@@ -457,6 +485,7 @@ const MathModule = (() => {
               <span class="complete-score-text">Geschafft: <strong>${correct} von ${total}</strong></span>
             </div>
             <p class="complete-performance">${performance}</p>
+            ${bonusHtml}
             <div class="complete-actions">
               <button class="btn btn-primary" id="play-again-btn">🔄 Nochmal spielen</button>
               <button class="btn btn-ghost" id="back-to-menu-btn">🏠 Zur Lernwelt</button>
@@ -467,7 +496,7 @@ const MathModule = (() => {
     `;
 
     document.getElementById('play-again-btn').addEventListener('click', () => {
-      sessionStats = { correct: 0, total: 0 };
+      resetSession();
       renderTask();
     });
     document.getElementById('back-to-menu-btn').addEventListener('click', () => {
@@ -523,7 +552,7 @@ const MathModule = (() => {
     });
 
     document.getElementById('back-to-village').addEventListener('click', () => {
-      sessionStats = { correct: 0, total: 0 };
+      resetSession();
       App.showVillage();
     });
   }
@@ -562,11 +591,26 @@ const MathModule = (() => {
       }
     } else {
       Oskar.silence();
-      showFeedback(randomFrom(FEEDBACK_WRONG), 'wrong');
+      queueRetry();
+      wrongAttempts++;
       const input = document.getElementById('task-answer');
-      input.value = '';
-      input.classList.add('shake');
-      setTimeout(() => input.classList.remove('shake'), 400);
+
+      if (wrongAttempts >= MAX_WRONG_ATTEMPTS) {
+        // Nach drei Versuchen die Lösung zeigen, damit niemand stecken bleibt
+        showFeedback(
+          `Die richtige Antwort ist: <strong>${currentTask.answer}</strong><br>Gleich klappt es bestimmt! 💪`,
+          'hint'
+        );
+        input.disabled = true;
+        document.getElementById('check-btn').disabled = true;
+        const nextBtn = document.getElementById('next-btn');
+        if (nextBtn) nextBtn.style.display = '';
+      } else {
+        showFeedback(randomFrom(FEEDBACK_WRONG), 'wrong');
+        input.value = '';
+        input.classList.add('shake');
+        setTimeout(() => input.classList.remove('shake'), 400);
+      }
     }
   }
 
@@ -585,7 +629,7 @@ const MathModule = (() => {
   // ─── Public API ───────────────────────────────────────────────────────────
 
   function mount() {
-    sessionStats = { correct: 0, total: 0 };
+    resetSession();
     renderMenu();
   }
 

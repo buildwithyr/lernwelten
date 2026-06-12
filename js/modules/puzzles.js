@@ -55,34 +55,54 @@ const PuzzlesModule = (() => {
 
   const GROUP_NAMES = Object.keys(WORD_GROUPS);
 
+  // Diese Gruppen überschneiden sich inhaltlich (eine Tomate ist auch eine
+  // Pflanze, ein Huhn auch ein Lebensmittel, Schnee gehört zum Winter).
+  // Sie dürfen bei „Welches passt nicht?" nie kombiniert werden.
+  const INCOMPATIBLE_GROUPS = [
+    ['Pflanzen', 'Lebensmittel'],
+    ['Tiere', 'Lebensmittel'],
+    ['Wetter', 'Jahreszeiten'],
+  ];
+
+  function groupsCompatible(g1, g2) {
+    return !INCOMPATIBLE_GROUPS.some(
+      ([a, b]) => (a === g1 && b === g2) || (a === g2 && b === g1)
+    );
+  }
+
   // ─── Daten: Formen für Muster-Erkennung ──────────────────────────────────
 
   const SHAPES = ['○', '□', '△', '♦', '⭐', '❤'];
 
+  // Jede Sequenz zeigt zwei volle Wiederholungen des Musters.
+  // Das letzte Element ist die gesuchte Antwort — so ist die Fortsetzung
+  // immer eindeutig aus dem sichtbaren Teil ablesbar.
   function buildShapePatterns() {
     const patterns = [];
     for (let i = 0; i < SHAPES.length; i++) {
       for (let j = 0; j < SHAPES.length; j++) {
         if (i === j) continue;
         const A = SHAPES[i], B = SHAPES[j];
-        // AB AB A → B
-        patterns.push({ seq:[A,B,A,B,A], answer:B, label:`${A} ${B} ${A} ${B} ?` });
-        // AAB AAB A → A
-        patterns.push({ seq:[A,A,B,A,A], answer:B, label:`${A} ${A} ${B} ${A} ?` });
-        // ABB ABB A → B
-        patterns.push({ seq:[A,B,B,A,B], answer:B, label:`${A} ${B} ${B} ${A} ?` });
+        // AB AB A? → B
+        patterns.push({ seq:[A,B,A,B,A,B] });
+        // AAB AA? → B
+        patterns.push({ seq:[A,A,B,A,A,B] });
+        // ABB AB? → B
+        patterns.push({ seq:[A,B,B,A,B,B] });
       }
     }
-    // ABC patterns with 3 shapes
+    // ABC AB? → C (Muster aus 3 Formen)
     for (let i = 0; i < SHAPES.length; i++) {
       for (let j = 0; j < SHAPES.length; j++) {
         for (let k = 0; k < SHAPES.length; k++) {
           if (i===j || j===k || i===k) continue;
           const A=SHAPES[i], B=SHAPES[j], C=SHAPES[k];
-          patterns.push({ seq:[A,B,C,A,B], answer:C, label:`${A} ${B} ${C} ${A} ?` });
+          patterns.push({ seq:[A,B,C,A,B,C] });
         }
       }
     }
+    // Die richtige Antwort ist immer das letzte Element der Sequenz
+    patterns.forEach(p => { p.answer = p.seq[p.seq.length - 1]; });
     return shuffle(patterns);
   }
 
@@ -149,22 +169,21 @@ const PuzzlesModule = (() => {
       icon: '🔢',
       description: 'Was kommt danach?',
       generate(difficulty) {
+        // Zahlenraum passend für Klasse 1–2: kleine Schritte, Ergebnisse unter 50
         const rules = difficulty === 1
           ? [
-              () => { const s=randomInt(1,8), d=randomInt(1,3); return {seq:[s,s+d,s+2*d,s+3*d], ans:s+4*d, hint:`+${d}`}; },
-              () => { const s=randomInt(5,20), d=randomInt(1,3); return {seq:[s,s-d,s-2*d,s-3*d], ans:s-4*d, hint:`-${d}`}; },
+              () => { const s=randomInt(1,8), d=randomInt(1,2); return {seq:[s,s+d,s+2*d,s+3*d], ans:s+4*d, hint:`Es geht immer +${d} weiter.`}; },
+              () => { const s=randomInt(9,20), d=randomInt(1,2); return {seq:[s,s-d,s-2*d,s-3*d], ans:s-4*d, hint:`Es geht immer −${d} zurück.`}; },
             ]
           : difficulty === 2
           ? [
-              () => { const s=randomInt(1,5), d=randomInt(2,5); return {seq:[s,s+d,s+2*d,s+3*d], ans:s+4*d, hint:`+${d}`}; },
-              () => { const s=randomInt(1,4); return {seq:[s,s*2,s*4,s*8], ans:s*16, hint:'×2'}; },
-              () => { const s=randomInt(2,10), d=randomInt(2,4); return {seq:[s,s+d,s+2*d,s+3*d], ans:s+4*d, hint:`+${d}`}; },
+              () => { const s=randomInt(1,5), d=randomInt(2,3); return {seq:[s,s+d,s+2*d,s+3*d], ans:s+4*d, hint:`Es geht immer +${d} weiter.`}; },
+              () => { const s=randomInt(10,20), d=randomInt(2,3); return {seq:[s,s-d,s-2*d,s-3*d], ans:s-4*d, hint:`Es geht immer −${d} zurück.`}; },
             ]
           : [
-              () => { const s=randomInt(1,5); return {seq:[s,s*2,s*4,s*8], ans:s*16, hint:'×2'}; },
-              () => { const s=randomInt(2,5), d=randomInt(3,7); return {seq:[s,s+d,s+2*d,s+3*d], ans:s+4*d, hint:`+${d}`}; },
-              () => { const s=randomInt(3,8), d=randomInt(1,3); return {seq:[s,s+d,s+2*d,s+3*d], ans:s+4*d, hint:`+${d} Muster`}; },
-              () => { const s=randomInt(1,3); return {seq:[s,s*3,s*9], ans:s*27, hint:'×3'}; },
+              () => { const s=randomInt(1,2); return {seq:[s,s*2,s*4,s*8], ans:s*16, hint:'Jede Zahl wird verdoppelt.'}; },
+              () => { const s=randomInt(2,6), d=randomInt(3,5); return {seq:[s,s+d,s+2*d,s+3*d], ans:s+4*d, hint:`Es geht immer +${d} weiter.`}; },
+              () => { const s=randomInt(20,40), d=randomInt(3,5); return {seq:[s,s-d,s-2*d,s-3*d], ans:s-4*d, hint:`Es geht immer −${d} zurück.`}; },
             ];
 
         let attempt = 0;
@@ -173,7 +192,10 @@ const PuzzlesModule = (() => {
           const rule = randomFrom(rules);
           result = rule();
           attempt++;
-        } while (result.ans <= 0 || result.ans > 200 || wasRecent('numberPattern', result.ans) && attempt < 15);
+        } while (
+          (result.ans <= 0 || result.ans > 50 ||
+           wasRecent('numberPattern', result.ans)) && attempt < 15
+        );
         markRecent('numberPattern', result.ans);
 
         const seqHtml = result.seq.map(n =>
@@ -186,7 +208,7 @@ const PuzzlesModule = (() => {
             <div class="number-sequence">${seqHtml}</div>
           `,
           answer: String(result.ans),
-          hint: `Das Muster lautet: ${result.hint}`,
+          hint: result.hint,
           taskType: 'text',
           inputMaxLength: 4,
         };
@@ -213,8 +235,11 @@ const PuzzlesModule = (() => {
             : `<span class="shape-item--blank">?</span>`
         ).join('');
 
-        // Wrong choices: other shapes not in this sequence answer
-        const wrongChoices = SHAPES.filter(s => s !== pat.answer).slice(0, 2);
+        // Falsche Antworten: bevorzugt die andere Form aus dem Muster
+        // (plausibel, aber eindeutig falsch) plus eine zufällige Form
+        const inSeq = [...new Set(pat.seq)].filter(s => s !== pat.answer);
+        const outside = shuffle(SHAPES.filter(s => s !== pat.answer && !inSeq.includes(s)));
+        const wrongChoices = [...inSeq, ...outside].slice(0, 2);
         const choices = shuffle([pat.answer, ...wrongChoices]);
 
         return {
@@ -240,7 +265,9 @@ const PuzzlesModule = (() => {
         let attempts = 0;
         do {
           const g1 = randomFrom(GROUP_NAMES);
-          const g2 = randomFrom(GROUP_NAMES.filter(g => g !== g1));
+          const g2 = randomFrom(
+            GROUP_NAMES.filter(g => g !== g1 && groupsCompatible(g1, g))
+          );
           const three = shuffle(WORD_GROUPS[g1]).slice(0, 3);
           const one = randomFrom(WORD_GROUPS[g2]);
           odd = one;
@@ -269,14 +296,19 @@ const PuzzlesModule = (() => {
         const group = randomFrom(GROUP_NAMES);
         const groupWords = WORD_GROUPS[group];
         const shown = shuffle(groupWords).slice(0, showCount);
-        // The missing option comes from another group (not shown)
-        const otherGroup = randomFrom(GROUP_NAMES.filter(g => g !== group));
-        const notShown = randomFrom(WORD_GROUPS[otherGroup]);
 
+        // Das gesuchte Wort kommt aus einer anderen Gruppe und darf
+        // keinesfalls unter den gezeigten Wörtern sein.
+        let notShown;
         let attempts = 0;
-        while (wasRecent('memoryTask', notShown) && attempts < 15) {
+        do {
+          const otherGroup = randomFrom(GROUP_NAMES.filter(g => g !== group));
+          notShown = randomFrom(WORD_GROUPS[otherGroup]);
           attempts++;
-        }
+        } while (
+          (shown.includes(notShown) || wasRecent('memoryTask', notShown)) &&
+          attempts < 15
+        );
         markRecent('memoryTask', notShown);
 
         const choices = shuffle([...shuffle(shown).slice(0,2), notShown]);
@@ -314,11 +346,11 @@ const PuzzlesModule = (() => {
         return {
           questionHtml: `
             <p class="q-label">Welche Zahl fehlt?</p>
-            <p class="q-sub">Jede Zahl 1–4 darf in jeder Zeile, Spalte und Box nur einmal vorkommen.</p>
+            <p class="q-sub">In jeder Zeile kommt jede Zahl von 1 bis 4 nur einmal vor.</p>
             <div class="sudoku-wrap">${gridHtml}</div>
           `,
           answer: String(sudoku.answer),
-          hint: 'Schau dir die Zeile, Spalte und 2×2-Box des leeren Feldes an.',
+          hint: 'Schau dir die Zeile mit dem ? an: Welche Zahl von 1 bis 4 fehlt dort noch?',
           taskType: 'choice',
           choices: choices.map(String),
         };
@@ -330,11 +362,33 @@ const PuzzlesModule = (() => {
   // ─── Session-State & Konstanten ───────────────────────────────────────────
 
   const DEFAULT_SESSION_LENGTH = 10;
+  const MAX_WRONG_ATTEMPTS = 3; // danach wird die Lösung gezeigt
   let sessionLength = DEFAULT_SESSION_LENGTH;
   let currentExerciseId = null;
   let currentTask = null;
   let sessionStats = { correct: 0, total: 0 };
   let answered = false;
+  let wrongAttempts = 0;
+  let retryQueue = []; // falsch gelöste Aufgaben kommen später noch einmal
+
+  function resetSession() {
+    sessionStats = { correct: 0, total: 0 };
+    retryQueue = [];
+  }
+
+  function queueRetry() {
+    if (currentTask._retry || sessionStats.total >= sessionLength) return;
+    retryQueue.push({ ...currentTask, _retry: true, _notBefore: sessionStats.total + 2 });
+  }
+
+  function nextTask() {
+    if (retryQueue.length &&
+        (retryQueue[0]._notBefore <= sessionStats.total ||
+         sessionStats.total >= sessionLength)) {
+      return retryQueue.shift();
+    }
+    return generateTask(currentExerciseId);
+  }
 
   const FEEDBACK_WRONG = [
     'Fast! Schau noch genauer hin! 💪',
@@ -469,7 +523,7 @@ const PuzzlesModule = (() => {
 
     document.querySelectorAll('.exercise-card').forEach(card => {
       card.addEventListener('click', () => {
-        sessionStats = { correct: 0, total: 0 };
+        resetSession();
         currentExerciseId = card.dataset.exercise;
         renderTask();
       });
@@ -493,8 +547,9 @@ const PuzzlesModule = (() => {
     if (!ex) return;
 
     sessionStats.total++;
-    currentTask = generateTask(currentExerciseId);
+    currentTask = nextTask();
     answered = false;
+    wrongAttempts = 0;
 
     if (currentTask.taskType === 'memory') {
       renderMemoryTask();
@@ -592,7 +647,7 @@ const PuzzlesModule = (() => {
       showFeedback(currentTask.hint, 'hint');
     });
     document.getElementById('back-to-village').addEventListener('click', () => {
-      sessionStats = { correct: 0, total: 0 };
+      resetSession();
       App.showVillage();
     });
 
@@ -668,7 +723,7 @@ const PuzzlesModule = (() => {
       showFeedback(currentTask.hint, 'hint');
     });
     document.getElementById('back-to-village').addEventListener('click', () => {
-      sessionStats = { correct: 0, total: 0 };
+      resetSession();
       App.showVillage();
     });
   }
@@ -716,9 +771,10 @@ const PuzzlesModule = (() => {
     } else {
       answered = false;
       Oskar.silence();
-      showFeedback(randomFrom(FEEDBACK_WRONG), 'wrong');
+      queueRetry();
 
       if (currentTask.taskType === 'choice' || currentTask.taskType === 'memory') {
+        showFeedback('Schau dir die grüne Antwort gut an – so merkst du sie dir! 🌟', 'wrong');
         highlightChoices(value, false);
         answered = true;
         const nextBtn = document.getElementById('next-btn');
@@ -744,12 +800,28 @@ const PuzzlesModule = (() => {
           }
         }
       } else {
+        wrongAttempts++;
         const input = document.getElementById('task-answer');
-        if (input) {
-          input.value = '';
-          input.classList.add('shake');
-          setTimeout(() => input.classList.remove('shake'), 400);
+        if (wrongAttempts >= MAX_WRONG_ATTEMPTS) {
+          // Nach drei Versuchen die Lösung zeigen, damit niemand stecken bleibt
+          answered = true;
+          showFeedback(
+            `Die richtige Antwort ist: <strong>${currentTask.answer}</strong><br>Gleich klappt es bestimmt! 💪`,
+            'hint'
+          );
+          if (input) input.disabled = true;
+          const checkBtn = document.getElementById('check-btn');
+          if (checkBtn) checkBtn.disabled = true;
+          const nextBtn = document.getElementById('next-btn');
+          if (nextBtn) nextBtn.style.display = '';
+        } else {
+          showFeedback(randomFrom(FEEDBACK_WRONG), 'wrong');
+          if (input) {
+            input.value = '';
+            input.classList.add('shake');
+            setTimeout(() => input.classList.remove('shake'), 400);
           }
+        }
       }
     }
   }
@@ -780,13 +852,20 @@ const PuzzlesModule = (() => {
     const profile = Storage.getActiveProfile();
     const correct = sessionStats.correct;
     const total   = sessionLength;
+    const isPerfect = correct === total;
 
-    if (profile) Storage.saveSessionResult(profile.id, currentExerciseId, correct, total);
+    if (profile) {
+      Storage.saveSessionResult(profile.id, currentExerciseId, correct, total);
+      if (isPerfect) Storage.addStars(profile.id, 2); // Bonus für eine fehlerfreie Runde
+    }
 
     const praise      = randomFrom(PRAISE_MESSAGES);
     const performance = getPerformanceText(correct, total);
     const stars       = getSessionStars(correct, total);
     const starStr     = stars > 0 ? '⭐'.repeat(stars) : '☆☆☆';
+    const bonusHtml   = isPerfect
+      ? '<p class="complete-performance">🎁 +2 Bonus-Sterne für eine fehlerfreie Runde!</p>'
+      : '';
 
     const app = document.getElementById('app');
     app.innerHTML = `
@@ -802,6 +881,7 @@ const PuzzlesModule = (() => {
               <span class="complete-score-text">Geschafft: <strong>${correct} von ${total}</strong></span>
             </div>
             <p class="complete-performance">${performance}</p>
+            ${bonusHtml}
             <div class="complete-actions">
               <button class="btn btn-primary" id="play-again-btn">🔄 Nochmal spielen</button>
               <button class="btn btn-ghost" id="back-to-menu-btn">🏠 Zur Lernwelt</button>
@@ -812,7 +892,7 @@ const PuzzlesModule = (() => {
     `;
 
     document.getElementById('play-again-btn').addEventListener('click', () => {
-      sessionStats = { correct: 0, total: 0 };
+      resetSession();
       renderTask();
     });
     document.getElementById('back-to-menu-btn').addEventListener('click', () => App.showVillage());
@@ -827,7 +907,7 @@ const PuzzlesModule = (() => {
   // ─── Public API ───────────────────────────────────────────────────────────
 
   function mount() {
-    sessionStats = { correct: 0, total: 0 };
+    resetSession();
     renderMenu();
   }
 

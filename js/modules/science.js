@@ -41,30 +41,30 @@ const ScienceModule = (() => {
     ['Wie viele Beine hat eine Spinne?',  ['6','4','8'],                  'Tiere','🕷️'],
     ['Welches Tier macht „Miau"?',        ['Hund','Vogel','Katze'],       'Tiere','🐱'],
     ['Wo lebt ein Fisch?',                ['In der Erde','Auf dem Baum','Im Wasser'],'Tiere','🐟'],
-    ['Was baut eine Biene?',              ['Ein Nest','Eine Höhle','Honig'],'Tiere','🐝'],
+    ['Was macht die Biene aus Nektar?',   ['Milch','Marmelade','Honig'],  'Tiere','🐝'],
     ['Welches Tier ist das größte Landtier?',['Giraffe','Löwe','Elefant'],'Tiere','🐘'],
     ['Was frisst ein Hase?',              ['Fleisch','Würmer','Gras und Gemüse'],'Tiere','🐰'],
     ['Wie nennt man das Zuhause eines Vogels?',['Höhle','Bau','Nest'],    'Tiere','🐦'],
-    ['Was macht ein Bär im Winter?',      ['Er fliegt weg','Er isst viel','Er hält Winterschlaf'],'Tiere','🐻'],
+    ['Was macht ein Bär im Winter?',      ['Er fliegt weg','Er geht baden','Er hält Winterschlaf'],'Tiere','🐻'],
     ['Wie viele Beine hat ein Insekt?',   ['4','8','6'],                  'Tiere','🐛'],
     ['Was ist ein Delfin?',               ['Ein Fisch','Ein Vogel','Ein Säugetier'],'Tiere','🐬'],
     ['Was frisst ein Adler?',             ['Gras','Honig','Kleine Tiere'],'Tiere','🦅'],
-    ['Welches Tier ist ein guter Kletterer?',['Fisch','Hund','Affe'],     'Tiere','🐒'],
-    ['Was sammeln Bienen?',               ['Sand','Wasser','Nektar'],     'Tiere','🌸'],
+    ['Welches Tier kann gut klettern?',   ['Fisch','Schnecke','Affe'],    'Tiere','🐒'],
+    ['Was sammeln Bienen an Blumen?',     ['Sand','Steine','Nektar'],     'Tiere','🌸'],
     ['Wie heißt das Baby einer Katze?',   ['Ferkel','Fohlen','Kätzchen'], 'Tiere','🐱'],
     ['Wie heißt das Baby eines Hundes?',  ['Lamm','Kalb','Welpe'],        'Tiere','🐶'],
     ['Wie heißt das Baby eines Pferdes?', ['Ferkel','Kalb','Fohlen'],     'Tiere','🐴'],
     ['Wie heißt das Baby einer Kuh?',     ['Lamm','Welpe','Kalb'],        'Tiere','🐄'],
-    ['Wo schläft eine Fledermaus?',       ['Im Wasser','Auf dem Boden','Kopfüber in einer Höhle'],'Tiere','🦇'],
-    ['Welches Tier kann sich verändern um sich zu tarnen?',['Hund','Katze','Chamäleon'],'Tiere','🦎'],
-    ['Was ist die schnellste Katze der Welt?',['Löwe','Tiger','Gepard'],  'Tiere','🐆'],
+    ['Wie schläft eine Fledermaus?',      ['Im Stehen','Im Sitzen','Kopfüber hängend'],'Tiere','🦇'],
+    ['Welches Tier kann seine Farbe ändern?',['Hund','Katze','Chamäleon'],'Tiere','🦎'],
+    ['Welches Tier rennt am schnellsten?',['Löwe','Tiger','Gepard'],      'Tiere','🐆'],
     ['Wie schützt sich ein Igel?',        ['Er läuft weg','Er beißt','Er rollt sich zusammen'],'Tiere','🦔'],
     ['Was frisst eine Schnecke?',         ['Fleisch','Fische','Pflanzen'],'Tiere','🐌'],
     ['Welche Farbe hat ein Flamingo?',    ['Blau','Grün','Rosa'],         'Tiere','🦩'],
-    ['Was macht eine Schlange mit ihrer Zunge?',['Sprechen','Essen','Riechen'],'Tiere','🐍'],
+    ['Was macht eine Schlange mit ihrer Zunge?',['Sprechen','Pfeifen','Riechen'],'Tiere','🐍'],
     ['Wie viele Höcker hat ein Dromedar?',['2','3','1'],                  'Tiere','🐪'],
     ['Was frisst ein Panda?',             ['Fleisch','Fisch','Bambus'],   'Tiere','🐼'],
-    ['Welches Tier hat Streifen?',        ['Elefant','Löwe','Zebra'],     'Tiere','🦓'],
+    ['Welches Tier hat schwarz-weiße Streifen?',['Elefant','Löwe','Zebra'],'Tiere','🦓'],
     ['Was ist ein Krokodil?',             ['Ein Vogel','Ein Säugetier','Ein Reptil'],'Tiere','🐊'],
     // ── Weltraum ──
     ['Wie heißt unser Planet?',           ['Mars','Venus','Erde'],        'Weltraum','🌍'],
@@ -74,39 +74,39 @@ const ScienceModule = (() => {
     ['Warum gibt es Tag und Nacht?',      ['Wegen des Mondes','Wegen der Sterne','Weil die Erde sich dreht'],'Weltraum','🌞'],
     ['Welcher Planet ist der größte?',    ['Erde','Saturn','Jupiter'],    'Weltraum','🪐'],
     ['Was ist ein Komet?',                ['Ein Stern','Ein Planet','Ein Eisball mit Schweif'],'Weltraum','☄️'],
-    ['Wie heißt das Licht, das der Mond zurückwirft?',['Eigenes Licht','Sonnenlicht','Mondlicht'],'Weltraum','🌕'],
+    ['Woher bekommt der Mond sein Licht?',['Er leuchtet selbst','Von den Sternen','Von der Sonne'],'Weltraum','🌕'],
     ['Wie nennt man Reisende ins Weltall?',['Piloten','Matrosen','Astronauten'],'Weltraum','👨‍🚀'],
     ['Was ist die Milchstraße?',          ['Ein Fluss','Ein Berg','Eine Galaxie'],'Weltraum','🌌'],
     ['Welche Farbe hat der Mars?',        ['Blau','Grün','Rot'],          'Weltraum','🔴'],
     ['Was passiert bei einer Sonnenfinsternis?',['Die Sonne explodiert','Es wird heiß','Der Mond verdeckt die Sonne'],'Weltraum','🌑'],
     ['Wie lange braucht die Erde für eine Runde um die Sonne?',['1 Monat','1 Woche','1 Jahr'],'Weltraum','🌍'],
     ['Was fliegt ins Weltall?',           ['Ein Schiff','Ein Flugzeug','Eine Rakete'],'Weltraum','🚀'],
-    ['Wo kann man die Sterne am besten sehen?',['Am Tag','Im Regen','In der Nacht'],'Weltraum','⭐'],
-    ['Wie heißt unser Sonnensystem?',     ['Das Mondensystem','Das Sternsystem','Das Sonnensystem'],'Weltraum','☀️'],
+    ['Wann kann man die Sterne am besten sehen?',['Am Mittag','Beim Regen','In der Nacht'],'Weltraum','⭐'],
+    ['Welcher Stern ist der Erde am nächsten?',['Der Mond','Der Mars','Die Sonne'],'Weltraum','☀️'],
     ['Was ist ein Asteroid?',             ['Ein Stern','Ein Planet','Ein Gesteinsbrocken im Weltall'],'Weltraum','🪨'],
     ['Welcher Planet hat Ringe?',         ['Erde','Mars','Saturn'],       'Weltraum','🪐'],
-    ['Wie nennt man das Raumschiff der NASA?',['Zeppelin','Helikopter','Space Shuttle'],'Weltraum','🚀'],
-    ['Warum leuchten Sterne?',            ['Sie brennen Wasser','Sie reflektieren Licht','Sie verbrennen Gas'],'Weltraum','⭐'],
+    ['Was trägt ein Astronaut im Weltall?',['Einen Schlafanzug','Eine Badehose','Einen Raumanzug'],'Weltraum','👨‍🚀'],
+    ['Warum leuchten Sterne?',            ['Sie spiegeln das Meer','Sie sind aus Gold','Sie sind sehr heiß und glühen'],'Weltraum','⭐'],
     // ── Natur ──
-    ['Was macht Wasser wenn es gefriert?',['Es wird kleiner','Es verschwindet','Es wird zu Eis'],'Natur','🧊'],
-    ['Was braucht eine Pflanze zum Wachsen?',['Zucker','Sand','Wasser und Sonne'],'Natur','🌱'],
+    ['Was passiert mit Wasser, wenn es friert?',['Es wird warm','Es verschwindet','Es wird zu Eis'],'Natur','🧊'],
+    ['Was braucht eine Pflanze zum Wachsen?',['Zucker','Salz','Wasser und Sonne'],'Natur','🌱'],
     ['Was ist ein Vulkan?',               ['Ein Fluss','Ein See','Ein Berg mit Feuer'],'Natur','🌋'],
-    ['Woher kommt Regen?',                ['Aus dem Meer','Aus der Erde','Aus Wolken'],'Natur','🌧️'],
-    ['Was ist ein Gletscher?',            ['Ein See','Ein Fluss','Ein riesiger Eisberg'],'Natur','🧊'],
-    ['Woher kommt der Wind?',             ['Vom Mond','Von Bäumen','Von Luftdruckunterschieden'],'Natur','💨'],
-    ['Was ist der Unterschied zwischen Fluss und See?',['Kein Unterschied','See fließt','Fluss fließt, See steht still'],'Natur','🏞️'],
+    ['Woher kommt der Regen?',            ['Aus der Sonne','Aus der Erde','Aus den Wolken'],'Natur','🌧️'],
+    ['Was ist ein Gletscher?',            ['Ein See','Ein Fluss','Ein riesiger Berg aus Eis'],'Natur','🧊'],
+    ['In welcher Jahreszeit werden die Blätter bunt?',['Im Frühling','Im Sommer','Im Herbst'],'Natur','💨'],
+    ['Was macht ein Fluss?',              ['Er steht still','Er brennt','Er fließt'],'Natur','🏞️'],
     ['Was passiert im Frühling?',         ['Alles friert ein','Alles verblüht','Die Natur erwacht'],  'Natur','🌸'],
-    ['Was ist Humus?',                    ['Sand','Steine','Nährstoffreiche Erde'],'Natur','🌱'],
-    ['Wie entsteht ein Regenbogen?',      ['Durch Wind','Durch Blitz','Durch Licht und Regen'],'Natur','🌈'],
-    ['Was ist die Photosynthese?',        ['Tiere essen','Steine wachsen','Pflanzen produzieren Nahrung aus Licht'],'Natur','☀️'],
-    ['Was ist Tau?',                      ['Gefriereis','Regen','Tröpfchen aus der Luft'],'Natur','💧'],
+    ['Wo wachsen Pilze gern?',            ['In der Wüste','Im Meer','Im Wald'],'Natur','🍄'],
+    ['Wie entsteht ein Regenbogen?',      ['Durch Wind','Durch Blitz','Durch Sonne und Regen'],'Natur','🌈'],
+    ['Was wird aus einer Kaulquappe?',    ['Ein Fisch','Eine Schlange','Ein Frosch'],'Natur','🐸'],
+    ['Was ist Tau?',                      ['Schnee','Hagel','Wassertropfen am Morgen'],'Natur','💧'],
     ['Welche Jahreszeit ist am wärmsten?',['Frühling','Winter','Sommer'],'Natur','☀️'],
     ['Was macht ein Baum mit seinen Blättern im Herbst?',['Sie werden größer','Sie bleiben gleich','Er lässt sie fallen'],'Natur','🍂'],
     ['Was ist ein Ozean?',                ['Ein Fluss','Ein See','Ein sehr großes Meer'],'Natur','🌊'],
-    ['Woher kommt Schnee?',               ['Aus der Erde','Vom Mond','Gefrorene Wassertröpfchen aus Wolken'],'Natur','❄️'],
-    ['Was ist ein Erdbeben?',             ['Starker Regen','Starker Wind','Beben des Erdbodens'],'Natur','🌍'],
+    ['Woher kommt der Schnee?',           ['Aus der Erde','Vom Mond','Aus den Wolken'],'Natur','❄️'],
+    ['Was ist ein Erdbeben?',             ['Starker Regen','Starker Wind','Die Erde wackelt'],'Natur','🌍'],
     ['Was ist Lava?',                     ['Kaltes Wasser','Heißer Sand','Geschmolzenes Gestein'],'Natur','🌋'],
-    ['Warum haben wir vier Jahreszeiten?',['Wegen des Mondes','Wegen der Sterne','Wegen der Erdneigung um die Sonne'],'Natur','🌍'],
+    ['Wie viele Jahreszeiten gibt es?',   ['Zwei','Drei','Vier'],         'Natur','🍀'],
     ['Was ist ein Wald?',                 ['Viele Tiere','Viel Wasser','Viele Bäume zusammen'],'Natur','🌲'],
     // ── Mensch ──
     ['Wie viele Zähne hat ein erwachsener Mensch?',['20','36','32'],'Mensch','🦷'],
@@ -116,81 +116,81 @@ const ScienceModule = (() => {
     ['Was macht das Gehirn?',             ['Es pumpt Blut','Es verdaut Essen','Es denkt und steuert alles'],'Mensch','🧠'],
     ['Wie viele Knochen hat ein Erwachsener?',['100','500','206'],        'Mensch','🦴'],
     ['Wie viele Lungen hat der Mensch?',  ['1','3','2'],                  'Mensch','🫁'],
-    ['Was ist der Zweck der Zähne?',      ['Hören','Sehen','Nahrung zerkleinern'],'Mensch','🦷'],
-    ['Was machen wir beim Schlafen?',     ['Wir wachsen nicht','Wir essen','Unser Körper erholt sich'],'Mensch','😴'],
-    ['Was ist Blut?',                     ['Wasser','Luft','Flüssigkeit die Sauerstoff transportiert'],'Mensch','💉'],
-    ['Warum müssen wir Wasser trinken?',  ['Wegen des Geschmacks','Es macht uns groß','Unser Körper braucht es zum Funktionieren'],'Mensch','💧'],
-    ['Was ist der Unterschied zwischen Arm und Bein?',['Kein Unterschied','Beide sind gleich','Arme sind oben, Beine unten'],'Mensch','🦿'],
+    ['Wozu brauchen wir die Zähne?',      ['Zum Hören','Zum Sehen','Zum Kauen'],'Mensch','🦷'],
+    ['Was machen wir beim Schlafen?',     ['Wir rennen','Wir essen','Unser Körper erholt sich'],'Mensch','😴'],
+    ['Welche Farbe hat unser Blut?',      ['Blau','Grün','Rot'],          'Mensch','💉'],
+    ['Warum müssen wir Wasser trinken?',  ['Damit wir fliegen können','Damit die Haare glänzen','Unser Körper braucht Wasser'],'Mensch','💧'],
+    ['Womit greifen wir?',                ['Mit den Füßen','Mit den Ohren','Mit den Händen'],'Mensch','🖐️'],
     ['Was schützt das Auge?',             ['Die Nase','Der Mund','Das Augenlid'],'Mensch','👁️'],
     ['Womit schmecken wir?',              ['Mit der Nase','Mit den Augen','Mit der Zunge'],'Mensch','👅'],
     ['Was machen die Muskeln?',           ['Sie denken','Sie schlafen','Sie bewegen den Körper'],'Mensch','💪'],
     ['Womit atmen wir?',                  ['Mit dem Herz','Mit dem Gehirn','Mit der Lunge'],'Mensch','🫁'],
     ['Wie viele Sinne hat der Mensch?',   ['3','7','5'],                  'Mensch','👀'],
-    ['Wozu brauchen wir Schlaf?',         ['Wir brauchen ihn nicht','Zum Wachsen','Damit sich der Körper erholen kann'],'Mensch','😴'],
-    ['Was ist ein Vitamin?',              ['Ein Mineral','Ein Knochen','Ein Nährstoff für den Körper'],'Mensch','🍎'],
-    ['Was zeigt ein Thermometer?',        ['Luftfeuchtigkeit','Windstärke','Temperatur'],   'Mensch','🌡️'],
+    ['Wozu brauchen wir Schlaf?',         ['Zum Spielen','Zum Essen','Damit sich der Körper erholen kann'],'Mensch','😴'],
+    ['Was ist ein Vitamin?',              ['Ein Spielzeug','Ein Knochen','Ein Nährstoff für den Körper'],'Mensch','🍎'],
+    ['Was sollst du nach dem Essen tun?', ['Schlafen','Fernsehen','Zähne putzen'],'Mensch','🪥'],
     // ── Wetter ──
     ['Was ist Nebel?',                    ['Staub','Rauch','Sehr viele kleine Wassertröpfchen'],'Wetter','🌫️'],
-    ['Was ist ein Blitz?',                ['Starker Wind','Starker Regen','Elektrische Entladung'],'Wetter','⚡'],
+    ['Was ist ein Blitz?',                ['Starker Wind','Starker Regen','Ein heller Strahl beim Gewitter'],'Wetter','⚡'],
     ['Was kommt nach dem Blitz?',         ['Regen','Schnee','Donner'],    'Wetter','⛈️'],
     ['Was ist ein Hurrikan?',             ['Ein Tier','Ein Berg','Ein sehr starker Wirbelsturm'],'Wetter','🌀'],
-    ['Was ist Hagel?',                    ['Schneeball','Regen','Gefrorene Regentropfen'],'Wetter','🌨️'],
+    ['Was ist Hagel?',                    ['Warmer Regen','Bunter Schnee','Gefrorene Regentropfen'],'Wetter','🌨️'],
     ['Womit misst man die Temperatur?',   ['Kompass','Lineal','Thermometer'],'Wetter','🌡️'],
-    ['Was ist eine Wettervorhersage?',    ['Wettergeschichte','Altes Wetter','Vorhersage wie das Wetter wird'],'Wetter','📱'],
-    ['Bei welchem Wetter regnet es?',     ['Bei Sonnenschein','Bei Schnee','Bei Wolken'],'Wetter','🌧️'],
-    ['Was ist der Unterschied zwischen Schnee und Eis?',['Kein Unterschied','Eis fällt','Schnee fällt, Eis entsteht durch Gefrieren'],'Wetter','❄️'],
+    ['Was ist eine Wettervorhersage?',    ['Ein Spiel','Ein Märchen','Sie sagt, wie das Wetter wird'],'Wetter','📱'],
+    ['Womit schützt du dich vor Regen?',  ['Mit einer Sonnenbrille','Mit Handschuhen','Mit einem Regenschirm'],'Wetter','☔'],
+    ['Was ziehst du im Winter an?',       ['Eine Badehose','Ein T-Shirt','Eine warme Jacke'],'Wetter','🧥'],
     ['Warum ist es im Winter kälter?',    ['Weil der Mond näher ist','Wegen der Sterne','Weil die Sonne weniger scheint'],'Wetter','❄️'],
     ['Was ist ein Tornado?',              ['Ein Tier','Ein Fluss','Ein drehender Sturm'],'Wetter','🌪️'],
     ['Was passiert bei Glatteis?',        ['Es ist heiß','Es regnet stark','Wasser gefriert auf dem Boden'],'Wetter','🧊'],
-    ['Welche Farben hat ein Regenbogen?', ['Grau und Weiß','Nur Rot und Blau','Alle Farben des Lichts'],'Wetter','🌈'],
-    ['Was ist ein Wetterumschwung?',      ['Gleiches Wetter','Mehr Regen','Das Wetter ändert sich plötzlich'],'Wetter','⛅'],
-    ['Womit misst man den Luftdruck?',    ['Thermometer','Uhr','Barometer'],'Wetter','🌡️'],
-    ['Was ist Frost?',                    ['Starker Regen','Heißer Wind','Temperaturen unter 0 Grad'],'Wetter','🥶'],
+    ['Welche Farben hat ein Regenbogen?', ['Nur Grau','Nur Schwarz und Weiß','Viele bunte Farben'],'Wetter','🌈'],
+    ['Wann ist es draußen am hellsten?',  ['In der Nacht','Am Abend','Am Mittag'],'Wetter','⛅'],
+    ['Was brauchst du an einem sonnigen Sommertag?',['Einen Wintermantel','Handschuhe','Sonnencreme'],'Wetter','🧴'],
+    ['Was ist Frost?',                    ['Starker Regen','Heißer Wind','Kälte unter 0 Grad'],'Wetter','🥶'],
     ['Was bedeutet „bewölkt"?',           ['Kein Wind','Es schneit','Viele Wolken am Himmel'],'Wetter','⛅'],
-    ['Wo entstehen Wolken?',              ['Im Meer','Auf Bergen','Durch Verdunstung hoch in der Luft'],'Wetter','☁️'],
-    ['Was ist ein Sturm?',                ['Leichter Wind','Schwaches Regen','Sehr starker Wind'],'Wetter','🌪️'],
-    ['Was ist ein Sonnenuntergang?',      ['Sonne verschwindet','Sonne steigt auf','Sonne versinkt am Horizont'],'Wetter','🌅'],
+    ['Wo siehst du die Wolken?',          ['Im Boden','Im Meer','Am Himmel'],'Wetter','☁️'],
+    ['Was ist ein Sturm?',                ['Leichter Wind','Schwacher Regen','Sehr starker Wind'],'Wetter','🌪️'],
+    ['Was passiert beim Sonnenuntergang?',['Die Sonne geht auf','Es wird Mittag','Die Sonne geht unter'],'Wetter','🌅'],
     // Weitere Tiere
-    ['Welches Tier ist das schwerste?',   ['Elefant','Nilpferd','Blauwal'],'Tiere','🐋'],
-    ['Was ist eine Raupe?',               ['Ein Käfer','Ein Schmetterling','Die Larve eines Schmetterlings'],'Tiere','🐛'],
-    ['Wie kommunizieren Bienen?',         ['Durch Töne','Durch Farben','Durch Tanzen'],'Tiere','🐝'],
-    ['Was ist ein Zugvogel?',             ['Ein Hausvogel','Ein Meerestier','Ein Vogel der im Winter wegfliegt'],'Tiere','🦅'],
-    ['Wo lebt ein Pinguin?',              ['In der Wüste','Im Dschungel','Hauptsächlich in der Antarktis'],'Tiere','🐧'],
-    ['Was fressen Ameisen?',              ['Nur Gras','Nur Wasser','Fast alles – sie sind Allesfresser'],'Tiere','🐜'],
+    ['Welches Tier ist das schwerste der Welt?',['Elefant','Nilpferd','Blauwal'],'Tiere','🐋'],
+    ['Was wird aus einer Raupe?',         ['Ein Vogel','Eine Biene','Ein Schmetterling'],'Tiere','🐛'],
+    ['Wie zeigen Bienen, wo Blumen sind?',['Durch Bellen','Durch Singen','Durch Tanzen'],'Tiere','🐝'],
+    ['Was ist ein Zugvogel?',             ['Ein Hausvogel','Ein Meerestier','Ein Vogel, der im Winter wegfliegt'],'Tiere','🦅'],
+    ['Wo lebt ein Pinguin?',              ['In der Wüste','Im Dschungel','Dort, wo es sehr kalt ist'],'Tiere','🐧'],
+    ['Was fressen Ameisen?',              ['Nur Steine','Nur Sand','Fast alles'],'Tiere','🐜'],
     ['Wie schützt sich ein Stachelschwein?',['Es beißt','Es läuft weg','Mit seinen Stacheln'],'Tiere','🦔'],
     ['Welches Tier ist kein Fisch, lebt aber im Wasser?',['Lachs','Forelle','Delfin'],'Tiere','🐬'],
-    ['Was ist ein Winterschlaf?',         ['Schnelles Laufen','Sommerschlaf','Langer Schlaf im Winter'],'Tiere','🐻'],
-    ['Wie viele Kammern hat ein Herz?',   ['2','6','4'],                  'Mensch','❤️'],
+    ['Was ist ein Winterschlaf?',         ['Ein kurzes Schläfchen','Ein Spiel','Ein langer Schlaf im Winter'],'Tiere','🐻'],
+    ['Wie viele Beine hat ein Vogel?',    ['4','6','2'],                  'Tiere','🐦'],
     // Weitere Natur
-    ['Was sind Fossilien?',               ['Lebende Tiere','Steine','Versteinerte Reste alter Lebewesen'],'Natur','🦕'],
-    ['Was ist Erosion?',                  ['Pflanzenwachstum','Tierwanderung','Abtragung von Gestein durch Wasser und Wind'],'Natur','🌊'],
-    ['Was ist eine Oase?',                ['Ein Berg','Eine Stadt','Grüne Stelle in der Wüste mit Wasser'],'Natur','🌴'],
-    ['Was ist Sauerstoff?',               ['Ein Tier','Eine Pflanze','Ein Gas das wir zum Atmen brauchen'],'Natur','💨'],
-    ['Warum ist das Meer salzig?',        ['Wegen Fischen','Wegen der Sonne','Wegen Mineralien aus der Erde'],'Natur','🌊'],
+    ['Was sind Fossilien?',               ['Lebende Tiere','Junge Pflanzen','Versteinerte Reste alter Lebewesen'],'Natur','🦕'],
+    ['Was gibt uns die Kuh?',             ['Eier','Wolle','Milch'],       'Natur','🐄'],
+    ['Was ist eine Oase?',                ['Ein Berg','Eine Stadt','Eine grüne Stelle in der Wüste'],'Natur','🌴'],
+    ['Was ist Sauerstoff?',               ['Ein Tier','Eine Pflanze','Ein Gas, das wir zum Atmen brauchen'],'Natur','💨'],
+    ['Welches Wasser kann man trinken?',  ['Meerwasser','Pfützenwasser','Leitungswasser'],'Natur','🚰'],
     // Weitere Weltraum
-    ['Was ist die Internationale Raumstation?',['Ein Satellit','Eine Rakete','Ein Labor im Weltraum'],'Weltraum','🚀'],
-    ['Warum sehen wir nur eine Seite des Mondes?',['Es ist zu dunkel','Der Mond steht still','Weil sich der Mond beim Umkreisen mitdreht'],'Weltraum','🌕'],
-    ['Was ist eine Mondfinsternis?',      ['Mond explodiert','Mond friert ein','Erde wirft Schatten auf den Mond'],'Weltraum','🌑'],
-    ['Was sind Sternschnuppen?',          ['Fallende Sterne','Planeten','Meteorite die durch die Atmosphäre fallen'],'Weltraum','🌠'],
-    ['Was sind schwarze Löcher?',         ['Dunkle Planeten','Leere Stellen','Stellen mit sehr starker Schwerkraft'],'Weltraum','🌑'],
+    ['Was ist die Internationale Raumstation?',['Ein Flugzeug','Eine Insel','Ein Labor im Weltraum'],'Weltraum','🚀'],
+    ['Wie sieht der Vollmond aus?',       ['Wie ein Stern','Wie eine Banane','Rund wie ein Ball'],'Weltraum','🌕'],
+    ['Was ist eine Mondfinsternis?',      ['Der Mond explodiert','Der Mond friert ein','Die Erde wirft einen Schatten auf den Mond'],'Weltraum','🌑'],
+    ['Was sind Sternschnuppen?',          ['Echte Sterne','Kleine Monde','Steinchen, die am Himmel verglühen'],'Weltraum','🌠'],
+    ['Womit kann man Sterne genau beobachten?',['Mit einer Lupe','Mit einem Mikroskop','Mit einem Teleskop'],'Weltraum','🔭'],
     // Mensch weitere
-    ['Was ist das größte Organ im Körper?',['Herz','Gehirn','Haut'],     'Mensch','👋'],
-    ['Was ist eine Allergie?',            ['Eine Kraft','Ein Tier','Überreaktion des Körpers auf etwas Harmloses'],'Mensch','🤧'],
+    ['Was ist das größte Organ des Körpers?',['Das Herz','Das Gehirn','Die Haut'],'Mensch','👋'],
+    ['Wo schlägt dein Herz?',             ['Im Kopf','Im Bein','In der Brust'],'Mensch','❤️'],
     ['Was macht das Ohr?',                ['Riechen','Sehen','Hören'],    'Mensch','👂'],
-    ['Was ist das Skelett?',              ['Alle Muskeln','Alle Organe','Alle Knochen zusammen'],'Mensch','🦴'],
-    ['Warum ist Bewegung wichtig?',       ['Nur zum Spaß','Macht schläfrig','Hält den Körper gesund und stark'],'Mensch','🏃'],
+    ['Was ist das Skelett?',              ['Alle Muskeln','Alle Haare','Alle Knochen zusammen'],'Mensch','🦴'],
+    ['Warum ist Bewegung wichtig?',       ['Sie macht müde','Sie macht hungrig','Sie hält den Körper gesund'],'Mensch','🏃'],
     // Noch mehr Natur
-    ['Was ist ein Korallenriff?',         ['Eine Alge','Ein Stein','Lebensraum aus Korallen im Meer'],'Natur','🐠'],
-    ['Was ist Grundwasser?',              ['Wasser aus Flüssen','Wasser aus Regen','Wasser tief unter der Erde'],'Natur','💧'],
-    ['Was ist eine Wüste?',               ['Ein Wald','Ein See','Sehr trockene Fläche'],'Natur','🏜️'],
-    ['Was ist ein Dschungel?',            ['Ein Gebirge','Eine Wüste','Dichter tropischer Wald'],'Natur','🌴'],
+    ['Was ist ein Korallenriff?',         ['Eine Wolke','Ein Berg','Ein Zuhause für Meerestiere'],'Natur','🐠'],
+    ['Was findet man am Strand?',         ['Schnee','Tannenzapfen','Sand und Muscheln'],'Natur','🏖️'],
+    ['Was ist eine Wüste?',               ['Ein Wald','Ein See','Sehr trockenes Land'],'Natur','🏜️'],
+    ['Was ist ein Dschungel?',            ['Ein Gebirge','Eine Wüste','Ein dichter Wald mit vielen Tieren'],'Natur','🌴'],
     ['Was macht der Wind?',               ['Wasser erwärmen','Licht erzeugen','Luft bewegen'],    'Natur','💨'],
     // Weitere Wetter
     ['Was ist ein Meteorologe?',          ['Ein Astronaut','Ein Arzt','Ein Wetterforscher'],'Wetter','🌤️'],
     ['Bei welcher Temperatur friert Wasser?',['Bei 10 Grad','Bei 100 Grad','Bei 0 Grad'],'Wetter','🌡️'],
-    ['Was ist ein Sandsturm?',            ['Regen mit Sand','Schnee in der Wüste','Sturm der Sand aufwirbelt'],'Wetter','🏜️'],
-    ['Was bedeutet Luftfeuchtigkeit?',    ['Windstärke','Temperatur','Wie viel Wasser in der Luft ist'],'Wetter','💧'],
-    ['Was ist ein Gewitter?',             ['Nur Wind','Nur Regen','Blitz, Donner und Regen'],'Wetter','⛈️'],
+    ['Was ist ein Sandsturm?',            ['Regen mit Blumen','Schnee in der Wüste','Ein Sturm, der Sand aufwirbelt'],'Wetter','🏜️'],
+    ['Was brauchst du bei Schnee an den Händen?',['Eine Sonnenbrille','Sandalen','Warme Handschuhe'],'Wetter','🧤'],
+    ['Was ist ein Gewitter?',             ['Nur Wind','Nur Nebel','Blitz, Donner und Regen'],'Wetter','⛈️'],
   ];
 
   // ─── Daten: Wahr/Falsch ───────────────────────────────────────────────────
@@ -232,13 +232,13 @@ const ScienceModule = (() => {
     ['Sternschnuppen sind echte Sterne.',     false, 'Weltraum'],
     ['Die Erde dreht sich um die Sonne.',     true,  'Weltraum'],
     ['Jupiter ist der größte Planet.',        true,  'Weltraum'],
-    ['Es gibt Wasser auf der Erde.',          true,  'Weltraum'],
-    ['Astronauten heißen auch Kosmonauten.',  true,  'Weltraum'],
+    ['Die Erde ist ein Planet.',              true,  'Weltraum'],
+    ['Astronauten schweben im Weltall.',      true,  'Weltraum'],
     ['Der Mond dreht sich um die Erde.',      true,  'Weltraum'],
-    ['Im Weltall ist es sehr kalt.',          true,  'Weltraum'],
+    ['Der Mond ist aus Käse.',                false, 'Weltraum'],
     ['Es gibt Luft im Weltall.',              false, 'Weltraum'],
     ['Raketen fahren wie Autos.',             false, 'Weltraum'],
-    ['Ein Lichtjahr ist eine Zeitangabe.',    false, 'Weltraum'],
+    ['Die Sonne ist viel größer als die Erde.',true, 'Weltraum'],
     // Natur
     ['Pflanzen brauchen Licht zum Wachsen.',  true,  'Natur'],
     ['Eis ist gefrorenes Wasser.',            true,  'Natur'],
@@ -246,25 +246,25 @@ const ScienceModule = (() => {
     ['Vulkane spucken Lava aus.',             true,  'Natur'],
     ['Das Meer ist süßes Wasser.',            false, 'Natur'],
     ['Ein Regenbogen hat viele Farben.',      true,  'Natur'],
-    ['Bäume atmen Kohlendioxid ein.',         true,  'Natur'],
+    ['Laubbäume verlieren im Herbst ihre Blätter.',true,'Natur'],
     ['Im Winter wachsen die meisten Pflanzen schnell.',false,'Natur'],
     ['Wasser fließt bergab.',                 true,  'Natur'],
     ['Fossilien sind lebende Tiere.',         false, 'Natur'],
     ['Die Sahara ist eine Wüste.',            true,  'Natur'],
     ['Im Dschungel ist es sehr trocken.',     false, 'Natur'],
     ['Korallen leben im Meer.',               true,  'Natur'],
-    ['Ein Gletscher ist ein Eisriese.',       true,  'Natur'],
+    ['Ein Gletscher besteht aus Eis.',        true,  'Natur'],
     ['Sauerstoff ist ein Gas.',               true,  'Natur'],
-    ['Erde besteht nur aus Wasser.',          false, 'Natur'],
-    ['Wasser verdunstet in der Hitze.',       true,  'Natur'],
+    ['Die Erde besteht nur aus Wasser.',      false, 'Natur'],
+    ['Eine Pfütze trocknet in der Sonne.',    true,  'Natur'],
     ['Steine wachsen wie Pflanzen.',          false, 'Natur'],
     ['In der Nacht scheint die Sonne.',       false, 'Natur'],
-    ['Blätter sind grün wegen Chlorophyll.',  true,  'Natur'],
+    ['Viele Blätter werden im Herbst bunt.',  true,  'Natur'],
     // Mensch
     ['Das Herz pumpt Blut.',                  true,  'Mensch'],
     ['Menschen haben 5 Sinne.',               true,  'Mensch'],
     ['Wir atmen mit dem Gehirn.',             false, 'Mensch'],
-    ['Haare wachsen nach wenn man sie schneidet.',true,'Mensch'],
+    ['Haare wachsen nach, wenn man sie schneidet.',true,'Mensch'],
     ['Kinder haben Milchzähne.',              true,  'Mensch'],
     ['Das Gehirn ist im Bauch.',              false, 'Mensch'],
     ['Menschen brauchen kein Wasser.',        false, 'Mensch'],
@@ -274,29 +274,29 @@ const ScienceModule = (() => {
     ['Die Haut schützt den Körper.',          true,  'Mensch'],
     ['Vitamine halten uns gesund.',           true,  'Mensch'],
     ['Mit dem Mund riechen wir.',             false, 'Mensch'],
-    ['Das linke und rechte Auge sehen zusammen.',true,'Mensch'],
+    ['Die Zähne helfen beim Kauen.',          true,  'Mensch'],
     ['Menschen haben 10 Finger.',             true,  'Mensch'],
     ['Das Blut ist blau.',                    false, 'Mensch'],
     ['Muskeln bewegen unseren Körper.',       true,  'Mensch'],
-    ['Kinder wachsen schnell.',               true,  'Mensch'],
+    ['Gesundes Essen hilft uns beim Wachsen.',true,  'Mensch'],
     ['Das Ohr hört Töne.',                    true,  'Mensch'],
     ['Menschen brauchen Luft zum Atmen.',     true,  'Mensch'],
     // Wetter
-    ['Schnee ist gefroren.',                  true,  'Wetter'],
-    ['Blitz kommt nach dem Donner.',          false, 'Wetter'],
-    ['Regen kommt aus Wolken.',               true,  'Wetter'],
-    ['Im Sommer ist es meistens kälter.',     false, 'Wetter'],
+    ['Schnee ist kalt.',                      true,  'Wetter'],
+    ['Der Blitz kommt nach dem Donner.',      false, 'Wetter'],
+    ['Regen kommt aus den Wolken.',           true,  'Wetter'],
+    ['Im Sommer ist es meistens kälter als im Winter.',false,'Wetter'],
     ['Hagel ist gefrorener Regen.',           true,  'Wetter'],
     ['Ein Tornado dreht sich.',               true,  'Wetter'],
-    ['Wetter ändert sich nie.',               false, 'Wetter'],
+    ['Das Wetter ändert sich nie.',           false, 'Wetter'],
     ['Nebel ist dicker Rauch.',               false, 'Wetter'],
     ['Bei 0 Grad gefriert Wasser.',           true,  'Wetter'],
-    ['Ein Wetterumschwung ist immer schlecht.',false,'Wetter'],
+    ['Nach Regen kann wieder die Sonne scheinen.',true,'Wetter'],
     ['Im Winter kann es schneien.',           true,  'Wetter'],
     ['Wind ist bewegte Luft.',                true,  'Wetter'],
     ['Der Regenbogen erscheint bei Regen und Sonne.',true,'Wetter'],
-    ['Ein Barometer misst die Temperatur.',   false, 'Wetter'],
-    ['Frost tritt bei Minusgraden auf.',      true,  'Wetter'],
+    ['Ein Thermometer misst die Temperatur.', true,  'Wetter'],
+    ['Frost gibt es nur bei Minusgraden.',    true,  'Wetter'],
     ['Ein Hurrikan ist ein starker Sturm.',   true,  'Wetter'],
     ['Wolken bestehen aus Baumwolle.',        false, 'Wetter'],
     ['Im Sommer sind die Tage länger.',       true,  'Wetter'],
@@ -314,7 +314,7 @@ const ScienceModule = (() => {
     ['Lachs',     'Fisch',      ['Vogel','Säugetier']],
     ['Hund',      'Säugetier',  ['Insekt','Reptil']],
     ['Krokodil',  'Reptil',     ['Vogel','Fisch']],
-    ['Frosch',    'Amphibie',   ['Insekt','Säugetier']],
+    ['Frosch',    'Teich',      ['Wüste','Schneeberg']],
     ['Katze',     'Säugetier',  ['Vogel','Fisch']],
     ['Schmetterling','Insekt',  ['Vogel','Fisch']],
     ['Schlange',  'Reptil',     ['Säugetier','Vogel']],
@@ -341,9 +341,9 @@ const ScienceModule = (() => {
     ['Schnee',    'Winter',   ['Sommer','Frühling']],
     ['Blüte',     'Frühling', ['Winter','Herbst']],
     ['Ernte',     'Herbst',   ['Winter','Sommer']],
-    ['Schwimmen', 'Sommer',   ['Winter','Frühling']],
+    ['Hitze',     'Sommer',   ['Winter','Herbst']],
     // Essen und Herkunft
-    ['Butter',    'Vom Tier', ['Aus der Erde','Von Pflanzen']],
+    ['Butter',    'Aus Milch',['Aus Mehl','Aus Wasser']],
     ['Brot',      'Aus Getreide',['Vom Tier','Aus Milch']],
     ['Joghurt',   'Aus Milch',['Aus Getreide','Aus Wasser']],
     ['Karotte',   'Aus der Erde',['Vom Tier','Aus Milch']],
@@ -351,7 +351,7 @@ const ScienceModule = (() => {
     ['Holz',      'Vom Baum',     ['Aus Metall','Aus Glas']],
     ['Wolle',     'Vom Schaf',    ['Vom Baum','Aus Metall']],
     ['Honig',     'Von der Biene',['Vom Schaf','Von der Kuh']],
-    ['Milch',     'Von der Kuh',  ['Von der Biene','Vom Schaf']],
+    ['Milch',     'Von der Kuh',  ['Von der Biene','Vom Huhn']],
     // Musik und Instrumente
     ['Geige',     'Streichinstrument',  ['Blasinstrument','Schlaginstrument']],
     ['Flöte',     'Blasinstrument',     ['Streichinstrument','Schlaginstrument']],
@@ -366,9 +366,9 @@ const ScienceModule = (() => {
     ['Bibliothek','Ort für Bücher',      ['Ort für Essen','Ort für Sport']],
     ['Bäckerei',  'Ort für Backwaren',   ['Ort für Bücher','Ort für Sport']],
     ['Sporthalle','Ort für Sport',       ['Ort für Bücher','Ort für Backwaren']],
-    // Mathematik
-    ['Summe',     'Ergebnis der Addition',  ['Ergebnis der Subtraktion','Ergebnis der Multiplikation']],
-    ['Differenz', 'Ergebnis der Subtraktion',['Ergebnis der Addition','Ergebnis der Multiplikation']],
+    // Tierkinder
+    ['Welpe',     'Baby vom Hund',      ['Baby von der Katze','Baby vom Pferd']],
+    ['Kätzchen',  'Baby von der Katze', ['Baby vom Hund','Baby von der Kuh']],
     // Natur
     ['Gletscher', 'Aus Eis',         ['Aus Stein','Aus Sand']],
     ['Wüste',     'Sehr trocken',    ['Sehr kalt','Sehr nass']],
@@ -401,6 +401,8 @@ const ScienceModule = (() => {
         const [frage, antworten, bereich, emoji] = q;
         const correct = antworten[antworten.length - 1];
         const choices = shuffle(antworten.slice());
+        // Tipp: eine falsche Antwort ausschließen — hilft, ohne zu verraten
+        const wrongExample = randomFrom(antworten.slice(0, -1));
 
         return {
           questionHtml: `
@@ -409,7 +411,7 @@ const ScienceModule = (() => {
             <p class="q-label">${frage}</p>
           `,
           answer: correct,
-          hint: `Die richtige Antwort hat mit dem Thema "${bereich}" zu tun.`,
+          hint: `„${wrongExample}" ist es nicht. 😉`,
           taskType: 'choice',
           choices,
         };
@@ -445,7 +447,8 @@ const ScienceModule = (() => {
             <p class="word-main">${aussage}</p>
           `,
           answer,
-          hint: istWahr ? 'Diese Aussage ist richtig!' : 'Diese Aussage ist falsch.',
+          // Kein Tipp bei Wahr/Falsch — er würde die Lösung verraten
+          hint: null,
           taskType: 'trueFalse',
           choices: ['Wahr', 'Falsch'],
         };
@@ -492,6 +495,26 @@ const ScienceModule = (() => {
   let currentTask = null;
   let sessionStats = { correct: 0, total: 0 };
   let answered = false;
+  let retryQueue = []; // falsch gelöste Aufgaben kommen später noch einmal
+
+  function resetSession() {
+    sessionStats = { correct: 0, total: 0 };
+    retryQueue = [];
+  }
+
+  function queueRetry() {
+    if (currentTask._retry || sessionStats.total >= sessionLength) return;
+    retryQueue.push({ ...currentTask, _retry: true, _notBefore: sessionStats.total + 2 });
+  }
+
+  function nextTask() {
+    if (retryQueue.length &&
+        (retryQueue[0]._notBefore <= sessionStats.total ||
+         sessionStats.total >= sessionLength)) {
+      return retryQueue.shift();
+    }
+    return generateTask(currentExerciseId);
+  }
 
   const FEEDBACK_WRONG = [
     'Fast! Denk noch mal nach! 💪',
@@ -626,7 +649,7 @@ const ScienceModule = (() => {
 
     document.querySelectorAll('.exercise-card').forEach(card => {
       card.addEventListener('click', () => {
-        sessionStats = { correct: 0, total: 0 };
+        resetSession();
         currentExerciseId = card.dataset.exercise;
         renderTask();
       });
@@ -650,7 +673,7 @@ const ScienceModule = (() => {
     if (!ex) return;
 
     sessionStats.total++;
-    currentTask = generateTask(currentExerciseId);
+    currentTask = nextTask();
     answered = false;
 
     const isTrueFalse = currentTask.taskType === 'trueFalse';
@@ -692,7 +715,7 @@ const ScienceModule = (() => {
             ${inputSection}
             <div class="task-feedback hidden" id="task-feedback"></div>
             <div class="task-actions">
-              <button class="btn btn-ghost" id="hint-btn">💡 Tipp</button>
+              ${currentTask.hint ? '<button class="btn btn-ghost" id="hint-btn">💡 Tipp</button>' : ''}
             </div>
           </div>
         </main>
@@ -705,11 +728,14 @@ const ScienceModule = (() => {
         evaluateAnswer(decodeURIComponent(btn.dataset.value));
       });
     });
-    document.getElementById('hint-btn').addEventListener('click', () => {
-      showFeedback(currentTask.hint, 'hint');
-    });
+    const hintBtn = document.getElementById('hint-btn');
+    if (hintBtn) {
+      hintBtn.addEventListener('click', () => {
+        showFeedback(currentTask.hint, 'hint');
+      });
+    }
     document.getElementById('back-to-village').addEventListener('click', () => {
-      sessionStats = { correct: 0, total: 0 };
+      resetSession();
       App.showVillage();
     });
 
@@ -747,7 +773,8 @@ const ScienceModule = (() => {
     } else {
       answered = false;
       Oskar.silence();
-      showFeedback(randomFrom(FEEDBACK_WRONG), 'wrong');
+      queueRetry();
+      showFeedback('Schau dir die grüne Antwort gut an – so merkst du sie dir! 🌟', 'wrong');
       highlightChoices(value, false);
       answered = true;
 
@@ -787,13 +814,20 @@ const ScienceModule = (() => {
     const profile = Storage.getActiveProfile();
     const correct = sessionStats.correct;
     const total   = sessionLength;
+    const isPerfect = correct === total;
 
-    if (profile) Storage.saveSessionResult(profile.id, currentExerciseId, correct, total);
+    if (profile) {
+      Storage.saveSessionResult(profile.id, currentExerciseId, correct, total);
+      if (isPerfect) Storage.addStars(profile.id, 2); // Bonus für eine fehlerfreie Runde
+    }
 
     const praise      = randomFrom(PRAISE_MESSAGES);
     const performance = getPerformanceText(correct, total);
     const stars       = getSessionStars(correct, total);
     const starStr     = stars > 0 ? '⭐'.repeat(stars) : '☆☆☆';
+    const bonusHtml   = isPerfect
+      ? '<p class="complete-performance">🎁 +2 Bonus-Sterne für eine fehlerfreie Runde!</p>'
+      : '';
 
     const app = document.getElementById('app');
     app.innerHTML = `
@@ -809,6 +843,7 @@ const ScienceModule = (() => {
               <span class="complete-score-text">Geschafft: <strong>${correct} von ${total}</strong></span>
             </div>
             <p class="complete-performance">${performance}</p>
+            ${bonusHtml}
             <div class="complete-actions">
               <button class="btn btn-primary" id="play-again-btn">🔄 Nochmal spielen</button>
               <button class="btn btn-ghost" id="back-to-menu-btn">🏠 Zur Lernwelt</button>
@@ -819,7 +854,7 @@ const ScienceModule = (() => {
     `;
 
     document.getElementById('play-again-btn').addEventListener('click', () => {
-      sessionStats = { correct: 0, total: 0 };
+      resetSession();
       renderTask();
     });
     document.getElementById('back-to-menu-btn').addEventListener('click', () => App.showVillage());
@@ -834,7 +869,7 @@ const ScienceModule = (() => {
   // ─── Public API ───────────────────────────────────────────────────────────
 
   function mount() {
-    sessionStats = { correct: 0, total: 0 };
+    resetSession();
     renderMenu();
   }
 

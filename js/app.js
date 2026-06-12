@@ -194,7 +194,7 @@ const App = (() => {
         </div>
       </div>
       <div class="star-progress-wrap">
-        <div class="star-progress-label">Noch ${starsToNextLevel} Stern${starsToNextLevel === 1 ? '' : 'en'}</div>
+        <div class="star-progress-label">Noch ${starsToNextLevel} ${starsToNextLevel === 1 ? 'Stern' : 'Sterne'} bis Level ${profile.level + 1}</div>
         <div class="star-progress-bar">
           <div class="star-progress-fill" style="width:${progressPct}%"></div>
         </div>

@@ -240,13 +240,12 @@
   padding: 0 6px;
 }
 
-/* Punkte-Anzeige beim Zählen */
+/* Punkte-Anzeige beim Zählen — feste 5er-Reihen erleichtern das Abzählen */
 .dot-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(5, auto);
   justify-content: center;
-  gap: 8px;
-  max-width: 220px;
+  gap: 8px 12px;
   padding-top: var(--sp-sm);
 }
 
