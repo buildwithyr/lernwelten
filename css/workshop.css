@@ -125,6 +125,8 @@
   animation: popIn 0.4s both;
   -webkit-tap-highlight-color: transparent;
   min-height: 130px;
+  min-width: 0;          /* verhindert, dass lange Titel das Grid sprengen */
+  overflow-wrap: break-word;
 }
 .exercise-card:nth-child(2) { animation-delay: 0.06s; }
 .exercise-card:nth-child(3) { animation-delay: 0.12s; }
@@ -262,8 +264,13 @@
   align-items: stretch;
 }
 
+/* Eingabefeld schrumpft mit, der Button behält seine Größe und bleibt
+   so auf schmalen Displays immer vollständig sichtbar. */
+.task-input-row .btn { flex-shrink: 0; }
+
 .task-input {
   flex: 1;
+  min-width: 0;
   border: 3px solid var(--cream-dark);
   border-radius: var(--r-md);
   padding: 14px 16px;

@@ -213,6 +213,7 @@
   -webkit-tap-highlight-color: transparent;
   /* Mindest-Touch-Fläche */
   min-height: 140px;
+  min-width: 0;   /* verhindert Grid-Überlauf bei langen Gebäudenamen */
 }
 .building-card::before {
   content: '';
