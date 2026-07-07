@@ -21,6 +21,7 @@ const STATIC_ASSETS = [
   './js/adaptive.js',
   './js/oskar.js',
   './js/profile.js',
+  './js/clock.js',
   './js/app.js',
   './js/modules/math.js',
   './js/modules/words.js',

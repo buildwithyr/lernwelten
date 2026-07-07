@@ -247,12 +247,6 @@
   line-height: 1.2;
 }
 
-/* Uhr-Emoji bei "Uhr lesen" (Klasse 2) */
-.clock-face {
-  font-size: 72px;
-  line-height: 1;
-}
-
 /* Fließtext bei Textaufgaben (Klasse 2) */
 .word-problem-text {
   font-size: var(--text-md);

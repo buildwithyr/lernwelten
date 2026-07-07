@@ -228,14 +228,13 @@ const MathModule = (() => {
       icon: '🕐',
       description: 'Volle und halbe Stunden',
       generate(difficulty) {
-        const HOURS       = [12,1,2,3,4,5,6,7,8,9,10,11];
-        const FULL_CLOCKS = ['🕛','🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚'];
-        const HALF_CLOCKS = ['🕧','🕜','🕝','🕞','🕟','🕠','🕡','🕢','🕣','🕤','🕥','🕦'];
+        const HOURS = [12,1,2,3,4,5,6,7,8,9,10,11];
         const isHalf = difficulty === 1 ? false : Math.random() < 0.5;
         const idx = randomInt(0, 11);
         const hour = HOURS[idx];
-        const emoji = isHalf ? HALF_CLOCKS[idx] : FULL_CLOCKS[idx];
+        const minute = isHalf ? 30 : 0;
         const answer = `${hour}:${isHalf ? '30' : '00'} Uhr`;
+        const clockHtml = Clock.render(hour, minute, { size: 150 });
 
         const otherIdx = (idx + randomInt(1, 5)) % 12;
         const wrong1 = `${HOURS[otherIdx]}:${isHalf ? '30' : '00'} Uhr`;
@@ -245,7 +244,7 @@ const MathModule = (() => {
         return {
           questionHtml: `
             <p class="q-label">Wie spät ist es?</p>
-            <p class="clock-face">${emoji}</p>
+            ${clockHtml}
           `,
           answer,
           hint: isHalf
@@ -554,9 +553,14 @@ const MathModule = (() => {
       progressHtml = `<span class="ex-progress ex-not-played">Noch nicht gespielt</span>`;
     }
 
+    // "Uhr lesen" bekommt eine kleine Vorschau-Uhr statt des Emoji-Icons
+    const iconHtml = ex.id === 'clockReading'
+      ? Clock.render(10, 10, { size: 40, showNumbers: false, borderWidth: 3 })
+      : `<span class="ex-icon">${ex.icon}</span>`;
+
     return `
       <button class="exercise-card" data-exercise="${ex.id}">
-        <span class="ex-icon">${ex.icon}</span>
+        ${iconHtml}
         <span class="ex-title">${ex.title}</span>
         <span class="ex-desc">${ex.description}</span>
         ${progressHtml}
