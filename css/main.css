@@ -2,7 +2,7 @@
    main.css — Design-System & globale Basis
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap');
 
 /* ─── Design Tokens ─────────────────────────────────────────── */
 :root {
@@ -23,6 +23,11 @@
   --text-light:     #9E7E5E;
   --white:          #FFFFFF;
 
+  /* Klasse-2-Akzentfarben (oklch) — für Klassenwahl & Werkstatt-Header */
+  --g2-accent:       oklch(58% 0.13 258);
+  --g2-accent-dark:  oklch(42% 0.14 262);
+  --g2-accent-light: oklch(92% 0.02 258);
+
   /* Schatten */
   --shadow-sm:  0 2px 8px  rgba(90, 60, 20, 0.10);
   --shadow-md:  0 4px 20px rgba(90, 60, 20, 0.14);
@@ -35,6 +40,11 @@
   --r-xl:   32px;
   --r-full: 9999px;
 
+  /* Formensprache: Klasse 1 = organisch/verspielt, Klasse 2 = klar/geometrisch */
+  --radius-organic: 46% 54% 62% 38% / 48% 42% 58% 52%;
+  --radius-badge:   14px;
+  --clip-badge:     polygon(18% 0, 100% 0, 100% 100%, 0 100%, 0 16%);
+
   /* Abstände */
   --sp-xs:  4px;
   --sp-sm:  8px;
@@ -42,8 +52,11 @@
   --sp-lg:  24px;
   --sp-xl:  36px;
 
-  /* Typografie */
-  --font:       'Nunito', 'Segoe UI', system-ui, sans-serif;
+  /* Typografie: Baloo 2 für Überschriften/Zahlen, Atkinson Hyperlegible als
+     gut lesbare Fließschrift (beide kindgerecht, aber unterschiedliche Rolle) */
+  --font-heading: 'Baloo 2', 'Segoe UI', system-ui, sans-serif;
+  --font-body:    'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+  --font:         var(--font-body);
   --text-xs:    12px;
   --text-sm:    14px;
   --text-base:  16px;
@@ -75,6 +88,14 @@ body {
   overflow-x: hidden;
 }
 
+/* Baloo 2 für Überschriften & prägnante Zahlen/Labels — Atkinson
+   Hyperlegible bleibt die gut lesbare Fließschrift für Fragen/Hinweise. */
+h1, h2, h3,
+.village-title, .building-label, .grade-card-label,
+.ex-title, .q-word, .math-eq {
+  font-family: var(--font-heading);
+}
+
 #app {
   display: flex;
   flex-direction: column;
@@ -85,6 +106,11 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
+  animation: panelIn 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen { animation: none; }
 }
 
 /* ─── Buttons ────────────────────────────────────────────────── */
@@ -318,6 +344,10 @@ body {
   0%   { transform: scale(0.8); opacity: 0; }
   70%  { transform: scale(1.06); }
   100% { transform: scale(1); opacity: 1; }
+}
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.99); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
 }
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
