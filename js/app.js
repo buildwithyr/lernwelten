@@ -11,7 +11,7 @@
 const App = (() => {
   // active: true  → Gebäude ist betretbar
   // active: false → Platzhalter (kommt bald)
-  const BUILDINGS = [
+  const BUILDINGS_GRADE1 = [
     {
       id: 'math',
       label: 'Rechenwerkstatt',
@@ -19,7 +19,7 @@ const App = (() => {
       color: '#F4A435',
       bgColor: '#FFF3DC',
       active: true,
-      mount: () => MathModule.mount(),
+      mount: () => MathModule.mount(1),
       exerciseIds: ['numberRecognition', 'counting', 'addition', 'subtraction'],
     },
     {
@@ -29,7 +29,7 @@ const App = (() => {
       color: '#6DB68A',
       bgColor: '#E8F5EE',
       active: true,
-      mount: () => WordsModule.mount(),
+      mount: () => WordsModule.mount(1),
       exerciseIds: ['missingLetter', 'sortLetters', 'wordCategory', 'opposites'],
     },
     {
@@ -54,9 +54,65 @@ const App = (() => {
     },
   ];
 
+  // 2. Klasse: gleicher Aufbau, eigenes Farbschema, angepasste Inhalte
+  // (siehe Module: math.js/words.js unterscheiden Übungen nach Klassenstufe).
+  const BUILDINGS_GRADE2 = [
+    {
+      id: 'math',
+      label: 'Rechenwerkstatt',
+      icon: '🔨',
+      color: '#2E86AB',
+      bgColor: '#E4F1F8',
+      active: true,
+      mount: () => MathModule.mount(2),
+      exerciseIds: [
+        'additionRound100', 'subtractionRound100', 'doubleHalf',
+        'numberSeries', 'euroCent', 'clockReading', 'wordProblems',
+      ],
+    },
+    {
+      id: 'reading',
+      label: 'Wörterhaus',
+      icon: '📖',
+      color: '#C1447E',
+      bgColor: '#FBEAF2',
+      active: true,
+      mount: () => WordsModule.mount(2),
+      exerciseIds: ['missingLetter', 'sortLetters', 'wordCategory', 'opposites', 'weekdaysMonths'],
+    },
+    {
+      id: 'science',
+      label: 'Forscherlabor',
+      icon: '🔬',
+      color: '#3AA655',
+      bgColor: '#E8F6EB',
+      active: true,
+      mount: () => ScienceModule.mount(),
+      exerciseIds: ['knowledgeQuiz', 'trueFalse', 'matching'],
+    },
+    {
+      id: 'puzzles',
+      label: 'Rätselhöhle',
+      icon: '🗝️',
+      color: '#E07A3E',
+      bgColor: '#FCEEE3',
+      active: true,
+      mount: () => PuzzlesModule.mount(),
+      exerciseIds: ['numberPattern', 'shapePattern', 'oddOneOut', 'memoryTask', 'miniSudoku'],
+    },
+  ];
+
+  function getActiveBuildings() {
+    return Storage.getGrade() === 2 ? BUILDINGS_GRADE2 : BUILDINGS_GRADE1;
+  }
+
   // ─── Bootstrap ────────────────────────────────────────────────────────────
 
   function init() {
+    if (!Storage.getGrade()) {
+      renderGradeSelect(true);
+      return;
+    }
     const profile = Storage.getActiveProfile();
     if (!profile) {
       Profile.renderSetupScreen();
@@ -65,20 +121,63 @@ const App = (() => {
     }
   }
 
+  // ─── Klassenstufen-Auswahl ─────────────────────────────────────────────────
+
+  function renderGradeSelect(isFirstRun) {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+      <div class="screen grade-select-screen">
+        <div class="grade-select-header">
+          <span class="grade-select-emoji">🏘️</span>
+          <h1>Willkommen in Lernwelten!</h1>
+          <p>Für welche Klasse möchtest du üben?</p>
+        </div>
+        <div class="grade-select-grid">
+          <button class="grade-card grade-card--1" data-grade="1">
+            <span class="grade-card-icon">1️⃣</span>
+            <span class="grade-card-label">1. Klasse</span>
+          </button>
+          <button class="grade-card grade-card--2" data-grade="2">
+            <span class="grade-card-icon">2️⃣</span>
+            <span class="grade-card-label">2. Klasse</span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.querySelectorAll('.grade-card').forEach(card => {
+      card.addEventListener('click', () => {
+        Storage.setGrade(Number(card.dataset.grade));
+        if (isFirstRun) {
+          const profile = Storage.getActiveProfile();
+          if (!profile) Profile.renderSetupScreen();
+          else showVillage();
+        } else {
+          showVillage();
+        }
+      });
+    });
+  }
+
   // ─── Village / Dorfplatz ──────────────────────────────────────────────────
 
   function showVillage() {
     const profile = Storage.getActiveProfile();
     const app = document.getElementById('app');
+    const grade = Storage.getGrade() === 2 ? 2 : 1;
+    const buildings = getActiveBuildings();
 
     app.innerHTML = `
-      <div class="screen village-screen">
+      <div class="screen village-screen village-screen--grade${grade}">
         <header class="village-header">
           <div class="village-title">
             <span>🏘️</span>
             <span>Lernwelt</span>
           </div>
           <div class="village-header-right">
+            <button class="btn-grade-switch" id="grade-switch-btn" title="Klasse wechseln">
+              ${grade}. Klasse ⇄
+            </button>
             <div class="star-badge">
               ⭐ <span id="village-stars">${profile.stars}</span>
             </div>
@@ -95,13 +194,17 @@ const App = (() => {
           </div>
 
           <div class="village-grid">
-            ${BUILDINGS.map(renderBuilding).join('')}
+            ${buildings.map(renderBuilding).join('')}
           </div>
         </main>
       </div>
     `;
 
-    BUILDINGS.forEach(building => {
+    document.getElementById('grade-switch-btn').addEventListener('click', () => {
+      renderGradeSelect(false);
+    });
+
+    buildings.forEach(building => {
       const btn = document.getElementById(`building-${building.id}`);
       if (!btn) return;
       btn.addEventListener('click', () => {

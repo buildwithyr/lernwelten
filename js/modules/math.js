@@ -74,7 +74,230 @@ const MathModule = (() => {
     3: { min: 1, max: 20 },
   };
 
-  const exercises = {
+  // ─── Klasse 2: Zahlenraum bis 100 ─────────────────────────────────────────
+  // Ab 20 nur "runde" Aufgaben: glatte Zehner (30+40) oder Fünferschritte
+  // (25+15, 45+5) — deshalb sind alle Operanden Vielfache von 5.
+
+  const DIFFICULTY_RANGE_G2 = {
+    1: { max: 50 },
+    2: { max: 75 },
+    3: { max: 100 },
+  };
+
+  function randomMultipleOf5(min, max) {
+    const lo = Math.ceil(min / 5);
+    const hi = Math.floor(max / 5);
+    return randomInt(lo, hi) * 5;
+  }
+
+  const exercisesGrade2 = {
+
+    additionRound100: {
+      id: 'additionRound100',
+      title: 'Plus bis 100',
+      icon: '➕',
+      description: 'Runde Zehner und Fünferschritte',
+      generate(difficulty) {
+        const { max } = DIFFICULTY_RANGE_G2[difficulty] || DIFFICULTY_RANGE_G2[1];
+        const a = randomMultipleOf5(5, max - 5);
+        const b = randomMultipleOf5(5, max - a);
+        return {
+          questionHtml: `
+            <p class="q-label">Was ist das Ergebnis?</p>
+            <p class="math-eq">${a} + ${b} = <span class="math-blank">?</span></p>
+          `,
+          answer: String(a + b),
+          hint: `Zähle in Fünferschritten von ${a} aus weiter.`,
+        };
+      },
+    },
+
+    subtractionRound100: {
+      id: 'subtractionRound100',
+      title: 'Minus bis 100',
+      icon: '➖',
+      description: 'Runde Zehner und Fünferschritte',
+      generate(difficulty) {
+        const { max } = DIFFICULTY_RANGE_G2[difficulty] || DIFFICULTY_RANGE_G2[1];
+        const a = randomMultipleOf5(20, max);
+        const b = randomMultipleOf5(5, a - 5);
+        return {
+          questionHtml: `
+            <p class="q-label">Was ist das Ergebnis?</p>
+            <p class="math-eq">${a} − ${b} = <span class="math-blank">?</span></p>
+          `,
+          answer: String(a - b),
+          hint: `Zähle in Fünferschritten von ${a} zurück.`,
+        };
+      },
+    },
+
+    doubleHalf: {
+      id: 'doubleHalf',
+      title: 'Verdoppeln & Halbieren',
+      icon: '✖️',
+      description: 'Verdopple oder halbiere die Zahl',
+      generate(difficulty) {
+        const max = difficulty === 1 ? 20 : difficulty === 2 ? 35 : 50;
+        const isDouble = Math.random() < 0.5;
+        if (isDouble) {
+          const n = randomInt(1, max);
+          return {
+            questionHtml: `
+              <p class="q-label">Verdopple die Zahl:</p>
+              <p class="math-eq">${n} + ${n} = <span class="math-blank">?</span></p>
+            `,
+            answer: String(n * 2),
+            hint: `Verdoppeln heißt: ${n} + ${n} rechnen.`,
+          };
+        }
+        const n = randomInt(1, max) * 2;
+        return {
+          questionHtml: `
+            <p class="q-label">Halbiere die Zahl:</p>
+            <p class="math-eq">Die Hälfte von ${n} = <span class="math-blank">?</span></p>
+          `,
+          answer: String(n / 2),
+          hint: `Halbieren heißt: ${n} durch 2 teilen.`,
+        };
+      },
+    },
+
+    numberSeries: {
+      id: 'numberSeries',
+      title: 'Zahlenreihen',
+      icon: '🔢',
+      description: '2er-, 5er- und 10er-Reihen',
+      generate(difficulty) {
+        const step = difficulty === 1 ? 10 : difficulty === 2 ? 5 : 2;
+        const maxStart = 100 - step * 4;
+        const start = randomMultipleOf5(0, Math.max(0, maxStart)) || 0;
+        const seq = [start, start + step, start + step * 2, start + step * 3];
+        const answer = start + step * 4;
+        const seqHtml = seq.map(n =>
+          `<div class="seq-num">${n}</div><div class="seq-sep">,</div>`
+        ).join('') + `<div class="seq-num seq-num--blank">?</div>`;
+        return {
+          questionHtml: `
+            <p class="q-label">Was kommt danach?</p>
+            <div class="number-sequence">${seqHtml}</div>
+          `,
+          answer: String(answer),
+          hint: `Das ist die ${step}er-Reihe: Es geht immer +${step} weiter.`,
+        };
+      },
+    },
+
+    euroCent: {
+      id: 'euroCent',
+      title: 'Euro & Cent',
+      icon: '💶',
+      description: 'Wie viel kostet das zusammen?',
+      generate(difficulty) {
+        const useCent = Math.random() < 0.5;
+        if (useCent) {
+          const values = difficulty === 1 ? [10, 20] : [10, 20, 50];
+          const a = randomFrom(values);
+          const b = randomFrom(values);
+          return {
+            questionHtml: `
+              <p class="q-label">Wie viel kostet das zusammen?</p>
+              <p class="math-eq">🏷️ ${a} Cent + 🏷️ ${b} Cent = <span class="math-blank">?</span> Cent</p>
+            `,
+            answer: String(a + b),
+            hint: `Rechne ${a} + ${b} in Cent.`,
+          };
+        }
+        const values = difficulty === 1 ? [1, 2] : difficulty === 2 ? [1, 2, 5] : [1, 2, 5, 10];
+        const a = randomFrom(values);
+        const b = randomFrom(values);
+        return {
+          questionHtml: `
+            <p class="q-label">Wie viel kostet das zusammen?</p>
+            <p class="math-eq">🏷️ ${a} € + 🏷️ ${b} € = <span class="math-blank">?</span> €</p>
+          `,
+          answer: String(a + b),
+          hint: `Rechne ${a} + ${b} in Euro.`,
+        };
+      },
+    },
+
+    clockReading: {
+      id: 'clockReading',
+      title: 'Uhr lesen',
+      icon: '🕐',
+      description: 'Volle und halbe Stunden',
+      generate(difficulty) {
+        const HOURS       = [12,1,2,3,4,5,6,7,8,9,10,11];
+        const FULL_CLOCKS = ['🕛','🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚'];
+        const HALF_CLOCKS = ['🕧','🕜','🕝','🕞','🕟','🕠','🕡','🕢','🕣','🕤','🕥','🕦'];
+        const isHalf = difficulty === 1 ? false : Math.random() < 0.5;
+        const idx = randomInt(0, 11);
+        const hour = HOURS[idx];
+        const emoji = isHalf ? HALF_CLOCKS[idx] : FULL_CLOCKS[idx];
+        const answer = `${hour}:${isHalf ? '30' : '00'} Uhr`;
+
+        const otherIdx = (idx + randomInt(1, 5)) % 12;
+        const wrong1 = `${HOURS[otherIdx]}:${isHalf ? '30' : '00'} Uhr`;
+        const wrong2 = `${hour}:${isHalf ? '00' : '30'} Uhr`;
+        const choices = shuffle([answer, wrong1, wrong2]);
+
+        return {
+          questionHtml: `
+            <p class="q-label">Wie spät ist es?</p>
+            <p class="clock-face">${emoji}</p>
+          `,
+          answer,
+          hint: isHalf
+            ? 'Der kleine Zeiger steht zwischen zwei Zahlen — das ist eine halbe Stunde.'
+            : 'Der große Zeiger steht auf der 12 — das ist eine volle Stunde.',
+          taskType: 'choice',
+          choices,
+        };
+      },
+    },
+
+    wordProblems: {
+      id: 'wordProblems',
+      title: 'Textaufgaben',
+      icon: '📝',
+      description: 'Kurze Aufgaben mit runden Zahlen',
+      generate(difficulty) {
+        const max = difficulty === 1 ? 30 : difficulty === 2 ? 60 : 100;
+        const templates = [
+          () => {
+            const a = randomMultipleOf5(5, max - 5);
+            const b = randomMultipleOf5(5, max - a);
+            return { text: `Luisa hat ${a} Sticker. Sie bekommt ${b} weitere dazu. Wie viele Sticker hat sie jetzt?`, ans: a + b };
+          },
+          () => {
+            const a = randomMultipleOf5(10, max);
+            const b = randomMultipleOf5(5, a - 5);
+            return { text: `Im Stall stehen ${a} Pferde. ${b} Pferde gehen auf die Weide. Wie viele Pferde bleiben im Stall?`, ans: a - b };
+          },
+          () => {
+            const a = randomMultipleOf5(5, max - 5);
+            const b = randomMultipleOf5(5, max - a);
+            return { text: `Am Nachthimmel sind ${a} Sterne zu sehen. ${b} weitere Sterne erscheinen. Wie viele Sterne sind es jetzt?`, ans: a + b };
+          },
+          () => {
+            const a = randomMultipleOf5(10, max);
+            const b = randomMultipleOf5(5, a - 5);
+            return { text: `Eine Rakete transportiert ${a} Astronauten. ${b} Astronauten steigen auf einer Raumstation aus. Wie viele bleiben an Bord?`, ans: a - b };
+          },
+        ];
+        const { text, ans } = randomFrom(templates)();
+        return {
+          questionHtml: `<p class="q-label word-problem-text">${text}</p>`,
+          answer: String(ans),
+          hint: 'Lies die Aufgabe noch einmal genau: Wird zusammengezählt oder weggenommen?',
+        };
+      },
+    },
+
+  };
+
+  const exercisesGrade1 = {
 
     numberRecognition: {
       id: 'numberRecognition',
@@ -156,6 +379,11 @@ const MathModule = (() => {
 
   };
 
+  let activeGrade = 1;
+  function getExercises() {
+    return activeGrade === 2 ? exercisesGrade2 : exercisesGrade1;
+  }
+
   // ─── Aufgabe erzeugen (mit Anti-Wiederholung) ─────────────────────────────
 
   function generateTask(exerciseId) {
@@ -164,7 +392,7 @@ const MathModule = (() => {
       ? Adaptive.getDifficulty(profile.id, exerciseId)
       : 1;
 
-    const ex = exercises[exerciseId];
+    const ex = getExercises()[exerciseId];
     let task;
     let attempts = 0;
 
@@ -345,7 +573,7 @@ const MathModule = (() => {
           <p class="menu-intro">Such dir ein Spiel aus.</p>
           ${renderSessionModeSelector()}
           <div class="exercise-grid">
-            ${Object.values(exercises).map(renderExerciseCard).join('')}
+            ${Object.values(getExercises()).map(renderExerciseCard).join('')}
           </div>
         </main>
       </div>
@@ -377,13 +605,35 @@ const MathModule = (() => {
   }
 
   function renderTask() {
-    const ex = exercises[currentExerciseId];
+    const ex = getExercises()[currentExerciseId];
     if (!ex) return;
 
     sessionStats.total++;
     currentTask = nextTask();
     hintShown = false;
     wrongAttempts = 0;
+
+    const isChoice = currentTask.taskType === 'choice';
+    const inputSection = isChoice
+      ? `<div class="choice-grid" id="choice-grid">
+          ${currentTask.choices.map(c => `<button class="choice-btn" data-value="${encodeURIComponent(c)}">${c}</button>`).join('')}
+         </div>`
+      : `<div class="task-input-row">
+          <input
+            type="number"
+            id="task-answer"
+            class="task-input"
+            placeholder=""
+            min="0"
+            max="100"
+            autocomplete="off"
+            inputmode="numeric"
+            pattern="[0-9]*"
+          />
+          <button class="btn btn-primary" id="check-btn">
+            Fertig ✓
+          </button>
+        </div>`;
 
     const app = document.getElementById('app');
     app.innerHTML = `
@@ -408,22 +658,7 @@ const MathModule = (() => {
               ${currentTask.questionHtml}
             </div>
 
-            <div class="task-input-row">
-              <input
-                type="number"
-                id="task-answer"
-                class="task-input"
-                placeholder=""
-                min="0"
-                max="99"
-                autocomplete="off"
-                inputmode="numeric"
-                pattern="[0-9]*"
-              />
-              <button class="btn btn-primary" id="check-btn">
-                Fertig ✓
-              </button>
-            </div>
+            ${inputSection}
 
             <div class="task-feedback hidden" id="task-feedback"></div>
 
@@ -436,7 +671,7 @@ const MathModule = (() => {
       </div>
     `;
 
-    bindTaskEvents();
+    bindTaskEvents(isChoice);
 
     setTimeout(() => {
       const main = document.querySelector('.task-main');
@@ -522,19 +757,27 @@ const MathModule = (() => {
     return ['⭐', '⭐⭐', '⭐⭐⭐'][level - 1] || '⭐';
   }
 
-  function bindTaskEvents() {
-    const answerInput = document.getElementById('task-answer');
-    const checkBtn   = document.getElementById('check-btn');
+  function bindTaskEvents(isChoice) {
+    if (isChoice) {
+      document.querySelectorAll('.choice-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          evaluateAnswer(decodeURIComponent(btn.dataset.value));
+        });
+      });
+    } else {
+      const answerInput = document.getElementById('task-answer');
+      const checkBtn   = document.getElementById('check-btn');
 
-    answerInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter') checkBtn.click();
-    });
+      answerInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') checkBtn.click();
+      });
 
-    checkBtn.addEventListener('click', () => {
-      const value = answerInput.value.trim();
-      if (value === '') return;
-      evaluateAnswer(value);
-    });
+      checkBtn.addEventListener('click', () => {
+        const value = answerInput.value.trim();
+        if (value === '') return;
+        evaluateAnswer(value);
+      });
+    }
 
     document.getElementById('hint-btn').addEventListener('click', () => {
       if (!hintShown) {
@@ -554,6 +797,15 @@ const MathModule = (() => {
     document.getElementById('back-to-village').addEventListener('click', () => {
       resetSession();
       App.showVillage();
+    });
+  }
+
+  function highlightChoices(selected, wasCorrect) {
+    document.querySelectorAll('.choice-btn').forEach(btn => {
+      btn.disabled = true;
+      const val = decodeURIComponent(btn.dataset.value);
+      if (val === currentTask.answer) btn.classList.add('choice-btn--correct');
+      else if (val === selected && !wasCorrect) btn.classList.add('choice-btn--wrong');
     });
   }
 
@@ -577,8 +829,12 @@ const MathModule = (() => {
       Oskar.say(randomFrom(Oskar.MESSAGES.correct));
       hideFeedback();
 
-      document.getElementById('check-btn').disabled = true;
-      document.getElementById('task-answer').disabled = true;
+      if (currentTask.taskType === 'choice') {
+        highlightChoices(value, true);
+      } else {
+        document.getElementById('check-btn').disabled = true;
+        document.getElementById('task-answer').disabled = true;
+      }
 
       // Update progress bar to full for this task
       const fill = document.querySelector('.task-progress-fill');
@@ -589,6 +845,13 @@ const MathModule = (() => {
       } else {
         setTimeout(() => renderTask(), 1900);
       }
+    } else if (currentTask.taskType === 'choice') {
+      Oskar.silence();
+      queueRetry();
+      showFeedback('Schau dir die grüne Antwort gut an – so merkst du sie dir! 🌟', 'wrong');
+      highlightChoices(value, false);
+      const nextBtn = document.getElementById('next-btn');
+      if (nextBtn) nextBtn.style.display = '';
     } else {
       Oskar.silence();
       queueRetry();
@@ -628,7 +891,8 @@ const MathModule = (() => {
 
   // ─── Public API ───────────────────────────────────────────────────────────
 
-  function mount() {
+  function mount(grade) {
+    activeGrade = grade === 2 ? 2 : 1;
     resetSession();
     renderMenu();
   }

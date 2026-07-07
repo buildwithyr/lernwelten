@@ -3,7 +3,7 @@
  * Offline-first caching — niemals localStorage berühren.
  */
 
-const CACHE_VERSION = 'lernwelten-v1';
+const CACHE_VERSION = 'lernwelten-v2';
 
 const STATIC_ASSETS = [
   './',
