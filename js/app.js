@@ -134,11 +134,11 @@ const App = (() => {
         </div>
         <div class="grade-select-grid">
           <button class="grade-card grade-card--1" data-grade="1">
-            <span class="grade-card-icon">1️⃣</span>
+            <span class="grade-card-badge grade-card-badge--1">1</span>
             <span class="grade-card-label">1. Klasse</span>
           </button>
           <button class="grade-card grade-card--2" data-grade="2">
-            <span class="grade-card-icon">2️⃣</span>
+            <span class="grade-card-badge grade-card-badge--2">2</span>
             <span class="grade-card-label">2. Klasse</span>
           </button>
         </div>
