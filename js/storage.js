@@ -8,6 +8,7 @@ const Storage = (() => {
   const KEYS = {
     PROFILES:       'lw_profiles',
     ACTIVE_PROFILE: 'lw_active_profile',
+    GRADE:          'lw_grade',
   };
 
   function _read(key) {
@@ -57,6 +58,17 @@ const Storage = (() => {
   function getActiveProfile() {
     const id = getActiveProfileId();
     return id ? getProfile(id) : null;
+  }
+
+  // ---------- Klassenstufe ----------
+
+  // Gibt 1 oder 2 zurück, oder null, wenn noch nie ausgewählt wurde.
+  function getGrade() {
+    return _read(KEYS.GRADE);
+  }
+
+  function setGrade(grade) {
+    return _write(KEYS.GRADE, grade === 2 ? 2 : 1);
   }
 
   // ---------- Stars & Level ----------
@@ -145,6 +157,8 @@ const Storage = (() => {
     getActiveProfileId,
     setActiveProfileId,
     getActiveProfile,
+    getGrade,
+    setGrade,
     addStars,
     recordAttempt,
     getAdaptiveData,

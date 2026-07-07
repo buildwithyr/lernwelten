@@ -234,6 +234,21 @@
   line-height: 1.2;
 }
 
+/* Uhr-Emoji bei "Uhr lesen" (Klasse 2) */
+.clock-face {
+  font-size: 72px;
+  line-height: 1;
+}
+
+/* Fließtext bei Textaufgaben (Klasse 2) */
+.word-problem-text {
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.5;
+  max-width: 380px;
+}
+
 .math-blank {
   display: inline-block;
   min-width: 52px;

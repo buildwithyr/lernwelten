@@ -453,6 +453,58 @@ const WordsModule = (() => {
 
   };
 
+  // ─── Klasse 2: Wochentage und Monate in Reihenfolge ───────────────────────
+
+  const WEEKDAYS = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+  const MONTHS   = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+
+  function nextInSequence(seq, name) {
+    const idx = seq.indexOf(name);
+    return seq[(idx + 1) % seq.length];
+  }
+
+  const exercisesGrade2Extra = {
+    weekdaysMonths: {
+      id: 'weekdaysMonths',
+      title: 'Was kommt danach?',
+      icon: '📅',
+      description: 'Wochentage und Monate in Reihenfolge',
+      generate(difficulty) {
+        const useMonths = difficulty === 1 ? false : Math.random() < 0.5;
+        const seq = useMonths ? MONTHS : WEEKDAYS;
+        let name;
+        let attempts = 0;
+        do {
+          name = randomFrom(seq);
+          attempts++;
+        } while (wasRecent('weekdaysMonths', name) && attempts < 15);
+        markRecent('weekdaysMonths', name);
+
+        const answer = nextInSequence(seq, name);
+        const wrong = shuffle(seq.filter(w => w !== name && w !== answer)).slice(0, 2);
+        const choices = shuffle([answer, ...wrong]);
+
+        return {
+          questionHtml: `
+            <p class="q-label">${useMonths ? 'Welcher Monat kommt nach' : 'Welcher Tag kommt nach'}:</p>
+            <p class="word-main">${name}</p>
+          `,
+          answer,
+          hint: useMonths
+            ? 'Denk an die Reihenfolge der Monate im Jahr.'
+            : 'Denk an die Reihenfolge der Wochentage.',
+          taskType: 'choice',
+          choices,
+        };
+      },
+    },
+  };
+
+  let activeGrade = 1;
+  function getExercises() {
+    return activeGrade === 2 ? { ...exercises, ...exercisesGrade2Extra } : exercises;
+  }
+
   // ─── Session-State & Konstanten ───────────────────────────────────────────
 
   const DEFAULT_SESSION_LENGTH = 10;
@@ -610,7 +662,7 @@ const WordsModule = (() => {
           <p class="menu-intro">Such dir ein Spiel aus.</p>
           ${renderSessionModeSelector()}
           <div class="exercise-grid">
-            ${Object.values(exercises).map(renderExerciseCard).join('')}
+            ${Object.values(getExercises()).map(renderExerciseCard).join('')}
           </div>
         </main>
       </div>
@@ -634,12 +686,12 @@ const WordsModule = (() => {
   function generateTask(exerciseId) {
     const profile = Storage.getActiveProfile();
     const difficulty = profile ? Adaptive.getDifficulty(profile.id, exerciseId) : 1;
-    const ex = exercises[exerciseId];
+    const ex = getExercises()[exerciseId];
     return { ...ex.generate(difficulty), difficulty };
   }
 
   function renderTask() {
-    const ex = exercises[currentExerciseId];
+    const ex = getExercises()[currentExerciseId];
     if (!ex) return;
 
     sessionStats.total++;
@@ -898,7 +950,8 @@ const WordsModule = (() => {
 
   // ─── Public API ───────────────────────────────────────────────────────────
 
-  function mount() {
+  function mount(grade) {
+    activeGrade = grade === 2 ? 2 : 1;
     resetSession();
     renderMenu();
   }
