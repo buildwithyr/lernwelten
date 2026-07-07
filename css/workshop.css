@@ -144,6 +144,17 @@
 .ex-title { font-size: var(--text-base); font-weight: 800; color: var(--text-dark); }
 .ex-desc  { font-size: var(--text-xs); font-weight: 600; color: var(--text-light); line-height: 1.4; }
 
+/* Klasse 2: geometrische Badge-Form statt organischer Rundung, ruhigerer
+   Hover — konsistent mit den Dorfplatz-Gebäudekacheln. */
+.grade2 .exercise-card {
+  border-radius: var(--radius-badge);
+}
+.grade2 .exercise-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--g2-accent);
+  background: var(--g2-accent-light);
+}
+
 /* ─── Aufgaben-Screen ────────────────────────────────────────── */
 .task-screen {
   background:
@@ -174,6 +185,8 @@
   gap: var(--sp-lg);
   animation: slideUp 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+
+.grade2 .task-card { border-radius: var(--radius-badge); }
 
 /* Kategorie-Zeile oben in der Aufgaben-Karte */
 .task-category {
@@ -421,6 +434,8 @@
   justify-content: center;
   padding: var(--sp-lg);
 }
+
+.grade2 .complete-card { border-radius: var(--radius-badge); }
 
 .complete-card {
   background: var(--cream-card);

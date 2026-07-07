@@ -656,7 +656,7 @@ const WordsModule = (() => {
   function renderMenu() {
     const app = document.getElementById('app');
     app.innerHTML = `
-      <div class="screen workshop-screen">
+      <div class="screen workshop-screen grade${Storage.getGrade() === 2 ? 2 : 1}">
         ${renderHeader()}
         <main class="exercise-menu">
           <p class="menu-intro">Such dir ein Spiel aus.</p>
@@ -715,7 +715,7 @@ const WordsModule = (() => {
 
     const app = document.getElementById('app');
     app.innerHTML = `
-      <div class="screen task-screen">
+      <div class="screen task-screen grade${Storage.getGrade() === 2 ? 2 : 1}">
         ${renderHeader()}
         <main class="task-main">
           <div class="task-card">
@@ -913,7 +913,7 @@ const WordsModule = (() => {
 
     const app = document.getElementById('app');
     app.innerHTML = `
-      <div class="screen complete-screen">
+      <div class="screen complete-screen grade${Storage.getGrade() === 2 ? 2 : 1}">
         ${renderHeader()}
         <main class="complete-main">
           <div class="complete-card">
