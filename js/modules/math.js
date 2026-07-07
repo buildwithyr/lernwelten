@@ -24,6 +24,12 @@ const MathModule = (() => {
     return a;
   }
 
+  // Eine Analoguhr zeigt nur 1–12 — ob es Vormittag oder Nachmittag ist,
+  // sieht man ihr nicht an. "5 Uhr" und "17 Uhr" sind daher gleich richtig.
+  function formatHour(hour, use24h) {
+    return use24h ? hour + 12 : hour;
+  }
+
   // ─── Anti-Wiederholungs-Warteschlange ─────────────────────────────────────
 
   const RECENT_WINDOW = 5;
@@ -233,13 +239,26 @@ const MathModule = (() => {
         const idx = randomInt(0, 11);
         const hour = HOURS[idx];
         const minute = isHalf ? 30 : 0;
-        const answer = `${hour}:${isHalf ? '30' : '00'} Uhr`;
+        // 12 Uhr bleibt immer 12 Uhr — Mittag/Mitternacht als 24h-Sonderfall
+        // ist für Klasse 2 kein Thema. Alle anderen Stunden werden manchmal
+        // im Nachmittags-Format (24h) abgefragt.
+        const use24h = hour !== 12 && Math.random() < 0.5;
+        const displayHour = formatHour(hour, use24h);
+        const answer = `${displayHour}:${isHalf ? '30' : '00'} Uhr`;
         const clockHtml = Clock.render(hour, minute, { size: 150 });
 
         const otherIdx = (idx + randomInt(1, 5)) % 12;
-        const wrong1 = `${HOURS[otherIdx]}:${isHalf ? '30' : '00'} Uhr`;
-        const wrong2 = `${hour}:${isHalf ? '00' : '30'} Uhr`;
+        const otherDisplayHour = formatHour(HOURS[otherIdx], use24h && HOURS[otherIdx] !== 12);
+        const wrong1 = `${otherDisplayHour}:${isHalf ? '30' : '00'} Uhr`;
+        const wrong2 = `${displayHour}:${isHalf ? '00' : '30'} Uhr`;
         const choices = shuffle([answer, wrong1, wrong2]);
+
+        const hourHint = isHalf
+          ? 'Der kleine Zeiger steht zwischen zwei Zahlen — das ist eine halbe Stunde.'
+          : 'Der große Zeiger steht auf der 12 — das ist eine volle Stunde.';
+        const hint = use24h
+          ? `${hourHint} Auf der Uhr steht die ${hour} — am Nachmittag sagt man dazu ${hour + 12} Uhr.`
+          : hourHint;
 
         return {
           questionHtml: `
@@ -247,9 +266,7 @@ const MathModule = (() => {
             ${clockHtml}
           `,
           answer,
-          hint: isHalf
-            ? 'Der kleine Zeiger steht zwischen zwei Zahlen — das ist eine halbe Stunde.'
-            : 'Der große Zeiger steht auf der 12 — das ist eine volle Stunde.',
+          hint,
           taskType: 'choice',
           choices,
         };
