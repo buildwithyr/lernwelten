@@ -58,7 +58,7 @@
   padding: var(--sp-md) var(--sp-lg);
   font-size: var(--text-base);
   font-weight: 700;
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font);
   background: #fff;
   color: var(--text-dark);
   border: 2.5px solid #e0d4c8;
@@ -75,6 +75,10 @@
     background: var(--cream);
     border-color: var(--orange);
     transform: translateY(-1px);
+  }
+  .grade2 .choice-btn:hover:not(:disabled) {
+    background: var(--g2-accent-light);
+    border-color: var(--g2-accent);
   }
 }
 
@@ -193,7 +197,7 @@
   height: 52px;
   font-size: var(--text-lg);
   font-weight: 800;
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font);
   background: #fff;
   border: 2.5px solid #e0d4c8;
   border-radius: 12px;
@@ -315,7 +319,7 @@
   padding: var(--sp-md);
   font-size: var(--text-base);
   font-weight: 800;
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font);
   border-radius: 14px;
   border: 2.5px solid #e0d4c8;
   cursor: pointer;
@@ -343,7 +347,7 @@
   padding: var(--sp-md);
   font-size: var(--text-lg);
   font-weight: 700;
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font);
   border: 2.5px solid #e0d4c8;
   border-radius: 14px;
   text-align: center;
@@ -357,6 +361,9 @@
 
 .task-input-text:focus {
   border-color: var(--orange);
+}
+.grade2 .task-input-text:focus {
+  border-color: var(--g2-accent);
 }
 
 /* ─── Forscherlabor Frage-Bild ──────────────────────────────────────────── */

@@ -163,27 +163,89 @@
   align-items: center;
   gap: var(--sp-md);
   padding: var(--sp-xl) var(--sp-md);
-  background: var(--cream-card);
-  border: 3px solid var(--cream-dark);
-  border-radius: var(--r-xl);
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--ease-bounce), box-shadow var(--ease), border-color var(--ease);
+  position: relative;
+  overflow: hidden;
   -webkit-tap-highlight-color: transparent;
 }
-.grade-card:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: var(--shadow-md);
-}
 .grade-card:active { transform: scale(0.96); }
-.grade-card--1:hover { border-color: var(--orange); }
-.grade-card--2:hover { border-color: #2E86AB; }
 
-.grade-card-icon { font-size: 44px; line-height: 1; }
 .grade-card-label {
   font-size: var(--text-lg);
   font-weight: 800;
-  color: var(--text-dark);
+}
+
+/* Klasse 1: organische Form, verspielter Bounce — passend zum
+   Formensprache-Token --radius-organic der Dorfplatz-Gebäude. */
+.grade-card--1 {
+  background: var(--cream-card);
+  border: 3px solid var(--cream-dark);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--ease-bounce), box-shadow var(--ease), border-color var(--ease);
+}
+.grade-card--1:hover {
+  transform: translateY(-4px) rotate(-1deg) scale(1.02);
+  box-shadow: var(--shadow-md);
+  border-color: var(--orange);
+}
+.grade-card--1 .grade-card-label { color: var(--text-dark); }
+
+.grade-card-badge--1 {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: var(--radius-organic);
+  background: var(--orange-light);
+  border: 3px solid var(--orange-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--orange-dark);
+}
+
+/* Klasse 2: klare, geometrische Form mit Eck-Ribbon — passend zum
+   Badge-Token --radius-badge/--clip-badge der Dorfplatz-Gebäude. */
+.grade-card--2 {
+  background: linear-gradient(135deg, var(--g2-accent), var(--g2-accent-dark));
+  border: 2px solid var(--g2-accent-dark);
+  border-radius: var(--radius-badge);
+  box-shadow: 0 8px 22px rgba(40, 60, 110, 0.28);
+  transition: transform var(--ease), box-shadow var(--ease);
+}
+.grade-card--2::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-style: solid;
+  border-width: 0 26px 26px 0;
+  border-color: transparent var(--orange) transparent transparent;
+}
+.grade-card--2:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(40, 60, 110, 0.36);
+}
+.grade-card--2 .grade-card-label { color: var(--white); }
+
+.grade-card-badge--2 {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: var(--radius-badge);
+  clip-path: var(--clip-badge);
+  background: var(--g2-accent-light);
+  border: 2px solid var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--g2-accent-dark);
 }
 
 /* ─── Dorfplatz ──────────────────────────────────────────────── */
@@ -367,6 +429,44 @@
   color: var(--text-light);
   letter-spacing: 0;
   font-weight: 600;
+}
+
+/* ─── Formensprache pro Klassenstufe ─────────────────────────────
+   Klasse 1: organische Blob-Form, dicker Rahmen, verspielter Tilt.
+   Klasse 2: klare Badge-Form (angeschnittene Ecke) + Eck-Ribbon,
+   dezenterer Hover — fühlt sich bewusst "erwachsener" an. */
+.village-screen--grade1 .building-card {
+  border-width: 3px;
+}
+.village-screen--grade1 .building-card:hover:not(.building-locked) {
+  transform: translateY(-6px) rotate(-2deg) scale(1.03);
+}
+.village-screen--grade1 .building-icon-wrap {
+  border-radius: var(--radius-organic);
+  background: var(--building-bg, rgba(255, 255, 255, 0.75));
+  border: 3px solid var(--building-color, rgba(255, 255, 255, 0.9));
+}
+
+.village-screen--grade2 .building-card {
+  border-radius: var(--radius-badge);
+}
+.village-screen--grade2 .building-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-style: solid;
+  border-width: 0 20px 20px 0;
+  border-color: transparent var(--building-color, transparent) transparent transparent;
+}
+.village-screen--grade2 .building-card:hover:not(.building-locked) {
+  transform: translateY(-4px);
+}
+.village-screen--grade2 .building-icon-wrap {
+  border-radius: var(--radius-badge);
+  clip-path: var(--clip-badge);
+  background: var(--building-bg, rgba(255, 255, 255, 0.75));
+  border: 2px solid var(--building-color, rgba(255, 255, 255, 0.9));
 }
 
 /* ─── Responsive ─────────────────────────────────────────────── */

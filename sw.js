@@ -3,7 +3,7 @@
  * Offline-first caching — niemals localStorage berühren.
  */
 
-const CACHE_VERSION = 'lernwelten-v2';
+const CACHE_VERSION = 'lernwelten-v3';
 
 const STATIC_ASSETS = [
   './',
@@ -21,6 +21,7 @@ const STATIC_ASSETS = [
   './js/adaptive.js',
   './js/oskar.js',
   './js/profile.js',
+  './js/clock.js',
   './js/app.js',
   './js/modules/math.js',
   './js/modules/words.js',
@@ -53,12 +54,17 @@ self.addEventListener('message', (event) => {
 });
 
 // ─── Install: cache all static assets ───────────────────────────────────────
+// Kein automatisches self.skipWaiting() hier: eine neue Version soll erst
+// aktiv werden, wenn pwa.js das per SKIP_WAITING-Message anstößt (siehe
+// "Message"-Handler oben). So wird niemand mitten in einer Übung ungefragt
+// neu geladen — beim allerersten Besuch (noch kein aktiver Worker vorhanden)
+// aktiviert der Browser ohnehin sofort, ganz ohne skipWaiting().
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_VERSION).then((cache) => {
       return cache.addAll(STATIC_ASSETS);
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 

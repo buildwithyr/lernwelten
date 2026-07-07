@@ -24,6 +24,12 @@ const MathModule = (() => {
     return a;
   }
 
+  // Eine Analoguhr zeigt nur 1–12 — ob es Vormittag oder Nachmittag ist,
+  // sieht man ihr nicht an. "5 Uhr" und "17 Uhr" sind daher gleich richtig.
+  function formatHour(hour, use24h) {
+    return use24h ? hour + 12 : hour;
+  }
+
   // ─── Anti-Wiederholungs-Warteschlange ─────────────────────────────────────
 
   const RECENT_WINDOW = 5;
@@ -228,29 +234,39 @@ const MathModule = (() => {
       icon: '🕐',
       description: 'Volle und halbe Stunden',
       generate(difficulty) {
-        const HOURS       = [12,1,2,3,4,5,6,7,8,9,10,11];
-        const FULL_CLOCKS = ['🕛','🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚'];
-        const HALF_CLOCKS = ['🕧','🕜','🕝','🕞','🕟','🕠','🕡','🕢','🕣','🕤','🕥','🕦'];
+        const HOURS = [12,1,2,3,4,5,6,7,8,9,10,11];
         const isHalf = difficulty === 1 ? false : Math.random() < 0.5;
         const idx = randomInt(0, 11);
         const hour = HOURS[idx];
-        const emoji = isHalf ? HALF_CLOCKS[idx] : FULL_CLOCKS[idx];
-        const answer = `${hour}:${isHalf ? '30' : '00'} Uhr`;
+        const minute = isHalf ? 30 : 0;
+        // 12 Uhr bleibt immer 12 Uhr — Mittag/Mitternacht als 24h-Sonderfall
+        // ist für Klasse 2 kein Thema. Alle anderen Stunden werden manchmal
+        // im Nachmittags-Format (24h) abgefragt.
+        const use24h = hour !== 12 && Math.random() < 0.5;
+        const displayHour = formatHour(hour, use24h);
+        const answer = `${displayHour}:${isHalf ? '30' : '00'} Uhr`;
+        const clockHtml = Clock.render(hour, minute, { size: 150 });
 
         const otherIdx = (idx + randomInt(1, 5)) % 12;
-        const wrong1 = `${HOURS[otherIdx]}:${isHalf ? '30' : '00'} Uhr`;
-        const wrong2 = `${hour}:${isHalf ? '00' : '30'} Uhr`;
+        const otherDisplayHour = formatHour(HOURS[otherIdx], use24h && HOURS[otherIdx] !== 12);
+        const wrong1 = `${otherDisplayHour}:${isHalf ? '30' : '00'} Uhr`;
+        const wrong2 = `${displayHour}:${isHalf ? '00' : '30'} Uhr`;
         const choices = shuffle([answer, wrong1, wrong2]);
+
+        const hourHint = isHalf
+          ? 'Der kleine Zeiger steht zwischen zwei Zahlen — das ist eine halbe Stunde.'
+          : 'Der große Zeiger steht auf der 12 — das ist eine volle Stunde.';
+        const hint = use24h
+          ? `${hourHint} Auf der Uhr steht die ${hour} — am Nachmittag sagt man dazu ${hour + 12} Uhr.`
+          : hourHint;
 
         return {
           questionHtml: `
             <p class="q-label">Wie spät ist es?</p>
-            <p class="clock-face">${emoji}</p>
+            ${clockHtml}
           `,
           answer,
-          hint: isHalf
-            ? 'Der kleine Zeiger steht zwischen zwei Zahlen — das ist eine halbe Stunde.'
-            : 'Der große Zeiger steht auf der 12 — das ist eine volle Stunde.',
+          hint,
           taskType: 'choice',
           choices,
         };
@@ -554,9 +570,14 @@ const MathModule = (() => {
       progressHtml = `<span class="ex-progress ex-not-played">Noch nicht gespielt</span>`;
     }
 
+    // "Uhr lesen" bekommt eine kleine Vorschau-Uhr statt des Emoji-Icons
+    const iconHtml = ex.id === 'clockReading'
+      ? Clock.render(10, 10, { size: 40, showNumbers: false, borderWidth: 3 })
+      : `<span class="ex-icon">${ex.icon}</span>`;
+
     return `
       <button class="exercise-card" data-exercise="${ex.id}">
-        <span class="ex-icon">${ex.icon}</span>
+        ${iconHtml}
         <span class="ex-title">${ex.title}</span>
         <span class="ex-desc">${ex.description}</span>
         ${progressHtml}
@@ -567,7 +588,7 @@ const MathModule = (() => {
   function renderMenu() {
     const app = document.getElementById('app');
     app.innerHTML = `
-      <div class="screen workshop-screen">
+      <div class="screen workshop-screen grade${Storage.getGrade() === 2 ? 2 : 1}">
         ${renderHeader()}
         <main class="exercise-menu">
           <p class="menu-intro">Such dir ein Spiel aus.</p>
@@ -637,7 +658,7 @@ const MathModule = (() => {
 
     const app = document.getElementById('app');
     app.innerHTML = `
-      <div class="screen task-screen">
+      <div class="screen task-screen grade${Storage.getGrade() === 2 ? 2 : 1}">
         ${renderHeader()}
         <main class="task-main">
           <div class="task-card">
@@ -708,7 +729,7 @@ const MathModule = (() => {
 
     const app = document.getElementById('app');
     app.innerHTML = `
-      <div class="screen complete-screen">
+      <div class="screen complete-screen grade${Storage.getGrade() === 2 ? 2 : 1}">
         ${renderHeader()}
         <main class="complete-main">
           <div class="complete-card">
