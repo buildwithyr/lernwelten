@@ -18,6 +18,13 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
+      // Merken, ob diese Seite schon VOR der Registrierung von einem Service
+      // Worker kontrolliert wurde. Nur dann ist ein späterer controllerchange
+      // ein echtes Update (alte Version → neue Version). Beim allerersten
+      // Besuch gibt es noch keinen Controller — hier soll NICHT neu geladen
+      // werden, das würde jedem Erstbesucher einen ungefragten Reload zeigen.
+      var hadController = !!navigator.serviceWorker.controller;
+
       navigator.serviceWorker
         .register('./sw.js', { scope: './' })
         .then(function (reg) {
@@ -38,13 +45,13 @@
           console.warn('[PWA] Service Worker konnte nicht registriert werden:', err);
         });
 
-      // Seite neu laden wenn neuer SW übernimmt
+      // Seite nur neu laden, wenn eine bereits aktive Version durch eine neue
+      // ersetzt wird — nicht bei der allerersten Aktivierung des Service Workers.
       var refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', function () {
-        if (!refreshing) {
-          refreshing = true;
-          window.location.reload();
-        }
+        if (!hadController || refreshing) return;
+        refreshing = true;
+        window.location.reload();
       });
     });
   }
