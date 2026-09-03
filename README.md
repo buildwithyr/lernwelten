@@ -1,62 +1,76 @@
-# Lernwelten 🌍
+# 🏘️ Lernwelten
 
-> Educational adventure game for primary school children with expandable learning modules.
+Eine spielerische Lern-App für Kinder der 1. und 2. Klasse Volksschule. Kinder erkunden ein kleines Dorf mit vier Lerngebäuden und üben dabei Mathe, Lesen, Sachwissen und logisches Denken — begleitet vom Maskottchen Oskar (1. Klasse) bzw. Samson (2. Klasse).
 
-## 🎮 About
+Kostenlos, werbefrei, ohne Anmeldung. Läuft direkt im Browser, auch offline (installierbar als App).
 
-Lernwelten is an interactive educational adventure game designed for primary school children. It combines engaging gameplay with expandable learning modules to make education fun and interactive.
+## 📚 Die vier Lernwelten
 
-## ✨ Features
+| | |
+|---|---|
+| 🔨 **Rechenwerkstatt** | Zahlen erkennen, zählen, plus- und minusrechnen (Klasse 2: auch Uhr lesen, Textaufgaben, Euro & Cent) |
+| 📖 **Wörterhaus** | Fehlende Buchstaben ergänzen, Wörter bauen, Wortgruppen und Gegenteile finden |
+| 🔬 **Forscherlabor** | Wissensquiz, Wahr-oder-falsch-Fragen, Zuordnungsaufgaben zu Alltagsthemen |
+| 🗝️ **Rätselhöhle** | Zahlen- und Formenmuster, "Was passt nicht dazu?", Gedächtnisspiel, Mini-Sudoku |
 
-- 🎯 **Interactive Learning**: Engaging adventure game mechanics
-- 📚 **Expandable Modules**: Learning content that grows with the project
-- 👶 **Child-Friendly**: Designed specifically for primary school students
-- 🌐 **Web-Based**: Easy access through a web browser
+Der Schwierigkeitsgrad passt sich automatisch an: Läuft es gut, werden die Aufgaben etwas schwerer; bei Unsicherheit wieder leichter. Für jede richtig gelöste Aufgabenrunde gibt's Sterne, die zu neuen Levels führen.
 
-## 🛠️ Technology Stack
+## 🖼️ Screenshots
 
-- **Language**: JavaScript
-- **Type**: Educational Game
+**Dorfplatz** — Ausgangspunkt, hier wählt das Kind sein Lerngebäude:
 
-## 📦 Installation
+![Dorfplatz](docs/screenshots/00-dorfplatz.png)
+
+**Rechenwerkstatt**
+
+![Rechenwerkstatt](docs/screenshots/01-rechenwerkstatt.png)
+
+**Wörterhaus**
+
+![Wörterhaus](docs/screenshots/02-woerterhaus.png)
+
+**Forscherlabor**
+
+![Forscherlabor](docs/screenshots/03-forscherlabor.png)
+
+**Rätselhöhle**
+
+![Rätselhöhle](docs/screenshots/04-raetselhoehle.png)
+
+## 🔗 Live-Demo
+
+👉 **[buildwithyr.github.io/lernwelten](https://buildwithyr.github.io/lernwelten/)**
+
+*(Falls der Link noch nicht funktioniert: GitHub Pages muss in den Repo-Einstellungen einmalig aktiviert werden — Settings → Pages → Branch `main`, Ordner `/root`.)*
+
+## 🧩 Technik
+
+Bewusst einfach gehalten, damit jeder mit ein bisschen HTML/CSS/JS-Grundwissen mitentwickeln kann:
+
+- **Vanilla JavaScript, HTML, CSS** — keine Frameworks, kein Build-Prozess
+- Läuft komplett im Browser, keine Server-Anbindung, keine Datenübertragung nach außen
+- Fortschritt wird lokal im Browser gespeichert (`localStorage`) — bleibt auf dem jeweiligen Gerät
+- PWA-fähig: über den Browser installierbar, danach auch offline nutzbar
+
+## 🚀 Selbst ausprobieren oder weiterentwickeln
+
+Kein `npm install`, kein Build nötig — einfach klonen und öffnen:
 
 ```bash
-# Clone the repository
 git clone https://github.com/buildwithyr/lernwelten.git
-
-# Navigate to the project directory
 cd lernwelten
-
-# Install dependencies
-npm install
-
-# Start the development server
-npm start
 ```
 
-## 🚀 Getting Started
+Danach `index.html` direkt im Browser öffnen, oder für volle Funktionalität (z. B. den Service Worker) einen einfachen lokalen Server starten:
 
-1. Clone this repository
-2. Install dependencies using `npm install`
-3. Start the development server
-4. Open your browser and navigate to the game
+```bash
+python3 -m http.server 8080
+```
 
-## 📝 Contributing
+und im Browser `http://localhost:8080` aufrufen.
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Wer ein neues Lernfach ergänzen möchte, findet die Kurzanleitung dazu oben in `app.js` bzw. in `CLAUDE.md`.
 
-## 📄 License
+## 📄 Lizenz
 
-This project is currently unlicensed. Please see the repository for more details.
-
-## 👤 Author
-
-Created by [buildwithyr](https://github.com/buildwithyr)
-
-## 📞 Support
-
-For issues, questions, or suggestions, please open an [issue](https://github.com/buildwithyr/lernwelten/issues) on GitHub.
-
----
-
-**Happy Learning! 🎓**
+Bisher keine Lizenz vergeben — bei Interesse an Nutzung oder Weiterentwicklung gerne über Issues melden.
