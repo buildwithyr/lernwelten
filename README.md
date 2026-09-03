@@ -39,9 +39,7 @@ Der Schwierigkeitsgrad passt sich automatisch an: Läuft es gut, werden die Aufg
 
 ## 🔗 Live-Demo
 
-👉 **[buildwithyr.github.io/lernwelten](https://buildwithyr.github.io/lernwelten/)**
-
-*(Falls der Link noch nicht funktioniert: GitHub Pages muss in den Repo-Einstellungen einmalig aktiviert werden — Settings → Pages → Branch `main`, Ordner `/root`.)*
+👉 **[lernwelten.vercel.app](https://lernwelten.vercel.app/)**
 
 ## 🧩 Technik
 
