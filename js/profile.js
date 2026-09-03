@@ -5,14 +5,14 @@
 
 const Profile = (() => {
   const AVATARS = [
-    { id: 'fox',    emoji: '🦊', label: 'Fuchs' },
-    { id: 'owl',    emoji: '🦉', label: 'Eule' },
-    { id: 'bear',   emoji: '🐻', label: 'Bär' },
+    { id: 'fox', emoji: '🦊', label: 'Fuchs' },
+    { id: 'owl', emoji: '🦉', label: 'Eule' },
+    { id: 'bear', emoji: '🐻', label: 'Bär' },
     { id: 'rabbit', emoji: '🐰', label: 'Hase' },
-    { id: 'cat',    emoji: '🐱', label: 'Katze' },
-    { id: 'dog',    emoji: '🐶', label: 'Hund' },
+    { id: 'cat', emoji: '🐱', label: 'Katze' },
+    { id: 'dog', emoji: '🐶', label: 'Hund' },
     { id: 'dragon', emoji: '🐲', label: 'Drache' },
-    { id: 'penguin',emoji: '🐧', label: 'Pinguin' },
+    { id: 'penguin', emoji: '🐧', label: 'Pinguin' },
   ];
 
   let selectedAvatarId = AVATARS[0].id;
@@ -34,7 +34,7 @@ const Profile = (() => {
   }
 
   function getAvatarEmoji(avatarId) {
-    const a = AVATARS.find(a => a.id === avatarId);
+    const a = AVATARS.find((a) => a.id === avatarId);
     return a ? a.emoji : '🦊';
   }
 
@@ -62,7 +62,8 @@ const Profile = (() => {
           <div class="form-group">
             <label>Such dir ein Tier aus</label>
             <div class="avatar-grid">
-              ${AVATARS.map(a => `
+              ${AVATARS.map(
+                (a) => `
                 <button
                   class="avatar-btn ${a.id === selectedAvatarId ? 'selected' : ''}"
                   data-avatar="${a.id}"
@@ -72,7 +73,8 @@ const Profile = (() => {
                   <span class="avatar-emoji">${a.emoji}</span>
                   <span class="avatar-label">${a.label}</span>
                 </button>
-              `).join('')}
+              `
+              ).join('')}
             </div>
           </div>
 
@@ -90,14 +92,14 @@ const Profile = (() => {
       startBtn.disabled = nameInput.value.trim().length < 2;
     });
 
-    nameInput.addEventListener('keydown', e => {
+    nameInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !startBtn.disabled) startBtn.click();
     });
 
-    app.querySelectorAll('.avatar-btn').forEach(btn => {
+    app.querySelectorAll('.avatar-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         selectedAvatarId = btn.dataset.avatar;
-        app.querySelectorAll('.avatar-btn').forEach(b => b.classList.remove('selected'));
+        app.querySelectorAll('.avatar-btn').forEach((b) => b.classList.remove('selected'));
         btn.classList.add('selected');
       });
     });
@@ -116,8 +118,8 @@ const Profile = (() => {
       if (screen) {
         Oskar.show(screen, {
           placement: 'setup-peek',
-          pool:      'greeting',
-          chance:    1,
+          pool: 'greeting',
+          chance: 1,
         });
       }
     }, 50);

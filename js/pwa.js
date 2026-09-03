@@ -58,10 +58,10 @@
 
   // ── Install-Banner ──────────────────────────────────────────────────────────
 
-  var banner    = document.getElementById('pwa-install-banner');
-  var hint      = document.getElementById('pwa-install-hint');
+  var banner = document.getElementById('pwa-install-banner');
+  var hint = document.getElementById('pwa-install-hint');
   var installBtn = document.getElementById('pwa-install-btn');
-  var closeBtn  = document.getElementById('pwa-install-close');
+  var closeBtn = document.getElementById('pwa-install-close');
 
   if (!banner || !hint || !installBtn || !closeBtn) return;
 
@@ -74,11 +74,17 @@
   }
 
   function wasDismissed() {
-    try { return localStorage.getItem(INSTALL_DISMISSED_KEY) === '1'; } catch (e) { return false; }
+    try {
+      return localStorage.getItem(INSTALL_DISMISSED_KEY) === '1';
+    } catch (e) {
+      return false;
+    }
   }
 
   function dismiss() {
-    try { localStorage.setItem(INSTALL_DISMISSED_KEY, '1'); } catch (e) {}
+    try {
+      localStorage.setItem(INSTALL_DISMISSED_KEY, '1');
+    } catch (e) {}
     banner.classList.remove('visible');
   }
 
@@ -115,7 +121,9 @@
   }
 
   function isIOSSafari() {
-    return isIOS() && /safari/i.test(navigator.userAgent) && !/crios|fxios/i.test(navigator.userAgent);
+    return (
+      isIOS() && /safari/i.test(navigator.userAgent) && !/crios|fxios/i.test(navigator.userAgent)
+    );
   }
 
   if (isIOSSafari() && !isInstalled() && !wasDismissed()) {
@@ -131,5 +139,4 @@
   window.addEventListener('appinstalled', function () {
     dismiss();
   });
-
 })();

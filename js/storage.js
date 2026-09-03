@@ -6,9 +6,9 @@
 
 const Storage = (() => {
   const KEYS = {
-    PROFILES:       'lw_profiles',
+    PROFILES: 'lw_profiles',
     ACTIVE_PROFILE: 'lw_active_profile',
-    GRADE:          'lw_grade',
+    GRADE: 'lw_grade',
   };
 
   function _read(key) {
@@ -113,7 +113,7 @@ const Storage = (() => {
     if (s.total >= 5) {
       const rate = s.correct / s.total;
       if (rate > 0.85 && s.difficulty < 3) s.difficulty++;
-      else if (rate < 0.50 && s.difficulty > 1) s.difficulty--;
+      else if (rate < 0.5 && s.difficulty > 1) s.difficulty--;
     }
 
     return saveProfile(profile);
@@ -131,7 +131,13 @@ const Storage = (() => {
     if (!profile) return false;
     if (!profile.sessions) profile.sessions = {};
     if (!profile.sessions[exerciseId]) {
-      profile.sessions[exerciseId] = { bestScore: 0, bestTotal: 0, sessionsPlayed: 0, lastScore: 0, lastTotal: 0 };
+      profile.sessions[exerciseId] = {
+        bestScore: 0,
+        bestTotal: 0,
+        sessionsPlayed: 0,
+        lastScore: 0,
+        lastTotal: 0,
+      };
     }
     const s = profile.sessions[exerciseId];
     s.sessionsPlayed++;

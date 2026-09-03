@@ -4,12 +4,13 @@
 
 /* ─── Setup Screen ───────────────────────────────────────────── */
 .setup-screen {
-  background: linear-gradient(160deg, var(--cream) 0%, #FFE8B8 100%);
+  background: linear-gradient(160deg, var(--cream) 0%, #ffe8b8 100%);
   align-items: center;
   justify-content: center;
-  padding: calc(var(--sp-lg) + env(safe-area-inset-top, 0px)) var(--sp-lg) calc(var(--sp-lg) + env(safe-area-inset-bottom, 0px));
+  padding: calc(var(--sp-lg) + env(safe-area-inset-top, 0px)) var(--sp-lg)
+    calc(var(--sp-lg) + env(safe-area-inset-bottom, 0px));
   position: relative; /* Positionierungskontext für Oskar */
-  overflow: hidden;   /* verhindert horizontalen Scroll durch Oskar-Überlapp */
+  overflow: hidden; /* verhindert horizontalen Scroll durch Oskar-Überlapp */
 }
 
 .setup-card {
@@ -38,7 +39,9 @@
   text-align: center;
   line-height: 1.3;
 }
-.setup-title span { color: var(--orange-dark); }
+.setup-title span {
+  color: var(--orange-dark);
+}
 
 .setup-subtitle {
   text-align: center;
@@ -72,7 +75,9 @@
   background: var(--cream);
   width: 100%;
   outline: none;
-  transition: border-color var(--ease), box-shadow var(--ease);
+  transition:
+    border-color var(--ease),
+    box-shadow var(--ease);
 }
 .name-input:focus {
   border-color: var(--orange);
@@ -100,7 +105,10 @@
   border-radius: var(--r-md);
   background: var(--cream);
   cursor: pointer;
-  transition: border-color var(--ease-bounce), transform var(--ease-bounce), background var(--ease);
+  transition:
+    border-color var(--ease-bounce),
+    transform var(--ease-bounce),
+    background var(--ease);
   -webkit-tap-highlight-color: transparent;
 }
 .avatar-btn:hover {
@@ -114,7 +122,10 @@
   transform: scale(1.08);
   box-shadow: 0 0 0 3px rgba(244, 164, 53, 0.25);
 }
-.avatar-emoji { font-size: 28px; line-height: 1; }
+.avatar-emoji {
+  font-size: 28px;
+  line-height: 1;
+}
 .avatar-label {
   font-size: 10px;
   font-weight: 700;
@@ -124,10 +135,11 @@
 
 /* ─── Klassenstufen-Auswahl ──────────────────────────────────── */
 .grade-select-screen {
-  background: linear-gradient(160deg, var(--cream) 0%, #FFE8B8 100%);
+  background: linear-gradient(160deg, var(--cream) 0%, #ffe8b8 100%);
   align-items: center;
   justify-content: center;
-  padding: calc(var(--sp-lg) + env(safe-area-inset-top, 0px)) var(--sp-lg) calc(var(--sp-lg) + env(safe-area-inset-bottom, 0px));
+  padding: calc(var(--sp-lg) + env(safe-area-inset-top, 0px)) var(--sp-lg)
+    calc(var(--sp-lg) + env(safe-area-inset-bottom, 0px));
   gap: var(--sp-xl);
 }
 
@@ -138,7 +150,9 @@
   gap: var(--sp-sm);
   text-align: center;
 }
-.grade-select-emoji { font-size: 52px; }
+.grade-select-emoji {
+  font-size: 52px;
+}
 .grade-select-header h1 {
   font-size: var(--text-xl);
   font-weight: 900;
@@ -168,7 +182,9 @@
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
 }
-.grade-card:active { transform: scale(0.96); }
+.grade-card:active {
+  transform: scale(0.96);
+}
 
 .grade-card-label {
   font-size: var(--text-lg);
@@ -182,14 +198,19 @@
   border: 3px solid var(--cream-dark);
   border-radius: var(--r-xl);
   box-shadow: var(--shadow-sm);
-  transition: transform var(--ease-bounce), box-shadow var(--ease), border-color var(--ease);
+  transition:
+    transform var(--ease-bounce),
+    box-shadow var(--ease),
+    border-color var(--ease);
 }
 .grade-card--1:hover {
   transform: translateY(-4px) rotate(-1deg) scale(1.02);
   box-shadow: var(--shadow-md);
   border-color: var(--orange);
 }
-.grade-card--1 .grade-card-label { color: var(--text-dark); }
+.grade-card--1 .grade-card-label {
+  color: var(--text-dark);
+}
 
 .grade-card-badge--1 {
   width: 64px;
@@ -214,7 +235,9 @@
   border: 2px solid var(--g2-accent-dark);
   border-radius: var(--radius-badge);
   box-shadow: 0 8px 22px rgba(40, 60, 110, 0.28);
-  transition: transform var(--ease), box-shadow var(--ease);
+  transition:
+    transform var(--ease),
+    box-shadow var(--ease);
 }
 .grade-card--2::after {
   content: '';
@@ -229,7 +252,9 @@
   transform: translateY(-3px);
   box-shadow: 0 12px 28px rgba(40, 60, 110, 0.36);
 }
-.grade-card--2 .grade-card-label { color: var(--white); }
+.grade-card--2 .grade-card-label {
+  color: var(--white);
+}
 
 .grade-card-badge--2 {
   width: 64px;
@@ -252,16 +277,14 @@
 .village-screen {
   background:
     radial-gradient(ellipse at 15% 15%, rgba(255, 209, 102, 0.18) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 85%, rgba(109, 182, 138, 0.10) 0%, transparent 55%),
-    var(--cream);
+    radial-gradient(ellipse at 85% 85%, rgba(109, 182, 138, 0.1) 0%, transparent 55%), var(--cream);
 }
 
 /* 2. Klasse: eigenes, klar unterscheidbares Farbschema */
 .village-screen--grade2 {
   background:
     radial-gradient(ellipse at 15% 15%, rgba(46, 134, 171, 0.14) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 85%, rgba(224, 122, 62, 0.10) 0%, transparent 55%),
-    var(--cream);
+    radial-gradient(ellipse at 85% 85%, rgba(224, 122, 62, 0.1) 0%, transparent 55%), var(--cream);
 }
 
 .btn-grade-switch {
@@ -278,11 +301,19 @@
   padding: 6px 12px;
   cursor: pointer;
   white-space: nowrap;
-  transition: background var(--ease), border-color var(--ease), transform var(--ease-bounce);
+  transition:
+    background var(--ease),
+    border-color var(--ease),
+    transform var(--ease-bounce);
   -webkit-tap-highlight-color: transparent;
 }
-.btn-grade-switch:hover { background: var(--orange-light); border-color: var(--orange); }
-.btn-grade-switch:active { transform: scale(0.95); }
+.btn-grade-switch:hover {
+  background: var(--orange-light);
+  border-color: var(--orange);
+}
+.btn-grade-switch:active {
+  transform: scale(0.95);
+}
 
 .village-header {
   display: flex;
@@ -334,13 +365,19 @@
   padding: var(--sp-md) var(--sp-lg);
   box-shadow: var(--shadow-sm);
 }
-.welcome-avatar { font-size: 40px; flex-shrink: 0; }
+.welcome-avatar {
+  font-size: 40px;
+  flex-shrink: 0;
+}
 .village-welcome p {
   font-size: var(--text-md);
   color: var(--text-mid);
   line-height: 1.45;
 }
-.village-welcome strong { color: var(--text-dark); font-weight: 800; }
+.village-welcome strong {
+  color: var(--text-dark);
+  font-weight: 800;
+}
 
 /* Gebäude-Grid */
 .village-grid {
@@ -363,17 +400,20 @@
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
-  transition: transform var(--ease-bounce), box-shadow var(--ease), border-color var(--ease);
+  transition:
+    transform var(--ease-bounce),
+    box-shadow var(--ease),
+    border-color var(--ease);
   -webkit-tap-highlight-color: transparent;
   /* Mindest-Touch-Fläche */
   min-height: 140px;
-  min-width: 0;   /* verhindert Grid-Überlauf bei langen Gebäudenamen */
+  min-width: 0; /* verhindert Grid-Überlauf bei langen Gebäudenamen */
 }
 .building-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(140deg, rgba(255,255,255,0.55), transparent);
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.55), transparent);
   pointer-events: none;
 }
 .building-card:hover:not(.building-locked) {
@@ -381,8 +421,13 @@
   box-shadow: var(--shadow-md);
   border-color: var(--building-color, var(--orange));
 }
-.building-card:active:not(.building-locked) { transform: scale(0.96); }
-.building-card.building-locked { opacity: 0.58; cursor: default; }
+.building-card:active:not(.building-locked) {
+  transform: scale(0.96);
+}
+.building-card.building-locked {
+  opacity: 0.58;
+  cursor: default;
+}
 
 .building-icon-wrap {
   width: 72px;
@@ -393,9 +438,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
-.building-icon { font-size: 34px; line-height: 1; }
+.building-icon {
+  font-size: 34px;
+  line-height: 1;
+}
 
 .building-label {
   font-size: var(--text-base);
@@ -471,15 +519,26 @@
 
 /* ─── Responsive ─────────────────────────────────────────────── */
 @media (min-width: 560px) {
-  .building-icon-wrap { width: 80px; height: 80px; }
-  .building-icon { font-size: 40px; }
-  .building-card { min-height: 160px; }
+  .building-icon-wrap {
+    width: 80px;
+    height: 80px;
+  }
+  .building-icon {
+    font-size: 40px;
+  }
+  .building-card {
+    min-height: 160px;
+  }
 }
 
 @media (min-width: 768px) {
   /* Breiterer Container + 4 Spalten: sonst ist bei fixen 640px pro Karte
      zu wenig Platz für lange Gebäudenamen ("Rechenwerkstatt", "Forscherlabor")
      und der Text bricht hässlich mitten im Wort um */
-  .village-main { max-width: 800px; }
-  .village-grid { grid-template-columns: repeat(4, 1fr); }
+  .village-main {
+    max-width: 800px;
+  }
+  .village-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }

@@ -66,8 +66,13 @@ const App = (() => {
       active: true,
       mount: () => MathModule.mount(2),
       exerciseIds: [
-        'additionRound100', 'subtractionRound100', 'doubleHalf',
-        'numberSeries', 'euroCent', 'clockReading', 'wordProblems',
+        'additionRound100',
+        'subtractionRound100',
+        'doubleHalf',
+        'numberSeries',
+        'euroCent',
+        'clockReading',
+        'wordProblems',
       ],
     },
     {
@@ -145,7 +150,7 @@ const App = (() => {
       </div>
     `;
 
-    document.querySelectorAll('.grade-card').forEach(card => {
+    document.querySelectorAll('.grade-card').forEach((card) => {
       card.addEventListener('click', () => {
         Storage.setGrade(Number(card.dataset.grade));
         if (isFirstRun) {
@@ -204,7 +209,7 @@ const App = (() => {
       renderGradeSelect(false);
     });
 
-    buildings.forEach(building => {
+    buildings.forEach((building) => {
       const btn = document.getElementById(`building-${building.id}`);
       if (!btn) return;
       btn.addEventListener('click', () => {
@@ -224,8 +229,8 @@ const App = (() => {
       if (main) {
         Oskar.show(main, {
           placement: 'inline-right',
-          pool:      'village',
-          chance:    0.65,
+          pool: 'village',
+          chance: 0.65,
         });
       }
     }, 50);
@@ -255,11 +260,15 @@ const App = (() => {
     const ids = b.exerciseIds || [];
     let totalBest = 0;
     let played = 0;
-    ids.forEach(id => {
+    ids.forEach((id) => {
       const s = Storage.getSessionStats(profile.id, id);
-      if (s) { played++; totalBest += s.bestScore; }
+      if (s) {
+        played++;
+        totalBest += s.bestScore;
+      }
     });
-    if (played === 0) return '<span class="building-progress building-progress--new">Noch nicht gespielt</span>';
+    if (played === 0)
+      return '<span class="building-progress building-progress--new">Noch nicht gespielt</span>';
     const avg = totalBest / played;
     const stars = avg >= 9 ? 3 : avg >= 7 ? 2 : 1;
     return `<span class="building-progress">${'⭐'.repeat(stars)}</span>`;
@@ -320,7 +329,7 @@ const App = (() => {
     overlay.className = 'overlay';
     overlay.innerHTML = `<div class="modal">${innerHtml}</div>`;
     document.body.appendChild(overlay);
-    overlay.addEventListener('click', e => {
+    overlay.addEventListener('click', (e) => {
       if (e.target === overlay) overlay.remove();
     });
     return overlay;

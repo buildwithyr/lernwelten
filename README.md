@@ -6,12 +6,12 @@ Kostenlos, werbefrei, ohne Anmeldung. Läuft direkt im Browser, auch offline (in
 
 ## 📚 Die vier Lernwelten
 
-| | |
-|---|---|
+|                        |                                                                                                       |
+| ---------------------- | ----------------------------------------------------------------------------------------------------- |
 | 🔨 **Rechenwerkstatt** | Zahlen erkennen, zählen, plus- und minusrechnen (Klasse 2: auch Uhr lesen, Textaufgaben, Euro & Cent) |
-| 📖 **Wörterhaus** | Fehlende Buchstaben ergänzen, Wörter bauen, Wortgruppen und Gegenteile finden |
-| 🔬 **Forscherlabor** | Wissensquiz, Wahr-oder-falsch-Fragen, Zuordnungsaufgaben zu Alltagsthemen |
-| 🗝️ **Rätselhöhle** | Zahlen- und Formenmuster, "Was passt nicht dazu?", Gedächtnisspiel, Mini-Sudoku |
+| 📖 **Wörterhaus**      | Fehlende Buchstaben ergänzen, Wörter bauen, Wortgruppen und Gegenteile finden                         |
+| 🔬 **Forscherlabor**   | Wissensquiz, Wahr-oder-falsch-Fragen, Zuordnungsaufgaben zu Alltagsthemen                             |
+| 🗝️ **Rätselhöhle**     | Zahlen- und Formenmuster, "Was passt nicht dazu?", Gedächtnisspiel, Mini-Sudoku                       |
 
 Der Schwierigkeitsgrad passt sich automatisch an: Läuft es gut, werden die Aufgaben etwas schwerer; bei Unsicherheit wieder leichter. Für jede richtig gelöste Aufgabenrunde gibt's Sterne, die zu neuen Levels führen.
 
@@ -41,7 +41,7 @@ Der Schwierigkeitsgrad passt sich automatisch an: Läuft es gut, werden die Aufg
 
 👉 **[buildwithyr.github.io/lernwelten](https://buildwithyr.github.io/lernwelten/)**
 
-*(Falls der Link noch nicht funktioniert: GitHub Pages muss in den Repo-Einstellungen einmalig aktiviert werden — Settings → Pages → Branch `main`, Ordner `/root`.)*
+_(Falls der Link noch nicht funktioniert: GitHub Pages muss in den Repo-Einstellungen einmalig aktiviert werden — Settings → Pages → Branch `main`, Ordner `/root`.)_
 
 ## 🧩 Technik
 

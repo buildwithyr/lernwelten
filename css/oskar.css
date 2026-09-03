@@ -64,7 +64,7 @@
 /* Dorfplatz, Werkstatt-Menü: Oskar rechts, Blase links davon    */
 .oskar--inline-right {
   justify-content: flex-end;
-  align-self: stretch;         /* volle Breite im flex-parent */
+  align-self: stretch; /* volle Breite im flex-parent */
   padding: 0 var(--sp-sm) var(--sp-sm);
 }
 
@@ -114,19 +114,41 @@
 
 /* ─── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 380px) {
-  .oskar-img                        { width: 72px; }
-  .oskar--setup-peek .oskar-img     { width: 78px; }
-  .oskar-bubble                     { font-size: var(--text-xs); max-width: 150px; padding: 8px 10px; }
-  .oskar--setup-peek                { right: var(--sp-md); }
+  .oskar-img {
+    width: 72px;
+  }
+  .oskar--setup-peek .oskar-img {
+    width: 78px;
+  }
+  .oskar-bubble {
+    font-size: var(--text-xs);
+    max-width: 150px;
+    padding: 8px 10px;
+  }
+  .oskar--setup-peek {
+    right: var(--sp-md);
+  }
 }
 
 @media (min-width: 600px) {
-  .oskar-img                        { width: 100px; }
-  .oskar--setup-peek .oskar-img     { width: 108px; }
-  .oskar-bubble                     { font-size: var(--text-base); max-width: 210px; }
-  .oskar--task-companion .oskar-bubble { font-size: var(--text-md); max-width: 230px; }
+  .oskar-img {
+    width: 100px;
+  }
+  .oskar--setup-peek .oskar-img {
+    width: 108px;
+  }
+  .oskar-bubble {
+    font-size: var(--text-base);
+    max-width: 210px;
+  }
+  .oskar--task-companion .oskar-bubble {
+    font-size: var(--text-md);
+    max-width: 230px;
+  }
 }
 
 @media (min-width: 900px) {
-  .oskar-img                        { width: 110px; }
+  .oskar-img {
+    width: 110px;
+  }
 }

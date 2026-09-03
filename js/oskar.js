@@ -23,15 +23,13 @@
  */
 
 const Oskar = (() => {
-
   // ─── Figuren-Registry ─────────────────────────────────────────────────────
   // Jede Figur hat eigene Posen und eigene Nachrichten-Pools.
   // null-Einträge in den Pools = die Figur erscheint still (ruhige Begleitung).
   const CHARACTERS = {
-
     oskar: {
       poses: {
-        default:  'assets/oskar-cartoon.png',
+        default: 'assets/oskar-cartoon.png',
         // happy:    'assets/oskar-happy.png',    // zukünftig: für Erfolgserlebnisse
         // thinking: 'assets/oskar-think.png',    // zukünftig: für Aufgabenintro
         // wave:     'assets/oskar-wave.png',     // zukünftig: für Begrüßung
@@ -50,20 +48,8 @@ const Oskar = (() => {
           null,
           null,
         ],
-        workshop: [
-          'Lass uns üben!',
-          'Das schaffst du bestimmt!',
-          'Ich bin gespannt!',
-          null,
-          null,
-        ],
-        taskIntro: [
-          null,
-          null,
-          null,
-          'Konzentriere dich!',
-          'Du schaffst das!',
-        ],
+        workshop: ['Lass uns üben!', 'Das schaffst du bestimmt!', 'Ich bin gespannt!', null, null],
+        taskIntro: [null, null, null, 'Konzentriere dich!', 'Du schaffst das!'],
         correct: [
           'Super gemacht! ⭐',
           'Toll gelöst! 🌟',
@@ -87,13 +73,7 @@ const Oskar = (() => {
           null,
           null,
         ],
-        puzzles: [
-          'Zeit zum Rätseln! 🗝️',
-          'Denk genau nach!',
-          'Das schaffst du! 🧠',
-          null,
-          null,
-        ],
+        puzzles: ['Zeit zum Rätseln! 🗝️', 'Denk genau nach!', 'Das schaffst du! 🧠', null, null],
         science: [
           'Lass uns forschen! 🔬',
           'Was wirst du heute lernen?',
@@ -122,20 +102,8 @@ const Oskar = (() => {
           null,
           null,
         ],
-        workshop: [
-          'Lass uns üben!',
-          'Das schaffst du bestimmt!',
-          'Ich bin gespannt!',
-          null,
-          null,
-        ],
-        taskIntro: [
-          null,
-          null,
-          null,
-          'Konzentriere dich!',
-          'Du schaffst das!',
-        ],
+        workshop: ['Lass uns üben!', 'Das schaffst du bestimmt!', 'Ich bin gespannt!', null, null],
+        taskIntro: [null, null, null, 'Konzentriere dich!', 'Du schaffst das!'],
         correct: [
           'Super gemacht! ⭐',
           'Toll gelöst! 🌟',
@@ -159,13 +127,7 @@ const Oskar = (() => {
           null,
           null,
         ],
-        puzzles: [
-          'Zeit zum Rätseln! 🗝️',
-          'Denk genau nach!',
-          'Das schaffst du! 🧠',
-          null,
-          null,
-        ],
+        puzzles: ['Zeit zum Rätseln! 🗝️', 'Denk genau nach!', 'Das schaffst du! 🧠', null, null],
         science: [
           'Lass uns forschen! 🔬',
           'Was wirst du heute lernen?',
@@ -175,14 +137,13 @@ const Oskar = (() => {
         ],
       },
     },
-
   };
 
   // Wählt die aktuell aktive Figur anhand der Klassenstufe.
   // Storage ist zur Ladezeit von oskar.js bereits verfügbar (siehe
   // Ladereihenfolge in index.html), die Prüfung schützt trotzdem defensiv.
   function _active() {
-    const grade = (typeof Storage !== 'undefined' && Storage.getGrade) ? Storage.getGrade() : 1;
+    const grade = typeof Storage !== 'undefined' && Storage.getGrade ? Storage.getGrade() : 1;
     return grade === 2 ? CHARACTERS.samson : CHARACTERS.oskar;
   }
 
@@ -247,10 +208,10 @@ const Oskar = (() => {
   function show(container, opts = {}) {
     const {
       placement = 'inline-right',
-      pose      = 'default',
-      pool      = null,
-      chance    = 1,
-      message   = undefined,  // undefined = pool-Auswahl, null = erzwingt Stille
+      pose = 'default',
+      pool = null,
+      chance = 1,
+      message = undefined, // undefined = pool-Auswahl, null = erzwingt Stille
     } = opts;
 
     remove(); // altes Element sauber entfernen
@@ -309,11 +270,18 @@ const Oskar = (() => {
   }
 
   return {
-    show, say, silence, remove,
+    show,
+    say,
+    silence,
+    remove,
     // Getter statt statischer Werte: einige Aufrufstellen greifen direkt auf
     // Oskar.MESSAGES/Oskar.POSES zu (z.B. `randomFrom(Oskar.MESSAGES.correct)`)
     // — das muss live die aktuell aktive Figur widerspiegeln.
-    get MESSAGES() { return _active().messages; },
-    get POSES() { return _active().poses; },
+    get MESSAGES() {
+      return _active().messages;
+    },
+    get POSES() {
+      return _active().poses;
+    },
   };
 })();

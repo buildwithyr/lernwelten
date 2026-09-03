@@ -20,7 +20,6 @@
  */
 
 const Adaptive = (() => {
-
   /**
    * Gibt den aktuellen Schwierigkeitsgrad (1–3) für eine Übungsart zurück.
    * Startet bei 1, bis genügend Daten vorliegen.
@@ -47,13 +46,13 @@ const Adaptive = (() => {
    */
   function getWeights(profileId, exerciseIds) {
     const data = Storage.getAdaptiveData(profileId);
-    return exerciseIds.map(id => {
+    return exerciseIds.map((id) => {
       const s = data[id];
       if (!s || s.total < 3) return 1.0;
       const rate = s.correct / s.total;
-      if (rate < 0.50) return 2.5;
-      if (rate < 0.70) return 1.8;
-      if (rate > 0.90) return 0.5;
+      if (rate < 0.5) return 2.5;
+      if (rate < 0.7) return 1.8;
+      if (rate > 0.9) return 0.5;
       return 1.0;
     });
   }
@@ -80,7 +79,7 @@ const Adaptive = (() => {
    */
   function getSummary(profileId, exerciseIds) {
     const data = Storage.getAdaptiveData(profileId);
-    return exerciseIds.map(id => {
+    return exerciseIds.map((id) => {
       const s = data[id] || { correct: 0, total: 0, difficulty: 1 };
       const rate = s.total > 0 ? Math.round((s.correct / s.total) * 100) : null;
       return { exerciseId: id, rate, difficulty: s.difficulty, total: s.total };

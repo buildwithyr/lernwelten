@@ -6,22 +6,22 @@
  */
 
 const Clock = (() => {
-
   // Erzeugt Ziffernblatt + Zeiger für eine feste Uhrzeit (hour: 1-12, minute: 0-59).
   function render(hour, minute, opts = {}) {
-    const size        = opts.size || 140;
+    const size = opts.size || 140;
     const showNumbers = opts.showNumbers !== false;
-    const faceColor   = opts.faceColor   || '#fff';
+    const faceColor = opts.faceColor || '#fff';
     const borderColor = opts.borderColor || 'var(--g2-accent)';
     const borderWidth = opts.borderWidth || 5;
-    const tickColor   = opts.tickColor   || 'var(--text-mid)';
-    const numColor    = opts.numColor    || 'var(--text-dark)';
-    const hourColor   = opts.hourColor   || 'var(--g2-accent-dark)';
+    const tickColor = opts.tickColor || 'var(--text-mid)';
+    const numColor = opts.numColor || 'var(--text-dark)';
+    const hourColor = opts.hourColor || 'var(--g2-accent-dark)';
     const minuteColor = opts.minuteColor || 'var(--g2-accent)';
     const centerColor = opts.centerColor || 'var(--g2-accent-dark)';
 
-    const cx = size / 2, cy = size / 2;
-    const hourAngle   = (hour % 12) * 30 + minute * 0.5;
+    const cx = size / 2,
+      cy = size / 2;
+    const hourAngle = (hour % 12) * 30 + minute * 0.5;
     const minuteAngle = minute * 6;
 
     let numbersHtml = '';
@@ -47,8 +47,10 @@ const Clock = (() => {
       ticksHtml += `<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${h}px;background:${tickColor};border-radius:2px;transform:translate(-50%,-50%) rotate(${n * 30}deg);"></div>`;
     }
 
-    const hl = size * 0.30, hw = Math.max(3, size * 0.045);
-    const ml = size * 0.42, mw = Math.max(2.5, size * 0.032);
+    const hl = size * 0.3,
+      hw = Math.max(3, size * 0.045);
+    const ml = size * 0.42,
+      mw = Math.max(2.5, size * 0.032);
     const dotSize = Math.max(8, size * 0.07);
 
     return `

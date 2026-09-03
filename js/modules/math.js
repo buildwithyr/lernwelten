@@ -4,7 +4,6 @@
  */
 
 const MathModule = (() => {
-
   // ─── Hilfsfunktionen ──────────────────────────────────────────────────────
 
   function randomInt(min, max) {
@@ -49,16 +48,33 @@ const MathModule = (() => {
   // ─── Aufgaben-Generatoren ─────────────────────────────────────────────────
 
   const NUMBER_WORDS = [
-    '', 'eins', 'zwei', 'drei', 'vier', 'fünf',
-    'sechs', 'sieben', 'acht', 'neun', 'zehn',
-    'elf', 'zwölf', 'dreizehn', 'vierzehn', 'fünfzehn',
-    'sechzehn', 'siebzehn', 'achtzehn', 'neunzehn', 'zwanzig',
+    '',
+    'eins',
+    'zwei',
+    'drei',
+    'vier',
+    'fünf',
+    'sechs',
+    'sieben',
+    'acht',
+    'neun',
+    'zehn',
+    'elf',
+    'zwölf',
+    'dreizehn',
+    'vierzehn',
+    'fünfzehn',
+    'sechzehn',
+    'siebzehn',
+    'achtzehn',
+    'neunzehn',
+    'zwanzig',
   ];
 
   let numberDeck = [];
   function nextFromDeck(max) {
     const pool = Array.from({ length: max }, (_, i) => i + 1);
-    if (numberDeck.length === 0 || numberDeck.some(n => n > max)) {
+    if (numberDeck.length === 0 || numberDeck.some((n) => n > max)) {
       numberDeck = shuffle(pool);
     }
     return numberDeck.pop();
@@ -97,7 +113,6 @@ const MathModule = (() => {
   }
 
   const exercisesGrade2 = {
-
     additionRound100: {
       id: 'additionRound100',
       title: 'Plus bis 100',
@@ -180,9 +195,9 @@ const MathModule = (() => {
         const start = randomMultipleOf5(0, Math.max(0, maxStart)) || 0;
         const seq = [start, start + step, start + step * 2, start + step * 3];
         const answer = start + step * 4;
-        const seqHtml = seq.map(n =>
-          `<div class="seq-num">${n}</div><div class="seq-sep">,</div>`
-        ).join('') + `<div class="seq-num seq-num--blank">?</div>`;
+        const seqHtml =
+          seq.map((n) => `<div class="seq-num">${n}</div><div class="seq-sep">,</div>`).join('') +
+          `<div class="seq-num seq-num--blank">?</div>`;
         return {
           questionHtml: `
             <p class="q-label">Was kommt danach?</p>
@@ -234,7 +249,7 @@ const MathModule = (() => {
       icon: '🕐',
       description: 'Volle und halbe Stunden',
       generate(difficulty) {
-        const HOURS = [12,1,2,3,4,5,6,7,8,9,10,11];
+        const HOURS = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         const isHalf = difficulty === 1 ? false : Math.random() < 0.5;
         const idx = randomInt(0, 11);
         const hour = HOURS[idx];
@@ -284,22 +299,34 @@ const MathModule = (() => {
           () => {
             const a = randomMultipleOf5(5, max - 5);
             const b = randomMultipleOf5(5, max - a);
-            return { text: `Luisa hat ${a} Sticker. Sie bekommt ${b} weitere dazu. Wie viele Sticker hat sie jetzt?`, ans: a + b };
+            return {
+              text: `Luisa hat ${a} Sticker. Sie bekommt ${b} weitere dazu. Wie viele Sticker hat sie jetzt?`,
+              ans: a + b,
+            };
           },
           () => {
             const a = randomMultipleOf5(10, max);
             const b = randomMultipleOf5(5, a - 5);
-            return { text: `Im Stall stehen ${a} Pferde. ${b} Pferde gehen auf die Weide. Wie viele Pferde bleiben im Stall?`, ans: a - b };
+            return {
+              text: `Im Stall stehen ${a} Pferde. ${b} Pferde gehen auf die Weide. Wie viele Pferde bleiben im Stall?`,
+              ans: a - b,
+            };
           },
           () => {
             const a = randomMultipleOf5(5, max - 5);
             const b = randomMultipleOf5(5, max - a);
-            return { text: `Am Nachthimmel sind ${a} Sterne zu sehen. ${b} weitere Sterne erscheinen. Wie viele Sterne sind es jetzt?`, ans: a + b };
+            return {
+              text: `Am Nachthimmel sind ${a} Sterne zu sehen. ${b} weitere Sterne erscheinen. Wie viele Sterne sind es jetzt?`,
+              ans: a + b,
+            };
           },
           () => {
             const a = randomMultipleOf5(10, max);
             const b = randomMultipleOf5(5, a - 5);
-            return { text: `Eine Rakete transportiert ${a} Astronauten. ${b} Astronauten steigen auf einer Raumstation aus. Wie viele bleiben an Bord?`, ans: a - b };
+            return {
+              text: `Eine Rakete transportiert ${a} Astronauten. ${b} Astronauten steigen auf einer Raumstation aus. Wie viele bleiben an Bord?`,
+              ans: a - b,
+            };
           },
         ];
         const { text, ans } = randomFrom(templates)();
@@ -310,11 +337,9 @@ const MathModule = (() => {
         };
       },
     },
-
   };
 
   const exercisesGrade1 = {
-
     numberRecognition: {
       id: 'numberRecognition',
       title: 'Zahlen erkennen',
@@ -392,7 +417,6 @@ const MathModule = (() => {
         };
       },
     },
-
   };
 
   let activeGrade = 1;
@@ -404,9 +428,7 @@ const MathModule = (() => {
 
   function generateTask(exerciseId) {
     const profile = Storage.getActiveProfile();
-    const difficulty = profile
-      ? Adaptive.getDifficulty(profile.id, exerciseId)
-      : 1;
+    const difficulty = profile ? Adaptive.getDifficulty(profile.id, exerciseId) : 1;
 
     const ex = getExercises()[exerciseId];
     let task;
@@ -445,9 +467,10 @@ const MathModule = (() => {
   }
 
   function nextTask() {
-    if (retryQueue.length &&
-        (retryQueue[0]._notBefore <= sessionStats.total ||
-         sessionStats.total >= sessionLength)) {
+    if (
+      retryQueue.length &&
+      (retryQueue[0]._notBefore <= sessionStats.total || sessionStats.total >= sessionLength)
+    ) {
       return retryQueue.shift();
     }
     return generateTask(currentExerciseId);
@@ -483,10 +506,10 @@ const MathModule = (() => {
 
   function getPerformanceText(correct, total) {
     const rate = correct / total;
-    if (rate === 1)   return 'Perfekte Leistung! 🏆';
-    if (rate >= 0.9)  return 'Sehr starke Leistung! 🌟';
-    if (rate >= 0.7)  return 'Gut gemacht! 👍';
-    if (rate >= 0.5)  return 'Weiter üben! 💪';
+    if (rate === 1) return 'Perfekte Leistung! 🏆';
+    if (rate >= 0.9) return 'Sehr starke Leistung! 🌟';
+    if (rate >= 0.7) return 'Gut gemacht! 👍';
+    if (rate >= 0.5) return 'Weiter üben! 💪';
     return 'Nicht aufgeben! Du wirst besser! 🌈';
   }
 
@@ -535,7 +558,6 @@ const MathModule = (() => {
     `;
   }
 
-
   function renderSessionModeSelector() {
     return `
       <div class="session-mode" role="group" aria-label="Spiellänge wählen">
@@ -547,7 +569,7 @@ const MathModule = (() => {
   }
 
   function bindSessionModeEvents() {
-    document.querySelectorAll('.session-mode-btn').forEach(btn => {
+    document.querySelectorAll('.session-mode-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         const len = Number(btn.dataset.sessionLength);
         sessionLength = len === 5 ? 5 : DEFAULT_SESSION_LENGTH;
@@ -571,9 +593,10 @@ const MathModule = (() => {
     }
 
     // "Uhr lesen" bekommt eine kleine Vorschau-Uhr statt des Emoji-Icons
-    const iconHtml = ex.id === 'clockReading'
-      ? Clock.render(10, 10, { size: 40, showNumbers: false, borderWidth: 3 })
-      : `<span class="ex-icon">${ex.icon}</span>`;
+    const iconHtml =
+      ex.id === 'clockReading'
+        ? Clock.render(10, 10, { size: 40, showNumbers: false, borderWidth: 3 })
+        : `<span class="ex-icon">${ex.icon}</span>`;
 
     return `
       <button class="exercise-card" data-exercise="${ex.id}">
@@ -602,7 +625,7 @@ const MathModule = (() => {
 
     bindSessionModeEvents();
 
-    document.querySelectorAll('.exercise-card').forEach(card => {
+    document.querySelectorAll('.exercise-card').forEach((card) => {
       card.addEventListener('click', () => {
         resetSession();
         currentExerciseId = card.dataset.exercise;
@@ -618,8 +641,8 @@ const MathModule = (() => {
       if (menu) {
         Oskar.show(menu, {
           placement: 'inline-right',
-          pool:      'workshop',
-          chance:    0.7,
+          pool: 'workshop',
+          chance: 0.7,
         });
       }
     }, 50);
@@ -637,7 +660,7 @@ const MathModule = (() => {
     const isChoice = currentTask.taskType === 'choice';
     const inputSection = isChoice
       ? `<div class="choice-grid" id="choice-grid">
-          ${currentTask.choices.map(c => `<button class="choice-btn" data-value="${encodeURIComponent(c)}">${c}</button>`).join('')}
+          ${currentTask.choices.map((c) => `<button class="choice-btn" data-value="${encodeURIComponent(c)}">${c}</button>`).join('')}
          </div>`
       : `<div class="task-input-row">
           <input
@@ -699,8 +722,8 @@ const MathModule = (() => {
       if (main) {
         Oskar.show(main, {
           placement: 'task-companion',
-          pool:      'taskIntro',
-          chance:    0.3,
+          pool: 'taskIntro',
+          chance: 0.3,
         });
       }
     }, 50);
@@ -711,7 +734,7 @@ const MathModule = (() => {
 
     const profile = Storage.getActiveProfile();
     const correct = sessionStats.correct;
-    const total   = sessionLength;
+    const total = sessionLength;
     const isPerfect = correct === total;
 
     if (profile) {
@@ -719,11 +742,11 @@ const MathModule = (() => {
       if (isPerfect) Storage.addStars(profile.id, 2); // Bonus für eine fehlerfreie Runde
     }
 
-    const praise      = randomFrom(PRAISE_MESSAGES);
+    const praise = randomFrom(PRAISE_MESSAGES);
     const performance = getPerformanceText(correct, total);
-    const stars       = getSessionStars(correct, total);
-    const starStr     = stars > 0 ? '⭐'.repeat(stars) : '☆☆☆';
-    const bonusHtml   = isPerfect
+    const stars = getSessionStars(correct, total);
+    const starStr = stars > 0 ? '⭐'.repeat(stars) : '☆☆☆';
+    const bonusHtml = isPerfect
       ? '<p class="complete-performance">🎁 +2 Bonus-Sterne für eine fehlerfreie Runde!</p>'
       : '';
 
@@ -767,8 +790,8 @@ const MathModule = (() => {
       if (main) {
         Oskar.show(main, {
           placement: 'task-companion',
-          pool:      'correct',
-          chance:    1,
+          pool: 'correct',
+          chance: 1,
         });
       }
     }, 100);
@@ -780,16 +803,16 @@ const MathModule = (() => {
 
   function bindTaskEvents(isChoice) {
     if (isChoice) {
-      document.querySelectorAll('.choice-btn').forEach(btn => {
+      document.querySelectorAll('.choice-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
           evaluateAnswer(decodeURIComponent(btn.dataset.value));
         });
       });
     } else {
       const answerInput = document.getElementById('task-answer');
-      const checkBtn   = document.getElementById('check-btn');
+      const checkBtn = document.getElementById('check-btn');
 
-      answerInput.addEventListener('keydown', e => {
+      answerInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') checkBtn.click();
       });
 
@@ -822,7 +845,7 @@ const MathModule = (() => {
   }
 
   function highlightChoices(selected, wasCorrect) {
-    document.querySelectorAll('.choice-btn').forEach(btn => {
+    document.querySelectorAll('.choice-btn').forEach((btn) => {
       btn.disabled = true;
       const val = decodeURIComponent(btn.dataset.value);
       if (val === currentTask.answer) btn.classList.add('choice-btn--correct');

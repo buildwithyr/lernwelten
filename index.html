@@ -1,114 +1,166 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
 
-  <!-- PWA / Android -->
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="theme-color" content="#F4A435" />
+    <!-- PWA / Android -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#F4A435" />
 
-  <!-- PWA / iOS -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Lernwelten" />
+    <!-- PWA / iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Lernwelten" />
 
-  <!-- General -->
-  <meta name="description" content="Spielerische Lern-App für Volksschulkinder" />
-  <meta name="application-name" content="Lernwelten" />
-  <meta name="format-detection" content="telephone=no" />
+    <!-- General -->
+    <meta name="description" content="Spielerische Lern-App für Volksschulkinder" />
+    <meta name="application-name" content="Lernwelten" />
+    <meta name="format-detection" content="telephone=no" />
 
-  <title>Lernwelten 🌟</title>
+    <title>Lernwelten 🌟</title>
 
-  <!-- Manifest -->
-  <link rel="manifest" href="manifest.json" />
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json" />
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/icon-16x16.png" />
-  <link rel="shortcut icon" href="favicon.ico" />
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/icon-16x16.png" />
+    <link rel="shortcut icon" href="favicon.ico" />
 
-  <!-- Apple Touch Icons -->
-  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
-  <link rel="apple-touch-icon" sizes="152x152" href="assets/icons/icon-152x152.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png" />
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/icons/icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png" />
 
-  <!-- Fonts: Baloo 2 (Überschriften) + Atkinson Hyperlegible (Fließtext) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap"
-    rel="stylesheet"
-  />
+    <!-- Fonts: Baloo 2 (Überschriften) + Atkinson Hyperlegible (Fließtext) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
 
-  <link rel="stylesheet" href="css/main.css" />
-  <link rel="stylesheet" href="css/village.css" />
-  <link rel="stylesheet" href="css/workshop.css" />
-  <link rel="stylesheet" href="css/oskar.css" />
-  <link rel="stylesheet" href="css/modules.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/village.css" />
+    <link rel="stylesheet" href="css/workshop.css" />
+    <link rel="stylesheet" href="css/oskar.css" />
+    <link rel="stylesheet" href="css/modules.css" />
 
-  <style>
-    /* ── PWA Install Banner ───────────────────────────────────────── */
-    #pwa-install-banner {
-      display: none;
-      position: fixed;
-      bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 32px);
-      max-width: 400px;
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-      padding: 16px 18px;
-      z-index: 9999;
-      font-family: Nunito, sans-serif;
-      animation: slideUpBanner 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
-    }
-    #pwa-install-banner.visible { display: flex; align-items: center; gap: 12px; }
-    @keyframes slideUpBanner {
-      from { transform: translateX(-50%) translateY(100px); opacity: 0; }
-      to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
-    }
-    #pwa-install-banner .banner-icon { font-size: 36px; flex-shrink: 0; }
-    #pwa-install-banner .banner-text { flex: 1; }
-    #pwa-install-banner .banner-title { font-weight: 800; font-size: 15px; color: #2D1F0F; margin: 0 0 2px; }
-    #pwa-install-banner .banner-hint  { font-size: 13px; color: #7A5C1E; margin: 0; line-height: 1.4; }
-    #pwa-install-banner .banner-btn   {
-      background: #F4A435; color: #fff; border: none; border-radius: 12px;
-      padding: 8px 14px; font-family: Nunito, sans-serif; font-weight: 800;
-      font-size: 14px; cursor: pointer; flex-shrink: 0; white-space: nowrap;
-    }
-    #pwa-install-banner .banner-close {
-      background: none; border: none; font-size: 18px; cursor: pointer;
-      color: #aaa; padding: 4px; flex-shrink: 0; line-height: 1;
-    }
-    #pwa-install-banner .banner-close:hover { color: #666; }
-  </style>
-</head>
-<body>
-  <!--
+    <style>
+      /* ── PWA Install Banner ───────────────────────────────────────── */
+      #pwa-install-banner {
+        display: none;
+        position: fixed;
+        bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 32px);
+        max-width: 400px;
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        padding: 16px 18px;
+        z-index: 9999;
+        font-family: Nunito, sans-serif;
+        animation: slideUpBanner 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      }
+      #pwa-install-banner.visible {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      @keyframes slideUpBanner {
+        from {
+          transform: translateX(-50%) translateY(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(-50%) translateY(0);
+          opacity: 1;
+        }
+      }
+      #pwa-install-banner .banner-icon {
+        font-size: 36px;
+        flex-shrink: 0;
+      }
+      #pwa-install-banner .banner-text {
+        flex: 1;
+      }
+      #pwa-install-banner .banner-title {
+        font-weight: 800;
+        font-size: 15px;
+        color: #2d1f0f;
+        margin: 0 0 2px;
+      }
+      #pwa-install-banner .banner-hint {
+        font-size: 13px;
+        color: #7a5c1e;
+        margin: 0;
+        line-height: 1.4;
+      }
+      #pwa-install-banner .banner-btn {
+        background: #f4a435;
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 8px 14px;
+        font-family: Nunito, sans-serif;
+        font-weight: 800;
+        font-size: 14px;
+        cursor: pointer;
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+      #pwa-install-banner .banner-close {
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        color: #aaa;
+        padding: 4px;
+        flex-shrink: 0;
+        line-height: 1;
+      }
+      #pwa-install-banner .banner-close:hover {
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <!--
     App-Root: alle Screens werden hier per JavaScript gerendert.
     Der initiale Inhalt wird sofort durch App.init() ersetzt.
   -->
-  <div id="app" role="main" aria-label="Lernwelten">
-    <div style="display:flex;align-items:center;justify-content:center;height:100dvh;font-size:52px;">
-      🌟
+    <div id="app" role="main" aria-label="Lernwelten">
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100dvh;
+          font-size: 52px;
+        "
+      >
+        🌟
+      </div>
     </div>
-  </div>
 
-  <!-- PWA Install Banner (hidden by default, shown by JS when appropriate) -->
-  <div id="pwa-install-banner" role="banner" aria-label="App installieren">
-    <span class="banner-icon">🌟</span>
-    <div class="banner-text">
-      <p class="banner-title">Lernwelten installieren</p>
-      <p class="banner-hint" id="pwa-install-hint">Tippe auf „Zum Home-Bildschirm".</p>
+    <!-- PWA Install Banner (hidden by default, shown by JS when appropriate) -->
+    <div id="pwa-install-banner" role="banner" aria-label="App installieren">
+      <span class="banner-icon">🌟</span>
+      <div class="banner-text">
+        <p class="banner-title">Lernwelten installieren</p>
+        <p class="banner-hint" id="pwa-install-hint">Tippe auf „Zum Home-Bildschirm".</p>
+      </div>
+      <button class="banner-btn" id="pwa-install-btn" style="display: none">Installieren</button>
+      <button class="banner-close" id="pwa-install-close" aria-label="Schließen">✕</button>
     </div>
-    <button class="banner-btn" id="pwa-install-btn" style="display:none">Installieren</button>
-    <button class="banner-close" id="pwa-install-close" aria-label="Schließen">✕</button>
-  </div>
 
-  <!--
+    <!--
     Ladereihenfolge (Abhängigkeiten beachten):
       1. storage.js   — Persistenz (keine Abhängigkeiten)
       2. adaptive.js  — Adaptives System (braucht Storage)
@@ -118,16 +170,16 @@
       6. math.js      — Mathe-Modul (braucht Storage, Adaptive, Oskar, Clock)
       7. app.js       — Controller; startet App nach DOMContentLoaded
   -->
-  <script src="js/storage.js"></script>
-  <script src="js/adaptive.js"></script>
-  <script src="js/oskar.js"></script>
-  <script src="js/profile.js"></script>
-  <script src="js/clock.js"></script>
-  <script src="js/modules/math.js"></script>
-  <script src="js/modules/words.js"></script>
-  <script src="js/modules/puzzles.js"></script>
-  <script src="js/modules/science.js"></script>
-  <script src="js/app.js"></script>
-  <script src="js/pwa.js"></script>
-</body>
+    <script src="js/storage.js"></script>
+    <script src="js/adaptive.js"></script>
+    <script src="js/oskar.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/clock.js"></script>
+    <script src="js/modules/math.js"></script>
+    <script src="js/modules/words.js"></script>
+    <script src="js/modules/puzzles.js"></script>
+    <script src="js/modules/science.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/pwa.js"></script>
+  </body>
 </html>

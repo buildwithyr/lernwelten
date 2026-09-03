@@ -5,6 +5,7 @@
 **Name:** Lernwelten  
 **Zweck:** Spielerische Lern-App für Volksschulkinder (Klasse 1 & 2). Kinder erkunden ein Dorf mit vier Lerngebäuden und üben Mathe, Lesen, Logik und Sachwissen.  
 **Tech-Stack:**
+
 - Vanilla JavaScript (keine Frameworks, kein Build-Step)
 - CSS (mehrere Dateien, kein Preprocessor)
 - PWA (manifest.json, sw.js, installierbar auf Mobilgeräten)
@@ -54,6 +55,7 @@ js/
 ## 3. Aktueller Stand
 
 **Fertig/stabil:**
+
 - Alle 4 Lerngebäude sind aktiv und spielbar
 - Profil-System (Name + Avatar-Auswahl, lokal gespeichert)
 - Sterne & Level-System (alle 10 Sterne → nächstes Level)
@@ -65,11 +67,13 @@ js/
 - Klassenstufen-Auswahl (1./2. Klasse) beim App-Start, jederzeit über Button im Dorfplatz-Header wechselbar (`Storage.getGrade()/setGrade()`)
 
 **In Arbeit / bekannt offen:**
+
 - Beide Maskottchen haben nur eine Pose (`oskar-cartoon.png`/`samson-cartoon.png`). Im Code sind `happy`, `thinking`, `wave` als auskommentierte Platzhalter in `oskar.js` — die PNG-Dateien fehlen noch
 - `oskar-default.png` existiert in assets/, aber unklar wo/ob genutzt (offene Frage)
 - Zweiter Branch `claude/clever-ride-85shxx` existiert — unklar was da drin ist, nicht gemergt
 
 **Nicht vorhanden (trotz README-Erwähnung):**
+
 - Kein `package.json`, kein `node_modules`, kein Build-System — die App ist reines Vanilla HTML/CSS/JS
 
 ---
