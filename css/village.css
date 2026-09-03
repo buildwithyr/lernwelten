@@ -477,5 +477,9 @@
 }
 
 @media (min-width: 768px) {
+  /* Breiterer Container + 4 Spalten: sonst ist bei fixen 640px pro Karte
+     zu wenig Platz für lange Gebäudenamen ("Rechenwerkstatt", "Forscherlabor")
+     und der Text bricht hässlich mitten im Wort um */
+  .village-main { max-width: 800px; }
   .village-grid { grid-template-columns: repeat(4, 1fr); }
 }

@@ -223,6 +223,19 @@ const WordsModule = (() => {
 
   const CATEGORIES = ['Tier','Pflanze','Farbe','Kleidung','Fahrzeug','Lebensmittel','Körperteil'];
 
+  // Sprachlich korrekte Pluralform je Kategorie, nur für die Frageformulierung
+  // ("Was passt zu Tieren?" statt "Was passt zu Tier?") - die Singular-Keys
+  // oben bleiben unverändert, da sie an vielen Stellen als Referenz dienen.
+  const CATEGORY_LABELS = {
+    Tier:         'Tieren',
+    Pflanze:      'Pflanzen',
+    Farbe:        'Farben',
+    Kleidung:     'Kleidungsstücken',
+    Fahrzeug:     'Fahrzeugen',
+    Lebensmittel: 'Lebensmitteln',
+    Körperteil:   'Körperteilen',
+  };
+
   // Aus diesen Kategorien dürfen KEINE falschen Antworten gezogen werden,
   // weil sich die Gruppen überschneiden (eine Tomate ist auch eine Pflanze,
   // ein Huhn ist auch ein Lebensmittel).
@@ -407,7 +420,7 @@ const WordsModule = (() => {
         } while (wasRecent('wordCategory', correct) && attempts < 15);
         markRecent('wordCategory', correct);
         return {
-          questionHtml: `<p class="q-label">Was passt zu <strong>${category}</strong>?</p>`,
+          questionHtml: `<p class="q-label">Was passt zu <strong>${CATEGORY_LABELS[category] || category}</strong>?</p>`,
           answer: correct,
           hint: CATEGORY_HINTS[category] || 'Überlege, was zu dieser Gruppe gehört.',
           taskType: 'choice',
