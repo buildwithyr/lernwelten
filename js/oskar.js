@@ -1,24 +1,19 @@
 /**
  * oskar.js
- * Maskottchen der Lernwelt — Oskar (Klasse 1) und Samson (Klasse 2).
+ * Maskottchen der Lernwelt — Oskar begleitet beide Klassenstufen.
  *
  * Architektur-Überblick:
- *   CHARACTERS  — Registry aller Maskottchen (Posen + Nachrichten-Pools je Figur).
- *   _active()   — wählt die aktuelle Figur anhand Storage.getGrade().
+ *   CHARACTERS  — Registry der Maskottchen (Posen + Nachrichten-Pools).
+ *   _active()   — liefert die aktuelle Figur (aktuell immer Oskar).
  *   Oskar.show  — Zeigt das aktive Maskottchen in einem Container mit Placement
  *                 und optionaler Sprechblase.
  *   Oskar.say   — Aktualisiert die Sprechblase ohne Neupositionierung.
  *   Oskar.silence — Versteckt die Sprechblase, das Maskottchen bleibt sichtbar.
  *   Oskar.remove  — Entfernt das Maskottchen komplett aus dem DOM.
  *
- * Der Modulname "Oskar" bleibt aus Kompatibilitätsgründen bestehen (alle
- * Aufrufstellen in app.js/profile.js/modules/*.js nutzen `Oskar.show(...)`
- * unverändert) — welche Figur tatsächlich erscheint, entscheidet sich
- * intern über die aktuelle Klassenstufe.
- *
- * Neue Pose für eine Figur hinzufügen:
+ * Neue Pose hinzufügen:
  *   1. PNG in assets/ ablegen, z.B. assets/oskar-happy.png
- *   2. Eintrag in CHARACTERS.<figur>.poses ergänzen: happy: 'assets/oskar-happy.png'
+ *   2. Eintrag in CHARACTERS.oskar.poses ergänzen: happy: 'assets/oskar-happy.png'
  *   3. Im Aufruf: Oskar.show(container, { pose: 'happy', ... })
  */
 
@@ -104,86 +99,11 @@ const Oskar = (() => {
       },
     },
 
-    samson: {
-      poses: {
-        default: 'assets/samson-cartoon.png',
-      },
-      messages: {
-        greeting: [
-          'Hallo! Ich bin Samson! 🐱',
-          'Schön, dich zu sehen!',
-          'Bereit für ein Abenteuer?',
-          'Willkommen in der Lernwelt!',
-        ],
-        village: [
-          'Wohin geht es heute?',
-          'Welches Gebäude besuchst du?',
-          'Toll, dass du da bist!',
-          null,
-          null,
-        ],
-        workshop: [
-          'Lass uns üben!',
-          'Das schaffst du bestimmt!',
-          'Ich bin gespannt!',
-          null,
-          null,
-        ],
-        taskIntro: [
-          null,
-          null,
-          null,
-          'Konzentriere dich!',
-          'Du schaffst das!',
-        ],
-        correct: [
-          'Super gemacht! ⭐',
-          'Toll gelöst! 🌟',
-          'Sehr gut! ✨',
-          'Weiter so! 🎉',
-          'Fantastisch! 🏆',
-          'Klasse! 👏',
-          'Du bist großartig! 🌈',
-          'Prima! 🎈',
-          'Ausgezeichnet! 💫',
-          'Das war richtig stark!',
-          'Du wirst immer besser!',
-          'Samson ist stolz auf dich! 🐱',
-          'Heute warst du richtig schlau! 🧠',
-          '10 von 10 – perfekt! 🏆',
-        ],
-        words: [
-          'Wörter machen Spaß! 📖',
-          'Du lernst so viel!',
-          'Buchstaben sind toll! 🔤',
-          null,
-          null,
-        ],
-        puzzles: [
-          'Zeit zum Rätseln! 🗝️',
-          'Denk genau nach!',
-          'Das schaffst du! 🧠',
-          null,
-          null,
-        ],
-        science: [
-          'Lass uns forschen! 🔬',
-          'Was wirst du heute lernen?',
-          'Wissen macht schlau! 🌍',
-          null,
-          null,
-        ],
-      },
-    },
-
   };
 
-  // Wählt die aktuell aktive Figur anhand der Klassenstufe.
-  // Storage ist zur Ladezeit von oskar.js bereits verfügbar (siehe
-  // Ladereihenfolge in index.html), die Prüfung schützt trotzdem defensiv.
+  // Es gibt aktuell nur eine Figur (Oskar) für beide Klassenstufen.
   function _active() {
-    const grade = (typeof Storage !== 'undefined' && Storage.getGrade) ? Storage.getGrade() : 1;
-    return grade === 2 ? CHARACTERS.samson : CHARACTERS.oskar;
+    return CHARACTERS.oskar;
   }
 
   // ─── Interner State ───────────────────────────────────────────────────────
@@ -233,8 +153,7 @@ const Oskar = (() => {
   // ─── Public API ───────────────────────────────────────────────────────────
 
   /**
-   * Zeigt das aktuelle Maskottchen (Oskar bei Klasse 1, Samson bei Klasse 2)
-   * in einem Container.
+   * Zeigt Oskar in einem Container.
    *
    * @param {HTMLElement} container - Ziel-Element, an das die Figur angehängt wird
    * @param {object}      opts

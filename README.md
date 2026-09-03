@@ -1,6 +1,6 @@
 # 🏘️ Lernwelten
 
-Eine spielerische Lern-App für Kinder der 1. und 2. Klasse Volksschule. Kinder erkunden ein kleines Dorf mit vier Lerngebäuden und üben dabei Mathe, Lesen, Sachwissen und logisches Denken — begleitet vom Maskottchen Oskar (1. Klasse) bzw. Samson (2. Klasse).
+Eine spielerische Lern-App für Kinder der 1. und 2. Klasse Volksschule. Kinder erkunden ein kleines Dorf mit vier Lerngebäuden und üben dabei Mathe, Lesen, Sachwissen und logisches Denken — begleitet vom Maskottchen Oskar.
 
 Kostenlos, werbefrei, ohne Anmeldung. Läuft direkt im Browser, auch offline (installierbar als App).
 

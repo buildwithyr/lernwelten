@@ -13,7 +13,7 @@
 - Hosting: unklar, aber als statische Seite deploybar (GitHub Pages, Netlify, etc.)
 
 **Sprache der UI:** Deutsch  
-**Zielgruppe:** Kinder ca. 6–8 Jahre → kindgerechtes Design, große Buttons, Emojis, Maskottchen Oskar (Klasse 1) bzw. Samson (Klasse 2)
+**Zielgruppe:** Kinder ca. 6–8 Jahre → kindgerechtes Design, große Buttons, Emojis, Maskottchen Oskar (beide Klassenstufen)
 
 ---
 
@@ -25,8 +25,7 @@ manifest.json           PWA-Manifest
 sw.js                   Service Worker (Offline-Caching)
 favicon.ico
 assets/
-  oskar-cartoon.png     Oskar-Maskottchen (Klasse 1)
-  samson-cartoon.png    Samson-Maskottchen (Klasse 2)
+  oskar-cartoon.png     Oskar-Maskottchen (beide Klassenstufen)
   oskar-default.png     zweites Oskar-Bild (wo genau genutzt?)
   icons/                PWA-Icons in allen Größen
 css/
@@ -38,7 +37,7 @@ css/
 js/
   storage.js            Zentrales localStorage-Interface (alle Persistenz läuft hier durch)
   adaptive.js           Schwierigkeitsgrad- und Gewichtungslogik (keine Cloud, lokal)
-  oskar.js              Maskottchen-Modul: Posen + Nachrichten-Pools je Figur (Oskar/Samson), DOM-Management
+  oskar.js              Maskottchen-Modul: Posen + Nachrichten-Pools für Oskar, DOM-Management
   profile.js            Profilerstellung, Avatar-Auswahl, Setup-Screen
   app.js                Haupt-Controller: Screen-Management, Dorfplatz, Overlays
   pwa.js                PWA-Installbanner-Logik
@@ -61,11 +60,11 @@ js/
 - Anti-Wiederholungs-Queue (letzte 5 Antworten werden nicht nochmal gestellt)
 - PWA: installierbar, Offline-Fähigkeit via Service Worker
 - Mobiles Layout: aktuell gefixt für schmale Displays (letzter Commit)
-- Maskottchen erscheint auf dem Dorfplatz und in Modulen mit zufälligen Nachrichten — Oskar (Hund) bei Klasse 1, Samson (Katze) bei Klasse 2. Welche Figur aktiv ist, entscheidet `oskar.js` intern über `Storage.getGrade()`; alle Aufrufstellen (`Oskar.show(...)` etc.) bleiben unverändert
+- Maskottchen Oskar (Hund) erscheint auf dem Dorfplatz und in Modulen mit zufälligen Nachrichten, für beide Klassenstufen gleich
 - Klassenstufen-Auswahl (1./2. Klasse) beim App-Start, jederzeit über Button im Dorfplatz-Header wechselbar (`Storage.getGrade()/setGrade()`)
 
 **In Arbeit / bekannt offen:**
-- Beide Maskottchen haben nur eine Pose (`oskar-cartoon.png`/`samson-cartoon.png`). Im Code sind `happy`, `thinking`, `wave` als auskommentierte Platzhalter in `oskar.js` — die PNG-Dateien fehlen noch
+- Oskar hat nur eine Pose (`oskar-cartoon.png`). Im Code sind `happy`, `thinking`, `wave` als auskommentierte Platzhalter in `oskar.js` — die PNG-Dateien fehlen noch
 - `oskar-default.png` existiert in assets/, aber unklar wo/ob genutzt (offene Frage)
 - Zweiter Branch `claude/clever-ride-85shxx` existiert — unklar was da drin ist, nicht gemergt
 
@@ -80,7 +79,7 @@ js/
 
 **Neues Lernfach hinzufügen:** `app.js` oben erklärt's: 1. `js/modules/<fach>.js` nach Muster von `math.js` erstellen, 2. im `BUILDINGS`-Array in `app.js` eintragen, 3. `<script>`-Tag in `index.html` ergänzen.
 
-**Neue Maskottchen-Pose:** PNG in `assets/` ablegen, in `CHARACTERS.<oskar|samson>.poses` in `oskar.js` eintragen, dann per `Oskar.show(container, { pose: 'name' })` nutzen. Welche Figur angezeigt wird, hängt automatisch von der Klassenstufe ab (`Storage.getGrade()`) — nicht am Aufruf selbst wählbar.
+**Neue Maskottchen-Pose:** PNG in `assets/` ablegen, in `CHARACTERS.oskar.poses` in `oskar.js` eintragen, dann per `Oskar.show(container, { pose: 'name' })` nutzen.
 
 **Storage:** Alles geht durch `storage.js` — nie direkt `localStorage` anschreiben. Profil-Daten, Adaptive-Stats und Session-Ergebnisse sind getrennte Felder im Profil-Objekt.
 
