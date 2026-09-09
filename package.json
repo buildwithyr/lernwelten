@@ -1,0 +1,20 @@
+{
+  "name": "lernwelten",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Lern-App für die Volksschule (Klasse 1 und 2). Reines HTML/CSS/JS ohne Build-Schritt — die Laufzeit braucht keine Abhängigkeiten. Die Pakete hier dienen ausschließlich den Tests.",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "test": "node --test tests/",
+    "test:unit": "node --test tests/generators.test.js tests/progress.test.js tests/storage.test.js tests/content.test.js tests/offline.test.js",
+    "test:browser": "node tests/browser.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buildwithyr/lernwelten.git"
+  },
+  "license": "SEE LICENSE IN README.md",
+  "devDependencies": {
+    "playwright": "^1.50.0"
+  }
+}

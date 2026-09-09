@@ -1,332 +1,173 @@
 /**
  * app.js
- * Haupt-Controller — verwaltet Screens und verbindet alle Module.
+ * Haupt-Controller: Start, Dorfplatz, Navigation.
  *
- * Neues Fach hinzufügen:
- *  1. js/modules/<fach>.js erstellen (Muster: math.js)
- *  2. Im BUILDINGS-Array unten eintragen
- *  3. <script>-Tag in index.html ergänzen
+ * Neues Lernziel hinzufügen:
+ *   1. Eintrag in js/core/topics.js ergänzen (id, subject, grade, gen, goal).
+ *   2. Generator in js/generators/<fach>-gen.js schreiben und exportieren.
+ *   3. Fertig — Menü, Lernstand, Elternbereich und Tests greifen automatisch.
+ *      `npm test` bzw. `node --test tests/` prüft den neuen Generator mit.
  */
 
 const App = (() => {
-  // active: true  → Gebäude ist betretbar
-  // active: false → Platzhalter (kommt bald)
-  const BUILDINGS_GRADE1 = [
-    {
-      id: 'math',
-      label: 'Rechenwerkstatt',
-      icon: '🔨',
-      color: '#F4A435',
-      bgColor: '#FFF3DC',
-      active: true,
-      mount: () => MathModule.mount(1),
-      exerciseIds: ['numberRecognition', 'counting', 'addition', 'subtraction'],
-    },
-    {
-      id: 'reading',
-      label: 'Wörterhaus',
-      icon: '📖',
-      color: '#6DB68A',
-      bgColor: '#E8F5EE',
-      active: true,
-      mount: () => WordsModule.mount(1),
-      exerciseIds: ['missingLetter', 'sortLetters', 'wordCategory', 'opposites'],
-    },
-    {
-      id: 'science',
-      label: 'Forscherlabor',
-      icon: '🔬',
-      color: '#7EB8D4',
-      bgColor: '#E3F2F9',
-      active: true,
-      mount: () => ScienceModule.mount(),
-      exerciseIds: ['knowledgeQuiz', 'trueFalse', 'matching'],
-    },
-    {
-      id: 'puzzles',
-      label: 'Rätselhöhle',
-      icon: '🗝️',
-      color: '#B07EC8',
-      bgColor: '#F3EAF8',
-      active: true,
-      mount: () => PuzzlesModule.mount(),
-      exerciseIds: ['numberPattern', 'shapePattern', 'oddOneOut', 'memoryTask', 'miniSudoku'],
-    },
-  ];
 
-  // 2. Klasse: gleicher Aufbau, eigenes Farbschema, angepasste Inhalte
-  // (siehe Module: math.js/words.js unterscheiden Übungen nach Klassenstufe).
-  const BUILDINGS_GRADE2 = [
-    {
-      id: 'math',
-      label: 'Rechenwerkstatt',
-      icon: '🔨',
-      color: '#2E86AB',
-      bgColor: '#E4F1F8',
-      active: true,
-      mount: () => MathModule.mount(2),
-      exerciseIds: [
-        'additionRound100', 'subtractionRound100', 'doubleHalf',
-        'numberSeries', 'euroCent', 'clockReading', 'wordProblems',
-      ],
-    },
-    {
-      id: 'reading',
-      label: 'Wörterhaus',
-      icon: '📖',
-      color: '#C1447E',
-      bgColor: '#FBEAF2',
-      active: true,
-      mount: () => WordsModule.mount(2),
-      exerciseIds: ['missingLetter', 'sortLetters', 'wordCategory', 'opposites', 'weekdaysMonths'],
-    },
-    {
-      id: 'science',
-      label: 'Forscherlabor',
-      icon: '🔬',
-      color: '#3AA655',
-      bgColor: '#E8F6EB',
-      active: true,
-      mount: () => ScienceModule.mount(),
-      exerciseIds: ['knowledgeQuiz', 'trueFalse', 'matching'],
-    },
-    {
-      id: 'puzzles',
-      label: 'Rätselhöhle',
-      icon: '🗝️',
-      color: '#E07A3E',
-      bgColor: '#FCEEE3',
-      active: true,
-      mount: () => PuzzlesModule.mount(),
-      exerciseIds: ['numberPattern', 'shapePattern', 'oddOneOut', 'memoryTask', 'miniSudoku'],
-    },
-  ];
+  const BUILDING_ORDER = ['math', 'german', 'science', 'logic'];
 
-  function getActiveBuildings() {
-    return Storage.getGrade() === 2 ? BUILDINGS_GRADE2 : BUILDINGS_GRADE1;
-  }
-
-  // ─── Bootstrap ────────────────────────────────────────────────────────────
+  // ─── Start ────────────────────────────────────────────────────────────────
 
   function init() {
-    if (!Storage.getGrade()) {
-      renderGradeSelect(true);
+    Storage.onError(err => UI.showStorageProblem(err));
+
+    if (!Storage.isAvailable()) {
+      UI.render(`
+        <div class="screen setup-screen">
+          <div class="setup-card">
+            <div class="setup-logo" aria-hidden="true">⚠️</div>
+            <h1 class="setup-title">Speicher nicht verfügbar</h1>
+            <p class="setup-subtitle">Dieser Browser darf gerade keine Daten speichern.
+              Im privaten Modus geht das oft nicht. Bitte öffne die Seite in einem
+              normalen Fenster — sonst geht der Lernstand nach dem Schließen verloren.</p>
+            <button class="btn btn-primary btn-large" id="anyway-btn" type="button">
+              Trotzdem weiter (ohne Speichern)
+            </button>
+          </div>
+        </div>`);
+      UI.on('#anyway-btn', 'click', () => bootstrap());
       return;
     }
+
+    const report = Storage.runMigrations();
+    if (report.failed && report.failed.length) {
+      UI.info('Beim Aktualisieren der gespeicherten Daten gab es ein Problem. '
+        + 'Die Originaldaten wurden nicht verändert. Ein Erwachsener findet im '
+        + 'Elternbereich unter „Daten" weitere Angaben.',
+        { title: 'Hinweis zu den Daten', icon: '⚠️' });
+    }
+    bootstrap();
+  }
+
+  function bootstrap() {
     const profile = Storage.getActiveProfile();
     if (!profile) {
-      Profile.renderSetupScreen();
-    } else {
-      showVillage();
+      ProfileUI.renderSetup({ grade: Storage.getGrade() || 1 });
+      return;
     }
+    showVillage();
   }
 
-  // ─── Klassenstufen-Auswahl ─────────────────────────────────────────────────
-
-  function renderGradeSelect(isFirstRun) {
-    const app = document.getElementById('app');
-    app.innerHTML = `
-      <div class="screen grade-select-screen">
-        <div class="grade-select-header">
-          <span class="grade-select-emoji">🏘️</span>
-          <h1>Willkommen in Lernwelten!</h1>
-          <p>Für welche Klasse möchtest du üben?</p>
-        </div>
-        <div class="grade-select-grid">
-          <button class="grade-card grade-card--1" data-grade="1">
-            <span class="grade-card-badge grade-card-badge--1">1</span>
-            <span class="grade-card-label">1. Klasse</span>
-          </button>
-          <button class="grade-card grade-card--2" data-grade="2">
-            <span class="grade-card-badge grade-card-badge--2">2</span>
-            <span class="grade-card-label">2. Klasse</span>
-          </button>
-        </div>
-      </div>
-    `;
-
-    document.querySelectorAll('.grade-card').forEach(card => {
-      card.addEventListener('click', () => {
-        Storage.setGrade(Number(card.dataset.grade));
-        if (isFirstRun) {
-          const profile = Storage.getActiveProfile();
-          if (!profile) Profile.renderSetupScreen();
-          else showVillage();
-        } else {
-          showVillage();
-        }
-      });
-    });
-  }
-
-  // ─── Village / Dorfplatz ──────────────────────────────────────────────────
+  // ─── Dorfplatz ────────────────────────────────────────────────────────────
 
   function showVillage() {
     const profile = Storage.getActiveProfile();
-    const app = document.getElementById('app');
-    const grade = Storage.getGrade() === 2 ? 2 : 1;
-    const buildings = getActiveBuildings();
+    if (!profile) { bootstrap(); return; }
 
-    app.innerHTML = `
-      <div class="screen village-screen village-screen--grade${grade}">
+    const buildings = BUILDING_ORDER.map(id => Workshop.get(id));
+    const canDaily = Daily.canStart(profile);
+    const dueCount = Progress.dueRetries(profile).length;
+    const previewTopics = canDaily ? Daily.preview(profile).slice(0, 3) : [];
+
+    UI.render(`
+      <div class="screen village-screen village-screen--grade${profile.grade}">
         <header class="village-header">
-          <div class="village-title">
-            <span>🏘️</span>
-            <span>Lernwelt</span>
-          </div>
+          <div class="village-title"><span aria-hidden="true">🏘️</span><span>Lernwelt</span></div>
           <div class="village-header-right">
-            <button class="btn-grade-switch" id="grade-switch-btn" title="Klasse wechseln">
-              ${grade}. Klasse ⇄
-            </button>
-            <div class="star-badge">
-              ⭐ <span id="village-stars">${profile.stars}</span>
+            <div class="star-badge" aria-label="${profile.stars} Sterne">
+              <span aria-hidden="true">⭐</span> <span id="header-stars">${profile.stars}</span>
             </div>
-            <button class="btn-avatar" id="profile-btn" title="Profil öffnen">
-              ${Profile.getAvatarEmoji(profile.avatarId)}
+            <button class="btn-avatar" id="profile-btn" type="button"
+                    aria-label="Profil von ${Util.escapeAttr(profile.name)} öffnen">
+              ${ProfileUI.avatarEmoji(profile.avatarId)}
             </button>
           </div>
         </header>
 
         <main class="village-main">
           <div class="village-welcome">
-            <span class="welcome-avatar">${Profile.getAvatarEmoji(profile.avatarId)}</span>
-            <p>Hallo, <strong>${profile.name}</strong>!<br>Wohin möchtest du heute?</p>
+            <span class="welcome-avatar" aria-hidden="true">${ProfileUI.avatarEmoji(profile.avatarId)}</span>
+            <p>Hallo, <strong>${Util.escapeHtml(profile.name)}</strong>!<br>Wohin möchtest du heute?</p>
           </div>
+
+          ${canDaily ? `
+            <button class="daily-card" id="daily-btn" type="button">
+              <span class="daily-icon" aria-hidden="true">🌞</span>
+              <span class="daily-body">
+                <span class="daily-title">Heute üben</span>
+                <span class="daily-sub">${previewTopics.length
+                  ? Util.escapeHtml(previewTopics.map(t => t.title).join(' · '))
+                  : 'Eine kurze, passende Runde'}</span>
+                ${dueCount ? `<span class="daily-badge">${dueCount} ${Util.plural(dueCount, 'Wiederholung', 'Wiederholungen')} fällig</span>` : ''}
+              </span>
+              <span class="daily-go" aria-hidden="true">▶</span>
+            </button>` : `
+            <p class="village-hint">Es sind noch keine Themen freigegeben.
+              Ein Erwachsener kann sie im Elternbereich auswählen.</p>`}
 
           <div class="village-grid">
             ${buildings.map(renderBuilding).join('')}
           </div>
+
+          <div class="village-extras">
+            <button class="village-extra" id="check-btn" type="button">
+              <span aria-hidden="true">📋</span> Kurz-Check
+            </button>
+            <button class="village-extra" id="album-btn" type="button">
+              <span aria-hidden="true">🖼️</span> Sammelalbum
+            </button>
+            <button class="village-extra" id="toolbox-btn" type="button">
+              <span aria-hidden="true">🧰</span> Werkzeugkiste
+            </button>
+            <button class="village-extra" id="parents-btn" type="button">
+              <span aria-hidden="true">👋</span> Für Eltern
+            </button>
+          </div>
         </main>
-      </div>
-    `;
+      </div>`);
 
-    document.getElementById('grade-switch-btn').addEventListener('click', () => {
-      renderGradeSelect(false);
+    buildings.forEach(b => {
+      UI.on(`#building-${b.id}`, 'click', () => Workshop.open(b.id));
     });
+    UI.on('#daily-btn', 'click', () => Daily.start());
+    UI.on('#check-btn', 'click', () => Daily.openCheckPicker());
+    UI.on('#album-btn', 'click', () => Album.open());
+    UI.on('#toolbox-btn', 'click', () => Toolbox.openPicker());
+    UI.on('#parents-btn', 'click', () => Parents.open());
+    UI.on('#profile-btn', 'click', () => ProfileUI.openCard());
 
-    buildings.forEach(building => {
-      const btn = document.getElementById(`building-${building.id}`);
-      if (!btn) return;
-      btn.addEventListener('click', () => {
-        if (building.active && building.mount) {
-          building.mount();
-        } else {
-          showComingSoon(building.label);
-        }
-      });
-    });
-
-    document.getElementById('profile-btn').addEventListener('click', showProfileModal);
-
-    // Oskar erscheint am unteren Rand des Dorfplatzes
-    setTimeout(() => {
-      const main = document.querySelector('.village-main');
-      if (main) {
-        Oskar.show(main, {
-          placement: 'inline-right',
-          pool:      'village',
-          chance:    0.65,
-        });
+    Timers.after(60, () => {
+      const main = UI.$('.village-main');
+      if (main && typeof Oskar !== 'undefined') {
+        Oskar.show(main, { placement: 'inline-right', pool: 'village', chance: 0.6 });
       }
-    }, 50);
+    });
+
+    // Auf dem Dorfplatz darf ein Update angeboten werden — hier läuft keine Übung.
+    if (typeof PWA !== 'undefined' && PWA.onVillage) PWA.onVillage();
   }
 
   function renderBuilding(b) {
-    const progressHtml = b.active ? getBuildingProgressBadge(b) : '';
+    const profile = Storage.getActiveProfile();
+    const topics = Workshop.availableTopics(b.subject);
+    const practiced = topics.filter(t => profile.skills[t.id] && profile.skills[t.id].attempts > 0);
+    const solid = practiced.filter(t => {
+      const s = profile.skills[t.id];
+      return s.attempts >= 6 && s.solo / s.attempts >= 0.8;
+    });
+
+    let badge;
+    if (!topics.length) badge = '<span class="building-progress building-progress--new">Noch nichts freigegeben</span>';
+    else if (!practiced.length) badge = '<span class="building-progress building-progress--new">Noch nicht geübt</span>';
+    else badge = `<span class="building-progress">${solid.length} von ${topics.length} sicher</span>`;
+
     return `
-      <button
-        class="building-card${b.active ? '' : ' building-locked'}"
-        id="building-${b.id}"
-        style="--building-color:${b.color}; --building-bg:${b.bgColor};"
-      >
-        <div class="building-icon-wrap">
-          <span class="building-icon">${b.icon}</span>
-        </div>
-        <span class="building-label">${b.label}</span>
-        ${progressHtml}
-        ${b.active ? '' : '<span class="building-soon">Kommt bald</span>'}
-      </button>
-    `;
+      <button class="building-card" id="building-${b.id}" type="button"
+              style="--building-color:${b.color}; --building-bg:${b.bg};">
+        <div class="building-icon-wrap"><span class="building-icon" aria-hidden="true">${b.icon}</span></div>
+        <span class="building-label">${Util.escapeHtml(b.label)}</span>
+        ${badge}
+      </button>`;
   }
 
-  function getBuildingProgressBadge(b) {
-    const profile = Storage.getActiveProfile();
-    if (!profile) return '';
-    const ids = b.exerciseIds || [];
-    let totalBest = 0;
-    let played = 0;
-    ids.forEach(id => {
-      const s = Storage.getSessionStats(profile.id, id);
-      if (s) { played++; totalBest += s.bestScore; }
-    });
-    if (played === 0) return '<span class="building-progress building-progress--new">Noch nicht gespielt</span>';
-    const avg = totalBest / played;
-    const stars = avg >= 9 ? 3 : avg >= 7 ? 2 : 1;
-    return `<span class="building-progress">${'⭐'.repeat(stars)}</span>`;
-  }
-
-  // ─── Overlays ─────────────────────────────────────────────────────────────
-
-  function showComingSoon(label) {
-    const overlay = createOverlay(`
-      <div class="modal-icon">🚧</div>
-      <h2>${label}</h2>
-      <p>Dieses Gebäude wird gerade<br>für dich gebaut. Es kommt bald!</p>
-      <button class="btn btn-primary" id="close-modal">Okay!</button>
-    `);
-    document.getElementById('close-modal').addEventListener('click', () => overlay.remove());
-    document.getElementById('close-modal').focus();
-  }
-
-  function showProfileModal() {
-    const profile = Storage.getActiveProfile();
-    const starsToNextLevel = 10 - (profile.stars % 10);
-    const progressPct = Math.min(((profile.stars % 10) / 10) * 100, 100);
-
-    const overlay = createOverlay(`
-      <div class="modal-avatar">${Profile.getAvatarEmoji(profile.avatarId)}</div>
-      <h2>${profile.name}</h2>
-      <div class="profile-stats">
-        <div class="stat-item">
-          <span class="stat-value">⭐ ${profile.stars}</span>
-          <span class="stat-label">Sterne</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-value">🏅 ${profile.level}</span>
-          <span class="stat-label">Level</span>
-        </div>
-      </div>
-      <div class="star-progress-wrap">
-        <div class="star-progress-label">Noch ${starsToNextLevel} ${starsToNextLevel === 1 ? 'Stern' : 'Sterne'} bis Level ${profile.level + 1}</div>
-        <div class="star-progress-bar">
-          <div class="star-progress-fill" style="width:${progressPct}%"></div>
-        </div>
-      </div>
-      <button class="btn btn-primary" id="close-profile">Weiterspielen 🎮</button>
-      <button class="btn btn-ghost btn-sm" id="new-profile-btn">Neues Profil</button>
-    `);
-
-    document.getElementById('close-profile').addEventListener('click', () => overlay.remove());
-    document.getElementById('new-profile-btn').addEventListener('click', () => {
-      overlay.remove();
-      Profile.renderSetupScreen();
-    });
-    document.getElementById('close-profile').focus();
-  }
-
-  // Erzeugt ein Overlay-Element und hängt es an den Body
-  function createOverlay(innerHtml) {
-    const overlay = document.createElement('div');
-    overlay.className = 'overlay';
-    overlay.innerHTML = `<div class="modal">${innerHtml}</div>`;
-    document.body.appendChild(overlay);
-    overlay.addEventListener('click', e => {
-      if (e.target === overlay) overlay.remove();
-    });
-    return overlay;
-  }
-
-  return { init, showVillage };
+  return { init, bootstrap, showVillage };
 })();
 
 document.addEventListener('DOMContentLoaded', () => App.init());

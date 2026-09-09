@@ -181,6 +181,33 @@ const Progress = (() => {
   }
 
   /**
+   * Speichert eine gemischte Runde ("Heute üben", Kurz-Check).
+   * Es entsteht KEIN Bestwert pro Lernziel — die Aufgabenanzahl je Thema
+   * ist dafür zu klein. Gezählt werden nur die Durchgänge und der Verlauf.
+   */
+  function saveMixedRound(profile, round) {
+    if (!profile || !round) return null;
+    if (!Array.isArray(profile.rounds)) profile.rounds = [];
+    const entry = {
+      mode: round.mode || 'daily',
+      total: round.total,
+      solo: round.solo,
+      helped: round.helped,
+      failed: round.failed,
+      topics: round.topics || [],
+      at: round.at || Date.now(),
+    };
+    profile.rounds.push(entry);
+    while (profile.rounds.length > 40) profile.rounds.shift();
+
+    (round.topics || []).forEach(id => {
+      if (!profile.sessions[id]) profile.sessions[id] = { plays: 0, best: {}, last: null, history: [] };
+      profile.sessions[id].plays = (profile.sessions[id].plays || 0) + 1;
+    });
+    return entry;
+  }
+
+  /**
    * Sterne-Bewertung einer Runde — immer als Quote, nie als absolute Zahl.
    * "Allein geschafft" zählt voll, "mit Hilfe geschafft" zur Hälfte.
    */
@@ -417,7 +444,7 @@ const Progress = (() => {
     OUTCOME, FIRST_TRY_WINDOW, MIN_ROUNDS_ON_LEVEL, MIN_FIRST_TRIES, BOX_DAYS,
     getSkill, getLevel, soloRate,
     recordAttempt, reviewLevelAfterRound,
-    saveRound, roundStars, roundSummaryText, bestLabel,
+    saveRound, saveMixedRound, roundStars, roundSummaryText, bestLabel,
     queueRetry, resolveRetry, dueRetries, retriesForTopic,
     topicWeight, planRound,
     skillSummary, suggestions,

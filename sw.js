@@ -1,36 +1,89 @@
 /**
  * Lernwelten Service Worker
- * Offline-first caching — niemals localStorage berühren.
+ *
+ * Grundsätze:
+ *  • localStorage wird nie berührt.
+ *  • Eine neue Version aktiviert sich NICHT von selbst. Sie wartet, bis
+ *    js/pwa.js eine SKIP_WAITING-Nachricht schickt — das passiert erst,
+ *    wenn keine Übung läuft und jemand ausdrücklich darauf tippt.
+ *  • Alle Dateien der App stehen in STATIC_ASSETS. Fehlt eine Datei hier,
+ *    funktioniert die App offline nicht vollständig — deshalb prüft
+ *    tests/offline.test.js diese Liste gegen index.html.
  */
 
-const CACHE_VERSION = 'lernwelten-v3';
+const CACHE_VERSION = 'lernwelten-v4';
 
 const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './favicon.ico',
+
   // CSS
+  './css/fonts.css',
   './css/main.css',
   './css/village.css',
   './css/workshop.css',
-  './css/oskar.css',
   './css/modules.css',
-  // JavaScript
-  './js/storage.js',
-  './js/adaptive.js',
+  './css/parents.css',
+  './css/oskar.css',
+  './css/print.css',
+
+  // Schriften (lokal, keine externen Anfragen)
+  './assets/fonts/atkinson-hyperlegible-400-latin.woff2',
+  './assets/fonts/atkinson-hyperlegible-400-latin-ext.woff2',
+  './assets/fonts/atkinson-hyperlegible-700-latin.woff2',
+  './assets/fonts/atkinson-hyperlegible-700-latin-ext.woff2',
+  './assets/fonts/baloo-2-var-latin.woff2',
+  './assets/fonts/baloo-2-var-latin-ext.woff2',
+
+  // Kern
+  './js/core/util.js',
+  './js/core/topics.js',
+  './js/core/answer.js',
+  './js/core/storage.js',
+  './js/core/progress.js',
+  './js/core/rewards.js',
+  './js/core/timers.js',
+  './js/core/session.js',
+
+  // Darstellungen
+  './js/ui/clock.js',
+  './js/ui/widgets.js',
+  './js/ui/dom.js',
+  './js/ui/taskview.js',
+  './js/ui/profile.js',
+  './js/ui/workshop.js',
+
+  // Inhalte
+  './js/content/words-data.js',
+  './js/content/german-data.js',
+  './js/content/science-data.js',
+  './js/content/logic-data.js',
+
+  // Generatoren
+  './js/generators/math-gen.js',
+  './js/generators/german-gen.js',
+  './js/generators/misc-gen.js',
+  './js/generators/index.js',
+
+  // Funktionen
+  './js/features/toolbox.js',
+  './js/features/album.js',
+  './js/features/shop.js',
+  './js/features/mirror.js',
+  './js/features/worksheet.js',
+  './js/features/daily.js',
+  './js/features/parents.js',
+
+  // Rest
   './js/oskar.js',
-  './js/profile.js',
-  './js/clock.js',
   './js/app.js',
-  './js/modules/math.js',
-  './js/modules/words.js',
-  './js/modules/puzzles.js',
-  './js/modules/science.js',
-  // Assets
+  './js/pwa.js',
+
+  // Bilder
   './assets/oskar-cartoon.png',
   './assets/oskar-default.png',
-  // Icons
   './assets/icons/icon-72x72.png',
   './assets/icons/icon-96x96.png',
   './assets/icons/icon-128x128.png',
@@ -42,84 +95,69 @@ const STATIC_ASSETS = [
   './assets/icons/apple-touch-icon.png',
 ];
 
-// Google Fonts — separate cache, longer lifetime
-const FONT_CACHE = 'lernwelten-fonts-v1';
-
-// ─── Message: allow clients to trigger skipWaiting ──────────────────────────
+// ─── Nachricht: Update anwenden ─────────────────────────────────────────────
+// Wird ausschließlich von js/pwa.js gesendet, wenn keine Übung läuft.
 
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
-// ─── Install: cache all static assets ───────────────────────────────────────
-// Kein automatisches self.skipWaiting() hier: eine neue Version soll erst
-// aktiv werden, wenn pwa.js das per SKIP_WAITING-Message anstößt (siehe
-// "Message"-Handler oben). So wird niemand mitten in einer Übung ungefragt
-// neu geladen — beim allerersten Besuch (noch kein aktiver Worker vorhanden)
-// aktiviert der Browser ohnehin sofort, ganz ohne skipWaiting().
+// ─── Install ────────────────────────────────────────────────────────────────
+// Kein self.skipWaiting() hier: Die neue Version wartet ab.
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
-    })
+    caches.open(CACHE_VERSION).then((cache) =>
+      // addAll bricht komplett ab, wenn eine Datei fehlt. Damit ein einzelnes
+      // fehlendes Bild nicht die gesamte Offline-Fähigkeit verhindert, wird
+      // jede Datei einzeln geholt und ein Fehlschlag protokolliert.
+      Promise.all(STATIC_ASSETS.map((url) =>
+        cache.add(url).catch((err) => {
+          console.warn('[SW] Nicht zwischengespeichert:', url, err);
+        })
+      ))
+    )
   );
 });
 
-// ─── Activate: remove old caches (never touches localStorage) ───────────────
+// ─── Activate ───────────────────────────────────────────────────────────────
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys
-          .filter((key) => key !== CACHE_VERSION && key !== FONT_CACHE)
-          .map((key) => caches.delete(key))
-      );
-    }).then(() => self.clients.claim())
+    caches.keys()
+      .then((keys) => Promise.all(
+        keys.filter((key) => key !== CACHE_VERSION).map((key) => caches.delete(key))
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
-// ─── Fetch: cache-first for static, network-first for fonts ─────────────────
+// ─── Fetch ──────────────────────────────────────────────────────────────────
+// Eigene Dateien: aus dem Cache, im Hintergrund auffrischen.
+// Fremde Adressen: gar nicht anfassen — die App braucht keine.
 
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
+  const request = event.request;
+  if (request.method !== 'GET') return;
 
-  // Google Fonts: network-first, fallback to cache
-  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
-    event.respondWith(
-      caches.open(FONT_CACHE).then((cache) => {
-        return fetch(event.request)
-          .then((response) => {
-            cache.put(event.request, response.clone());
-            return response;
-          })
-          .catch(() => cache.match(event.request));
-      })
-    );
-    return;
-  }
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
 
-  // Everything else: cache-first, then network
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(event.request).then((response) => {
-        // Only cache successful same-origin responses
+    caches.match(request).then((cached) => {
+      const network = fetch(request).then((response) => {
         if (response && response.status === 200 && response.type === 'basic') {
-          const toCache = response.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, toCache));
+          const copy = response.clone();
+          caches.open(CACHE_VERSION).then((cache) => cache.put(request, copy));
         }
         return response;
       }).catch(() => {
-        // Offline fallback: return index.html for navigation requests
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
+        if (request.mode === 'navigate') return caches.match('./index.html');
+        return cached;
       });
+
+      // Cache zuerst ausliefern, Netzwerk läuft im Hintergrund weiter.
+      return cached || network;
     })
   );
 });
