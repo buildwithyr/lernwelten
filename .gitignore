@@ -1,3 +1,6 @@
 node_modules/
 *.log
 .DS_Store
+
+# Temporäre Skripte unabhängiger Review-Agenten — kein Projektcode.
+.review-*.js
