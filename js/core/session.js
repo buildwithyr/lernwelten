@@ -268,7 +268,26 @@ const Session = (() => {
       return;
     }
 
-    // Noch Versuche übrig
+    // Bei Auswahlaufgaben ist ein zweiter Versuch sinnlos — die falsche
+    // Möglichkeit ist ja schon ausgeschlossen. Also gleich die Lösung zeigen,
+    // statt raten zu lassen.
+    if (view.mark && (task.input.kind === 'choice' || task.input.kind === 'memory')) {
+      c.locked = true;
+      view.lock(task);
+      view.mark(task, value, false);
+      record(OUT.FAILED);
+      const solution = AnswerCheck.formatSolution(task);
+      showFeedback(
+        `Die richtige Antwort ist: <strong>${Util.escapeHtml(solution)}</strong><br>`
+        + 'Schau sie dir gut an — die Aufgabe kommt noch einmal.',
+        'solution');
+      UI.announce('Die richtige Antwort ist ' + solution);
+      showNextButton();
+      return;
+    }
+
+    // Noch Versuche übrig: freundliche Rückmeldung, die zum nächsten
+    // Versuch passt.
     const kind = AnswerCheck.classify(value, task);
     let msg = Util.randomFrom(ENCOURAGE);
     if (kind === 'caseOnly') msg = 'Fast! Achte auf die Groß- und Kleinschreibung.';
@@ -276,20 +295,6 @@ const Session = (() => {
     else if (kind === 'closeNumber') msg = 'Knapp daneben. Rechne noch einmal in Ruhe.';
     showFeedback(msg, 'wrong');
     UI.announce(msg);
-
-    if (view.mark && (task.input.kind === 'choice' || task.input.kind === 'memory')) {
-      // Bei Auswahlaufgaben ist ein zweiter Versuch sinnlos: Lösung zeigen.
-      c.locked = true;
-      view.lock(task);
-      view.mark(task, value, false);
-      record(OUT.FAILED);
-      showFeedback(
-        `Die richtige Antwort ist: <strong>${Util.escapeHtml(AnswerCheck.formatSolution(task))}</strong><br>`
-        + 'Schau sie dir gut an — die Aufgabe kommt noch einmal.',
-        'solution');
-      showNextButton();
-      return;
-    }
 
     if (view.clear) view.clear();
     const input = UI.$('#task-answer');
