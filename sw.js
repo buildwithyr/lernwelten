@@ -84,6 +84,9 @@ const STATIC_ASSETS = [
   // Bilder
   './assets/oskar-cartoon.png',
   './assets/oskar-default.png',
+  './assets/icons/icon-16x16.png',
+  './assets/icons/icon-32x32.png',
+  './assets/icons/icon-48x48.png',
   './assets/icons/icon-72x72.png',
   './assets/icons/icon-96x96.png',
   './assets/icons/icon-128x128.png',

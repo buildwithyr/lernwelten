@@ -659,7 +659,7 @@ const Topics = (() => {
       title: 'Langes i: ie', short: 'Wiese, Biene', icon: '🐝',
       gen: 'langesIe', unlock: 'default',
       goal: 'Wörter mit langem i richtig schreiben.',
-      book: [ff('schreiben', '16–42', 'ie')],
+      book: [ff('schreiben', '16–42', 'Langes i mit ie')],
     },
     {
       id: 'd2.doppelmitlaut',

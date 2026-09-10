@@ -88,6 +88,12 @@ const GermanData = (() => {
     { sg: 'Sonne',    art: 'die', pl: null },
     { sg: 'Mond',     art: 'der', pl: null },
     { sg: 'Schnee',   art: 'der', pl: null },
+    { sg: 'Suppe',    art: 'die', pl: 'Suppen' },
+    { sg: 'Honig',    art: 'der', pl: null },
+    { sg: 'Korb',     art: 'der', pl: 'Körbe' },
+    { sg: 'Biene',    art: 'die', pl: 'Bienen' },
+    { sg: 'Bahnhof',  art: 'der', pl: 'Bahnhöfe' },
+    { sg: 'Wolle',    art: 'die', pl: null },
   ];
 
   // ─── ABC ──────────────────────────────────────────────────────────────────
