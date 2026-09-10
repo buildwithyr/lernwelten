@@ -39,9 +39,21 @@ body {
   page-break-inside: avoid;
   break-inside: avoid;
 }
-.ps-task .q-label { font-size: 12pt; font-weight: 700; margin-bottom: 2mm; }
-.ps-task .q-sub { font-size: 10pt; color: #333; }
-.ps-task .math-eq { font-size: 15pt; font-weight: 700; }
+/* Alles im Aufgabenblock linksbündig — die Bildschirm-Zentrierung sieht
+   auf A4 aus, als stünde der Text zufällig irgendwo auf der Seite. */
+.ps-task,
+.ps-task * { text-align: left !important; }
+.ps-task .q-label { font-size: 12pt; font-weight: 700; margin-bottom: 1mm; color: #000; }
+.ps-task .q-sub { font-size: 10pt; color: #333; margin-bottom: 1mm; }
+.ps-task .math-eq { font-size: 15pt; font-weight: 700; margin: 1mm 0; }
+.ps-task .word-main,
+.ps-task .word-masked,
+.ps-task .letter-scramble { font-size: 15pt; font-weight: 700; margin: 1mm 0; }
+.ps-task .sentence-line { font-size: 12pt; margin: 1mm 0; }
+.ps-task .dot-grid,
+.ps-task .groups-view,
+.ps-task .point-field,
+.ps-task .money-row { margin: 2mm 0; }
 
 .ws-blank {
   display: inline-block;
