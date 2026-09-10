@@ -1,0 +1,95 @@
+/* ============================================================
+   print.css — Arbeitsblätter zum Ausdrucken
+   Wird nur beim Drucken geladen (media="print").
+   ============================================================ */
+
+@page {
+  size: A4 portrait;
+  margin: 16mm 14mm;
+}
+
+body {
+  background: #fff !important;
+  color: #000 !important;
+  font-size: 12pt;
+}
+
+/* Alles ausblenden, was nicht auf das Blatt gehört. */
+.no-print,
+.workshop-header,
+.village-header,
+.oskar-companion,
+#pwa-install-banner,
+.update-banner,
+.storage-warning,
+.confetti-container,
+.overlay { display: none !important; }
+
+#app, .screen { display: block !important; min-height: 0 !important; }
+
+.print-sheet { display: block; }
+
+.ps-head { border-bottom: 2px solid #000; padding-bottom: 6mm; margin-bottom: 8mm; }
+.ps-head h1 { font-size: 18pt; margin: 0; }
+.ps-meta { font-size: 10pt; color: #333; margin-top: 2mm; }
+
+.ps-tasks { list-style: decimal; padding-left: 8mm; }
+.ps-task {
+  margin-bottom: 9mm;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+/* Alles im Aufgabenblock linksbündig — die Bildschirm-Zentrierung sieht
+   auf A4 aus, als stünde der Text zufällig irgendwo auf der Seite. */
+.ps-task,
+.ps-task * { text-align: left !important; }
+.ps-task .q-label { font-size: 12pt; font-weight: 700; margin-bottom: 1mm; color: #000; }
+.ps-task .q-sub { font-size: 10pt; color: #333; margin-bottom: 1mm; }
+.ps-task .math-eq { font-size: 15pt; font-weight: 700; margin: 1mm 0; }
+.ps-task .word-main,
+.ps-task .word-masked,
+.ps-task .letter-scramble { font-size: 15pt; font-weight: 700; margin: 1mm 0; }
+.ps-task .sentence-line { font-size: 12pt; margin: 1mm 0; }
+.ps-task .dot-grid,
+.ps-task .groups-view,
+.ps-task .point-field,
+.ps-task .money-row { margin: 2mm 0; }
+
+.ws-blank {
+  display: inline-block;
+  min-width: 18mm;
+  border-bottom: 1.5pt solid #000;
+}
+.ws-answer { margin-top: 3mm; }
+.ws-line {
+  display: inline-block;
+  width: 40mm; height: 7mm;
+  border-bottom: 1pt solid #666;
+}
+.ws-line--short { width: 18mm; }
+.ws-choices { display: flex; flex-wrap: wrap; gap: 5mm; }
+.ws-choice { font-size: 11pt; }
+.ws-fields { display: flex; flex-wrap: wrap; gap: 6mm; }
+.ws-items { display: flex; flex-wrap: wrap; gap: 3mm; margin-bottom: 2mm; }
+.ws-item { border: 1pt solid #666; border-radius: 2mm; padding: 1mm 3mm; font-size: 11pt; }
+
+/* Lösungen auf einer eigenen Seite, klar abgetrennt. */
+.ps-solutions {
+  page-break-before: always;
+  break-before: page;
+  border-top: 2pt dashed #666;
+  padding-top: 6mm;
+}
+.ps-solutions h2 { font-size: 14pt; margin-bottom: 4mm; }
+.ps-solution-list { list-style: decimal; padding-left: 8mm; columns: 2; font-size: 11pt; }
+.ps-source { margin-top: 6mm; font-size: 7pt; color: #777; word-break: break-all; }
+
+/* Darstellungen bleiben lesbar, aber sparsam im Druck. */
+.hundred-field { max-width: 90mm; }
+.hf-cell { font-size: 7pt; }
+.number-line { height: 24mm; }
+.bar-chart { height: 45mm; }
+.point-field .pf-dot { background: #444 !important; }
+.tb-cell { background: #ddd !important; }
+.tb-unit { background: #444 !important; }
+.coin, .note { border-color: #666 !important; background: #eee !important; color: #000 !important; }

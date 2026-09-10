@@ -1,38 +1,14 @@
 /**
- * modules/science.js
- * Forscherlabor — Wissen über die Welt spielerisch entdecken (Klasse 2).
+ * content/science-data.js
+ * Inhalte für das Forscherlabor.
+ *
+ * Format Quizfragen: [Frage, [falsch, falsch, richtig], Bereich, Emoji]
+ *   Die LETZTE Antwort im Array ist immer die richtige.
+ * Format Wahr/Falsch: [Aussage, istWahr, Bereich]
+ * Format Zuordnen:    [Begriff, richtigeKategorie, [falsche, falsche]]
  */
 
-const ScienceModule = (() => {
-
-  // ─── Hilfsfunktionen ──────────────────────────────────────────────────────
-
-  function randomFrom(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
-  // ─── Anti-Wiederholung ────────────────────────────────────────────────────
-
-  const RECENT_WINDOW = 6;
-  const recentKeys = {};
-  function wasRecent(id, key) { return (recentKeys[id] || []).includes(String(key)); }
-  function markRecent(id, key) {
-    if (!recentKeys[id]) recentKeys[id] = [];
-    recentKeys[id].push(String(key));
-    if (recentKeys[id].length > RECENT_WINDOW) recentKeys[id].shift();
-  }
-
-  // ─── Daten: Quizfragen (Multiple Choice) ───────────────────────────────
-  // Format: [frage, [falsch, falsch, richtig], bereich, emoji]
-  // Das LETZTE Element im Antwort-Array ist immer die richtige Antwort.
+const ScienceData = (() => {
 
   const KNOWLEDGE_QUESTIONS = [
     // ── Tiere ──
@@ -45,7 +21,7 @@ const ScienceModule = (() => {
     ['Welches Tier ist das größte Landtier?',['Giraffe','Löwe','Elefant'],'Tiere','🐘'],
     ['Was frisst ein Hase?',              ['Fleisch','Würmer','Gras und Gemüse'],'Tiere','🐰'],
     ['Wie nennt man das Zuhause eines Vogels?',['Höhle','Bau','Nest'],    'Tiere','🐦'],
-    ['Was macht ein Bär im Winter?',      ['Er fliegt weg','Er geht baden','Er hält Winterschlaf'],'Tiere','🐻'],
+    ['Was macht ein Bär im Winter?',      ['Er fliegt weg','Er geht baden','Er ruht in seiner Höhle'],'Tiere','🐻'],
     ['Wie viele Beine hat ein Insekt?',   ['4','8','6'],                  'Tiere','🐛'],
     ['Was ist ein Delfin?',               ['Ein Fisch','Ein Vogel','Ein Säugetier'],'Tiere','🐬'],
     ['Was frisst ein Adler?',             ['Gras','Honig','Kleine Tiere'],'Tiere','🦅'],
@@ -93,7 +69,7 @@ const ScienceModule = (() => {
     ['Was ist ein Vulkan?',               ['Ein Fluss','Ein See','Ein Berg mit Feuer'],'Natur','🌋'],
     ['Woher kommt der Regen?',            ['Aus der Sonne','Aus der Erde','Aus den Wolken'],'Natur','🌧️'],
     ['Was ist ein Gletscher?',            ['Ein See','Ein Fluss','Ein riesiger Berg aus Eis'],'Natur','🧊'],
-    ['In welcher Jahreszeit werden die Blätter bunt?',['Im Frühling','Im Sommer','Im Herbst'],'Natur','💨'],
+    ['In welcher Jahreszeit werden die Blätter bunt?',['Im Frühling','Im Sommer','Im Herbst'],'Natur','🍂'],
     ['Was macht ein Fluss?',              ['Er steht still','Er brennt','Er fließt'],'Natur','🏞️'],
     ['Was passiert im Frühling?',         ['Alles friert ein','Alles verblüht','Die Natur erwacht'],  'Natur','🌸'],
     ['Wo wachsen Pilze gern?',            ['In der Wüste','Im Meer','Im Wald'],'Natur','🍄'],
@@ -159,7 +135,7 @@ const ScienceModule = (() => {
     ['Was fressen Ameisen?',              ['Nur Steine','Nur Sand','Fast alles'],'Tiere','🐜'],
     ['Wie schützt sich ein Stachelschwein?',['Es beißt','Es läuft weg','Mit seinen Stacheln'],'Tiere','🦔'],
     ['Welches Tier ist kein Fisch, lebt aber im Wasser?',['Lachs','Forelle','Delfin'],'Tiere','🐬'],
-    ['Was ist ein Winterschlaf?',         ['Ein kurzes Schläfchen','Ein Spiel','Ein langer Schlaf im Winter'],'Tiere','🐻'],
+    ['Was ist ein Winterschlaf?',         ['Ein kurzes Schläfchen','Ein Spiel','Ein langer Schlaf im Winter'],'Tiere','🦔'],
     ['Wie viele Beine hat ein Vogel?',    ['4','6','2'],                  'Tiere','🐦'],
     // Weitere Natur
     ['Was sind Fossilien?',               ['Lebende Tiere','Junge Pflanzen','Versteinerte Reste alter Lebewesen'],'Natur','🦕'],
@@ -192,9 +168,6 @@ const ScienceModule = (() => {
     ['Was brauchst du bei Schnee an den Händen?',['Eine Sonnenbrille','Sandalen','Warme Handschuhe'],'Wetter','🧤'],
     ['Was ist ein Gewitter?',             ['Nur Wind','Nur Nebel','Blitz, Donner und Regen'],'Wetter','⛈️'],
   ];
-
-  // ─── Daten: Wahr/Falsch ───────────────────────────────────────────────────
-  // Format: [aussage, istWahr, bereich]
 
   const TRUE_FALSE_DATA = [
     // Tiere
@@ -296,16 +269,13 @@ const ScienceModule = (() => {
     ['Wind ist bewegte Luft.',                true,  'Wetter'],
     ['Der Regenbogen erscheint bei Regen und Sonne.',true,'Wetter'],
     ['Ein Thermometer misst die Temperatur.', true,  'Wetter'],
-    ['Frost gibt es nur bei Minusgraden.',    true,  'Wetter'],
+    ['Frost gibt es, wenn es kälter als 0 Grad ist.', true, 'Wetter'],
     ['Ein Hurrikan ist ein starker Sturm.',   true,  'Wetter'],
     ['Wolken bestehen aus Baumwolle.',        false, 'Wetter'],
     ['Im Sommer sind die Tage länger.',       true,  'Wetter'],
     ['Gewitter kommen nur im Sommer.',        false, 'Wetter'],
     ['Der Donner ist der Schall des Blitzes.',true,  'Wetter'],
   ];
-
-  // ─── Daten: Zuordnen ──────────────────────────────────────────────────────
-  // Format: [item, zuKategorie, falscheKategorien]
 
   const MATCHING_DATA = [
     // Tiere und Gruppen
@@ -375,503 +345,7 @@ const ScienceModule = (() => {
     ['Regenwald', 'Sehr feucht',     ['Sehr trocken','Sehr kalt']],
   ];
 
-  // ─── Aufgaben-Generatoren ─────────────────────────────────────────────────
-
-  const exercises = {
-
-    knowledgeQuiz: {
-      id: 'knowledgeQuiz',
-      title: 'Quizfrage',
-      icon: '🔬',
-      description: 'Wähle die richtige Antwort',
-      generate(difficulty) {
-        const pool = difficulty === 1
-          ? KNOWLEDGE_QUESTIONS.filter(q => ['Tiere','Wetter'].includes(q[2]))
-          : difficulty === 2
-            ? KNOWLEDGE_QUESTIONS.filter(q => ['Tiere','Natur','Wetter','Mensch'].includes(q[2]))
-            : KNOWLEDGE_QUESTIONS;
-
-        let q, attempts = 0;
-        do {
-          q = randomFrom(pool.length >= 5 ? pool : KNOWLEDGE_QUESTIONS);
-          attempts++;
-        } while (wasRecent('knowledgeQuiz', q[0]) && attempts < 20);
-        markRecent('knowledgeQuiz', q[0]);
-
-        const [frage, antworten, bereich, emoji] = q;
-        const correct = antworten[antworten.length - 1];
-        const choices = shuffle(antworten.slice());
-        // Tipp: eine falsche Antwort ausschließen — hilft, ohne zu verraten
-        const wrongExample = randomFrom(antworten.slice(0, -1));
-
-        return {
-          questionHtml: `
-            <div class="sci-topic-badge">${bereich}</div>
-            <div class="sci-emoji-img">${emoji}</div>
-            <p class="q-label">${frage}</p>
-          `,
-          answer: correct,
-          hint: `„${wrongExample}" ist es nicht. 😉`,
-          taskType: 'choice',
-          choices,
-        };
-      },
-    },
-
-    trueFalse: {
-      id: 'trueFalse',
-      title: 'Stimmt das?',
-      icon: '✅',
-      description: 'Stimmt das oder nicht?',
-      generate(difficulty) {
-        const pool = difficulty === 1
-          ? TRUE_FALSE_DATA.filter(d => ['Tiere','Wetter'].includes(d[2]))
-          : difficulty === 2
-            ? TRUE_FALSE_DATA.filter(d => ['Tiere','Natur','Wetter','Mensch'].includes(d[2]))
-            : TRUE_FALSE_DATA;
-
-        let item, attempts = 0;
-        do {
-          item = randomFrom(pool.length >= 5 ? pool : TRUE_FALSE_DATA);
-          attempts++;
-        } while (wasRecent('trueFalse', item[0]) && attempts < 20);
-        markRecent('trueFalse', item[0]);
-
-        const [aussage, istWahr, bereich] = item;
-        const answer = istWahr ? 'Wahr' : 'Falsch';
-
-        return {
-          questionHtml: `
-            <div class="sci-topic-badge">${bereich}</div>
-            <p class="q-label">Stimmt das?</p>
-            <p class="word-main">${aussage}</p>
-          `,
-          answer,
-          // Kein Tipp bei Wahr/Falsch — er würde die Lösung verraten
-          hint: null,
-          taskType: 'trueFalse',
-          choices: ['Wahr', 'Falsch'],
-        };
-      },
-    },
-
-    matching: {
-      id: 'matching',
-      title: 'Zuordnen',
-      icon: '🔗',
-      description: 'Was gehört wozu?',
-      generate(difficulty) {
-        let item, attempts = 0;
-        do {
-          item = randomFrom(MATCHING_DATA);
-          attempts++;
-        } while (wasRecent('matching', item[0]) && attempts < 20);
-        markRecent('matching', item[0]);
-
-        const [subject, correct, wrong] = item;
-        const choices = shuffle([correct, ...wrong]);
-
-        return {
-          questionHtml: `
-            <p class="q-label">Wozu gehört das?</p>
-            <p class="match-word">${subject}</p>
-            <p class="match-arrow">gehört zu ...</p>
-          `,
-          answer: correct,
-          hint: `Denke daran, was „${subject}" ist oder woher es kommt.`,
-          taskType: 'choice',
-          choices,
-        };
-      },
-    },
-
-  };
-
-  // ─── Session-State & Konstanten ───────────────────────────────────────────
-
-  const DEFAULT_SESSION_LENGTH = 10;
-  let sessionLength = DEFAULT_SESSION_LENGTH;
-  let currentExerciseId = null;
-  let currentTask = null;
-  let sessionStats = { correct: 0, total: 0 };
-  let answered = false;
-  let retryQueue = []; // falsch gelöste Aufgaben kommen später noch einmal
-
-  function resetSession() {
-    sessionStats = { correct: 0, total: 0 };
-    retryQueue = [];
-  }
-
-  function queueRetry() {
-    if (currentTask._retry || sessionStats.total >= sessionLength) return;
-    retryQueue.push({ ...currentTask, _retry: true, _notBefore: sessionStats.total + 2 });
-  }
-
-  function nextTask() {
-    if (retryQueue.length &&
-        (retryQueue[0]._notBefore <= sessionStats.total ||
-         sessionStats.total >= sessionLength)) {
-      return retryQueue.shift();
-    }
-    return generateTask(currentExerciseId);
-  }
-
-  const FEEDBACK_WRONG = [
-    'Fast! Denk noch mal nach! 💪',
-    'Nicht ganz – du schaffst das! 🌟',
-    'Nochmal versuchen! ✨',
-    'Das klappt beim nächsten Mal! 🎯',
-    'Gute Frage – nächstes Mal weißt du es! 🔍',
-  ];
-
-  const PRAISE_MESSAGES = [
-    'Klasse geforscht! 🔬',
-    'Was für ein Wissensstar! 🌟',
-    'Oskar ist beeindruckt! 🐶',
-    'Du weißt so viel! 💫',
-    'Fantastisch! 🏆',
-    'Ein echter Forscher! ⭐',
-    'Toll gemacht! 🎉',
-    'Wunderbar! ✨',
-  ];
-
-  function getSessionStars(correct, total) {
-    const r = correct / total;
-    return r >= 0.9 ? 3 : r >= 0.7 ? 2 : r >= 0.5 ? 1 : 0;
-  }
-
-  function getPerformanceText(correct, total) {
-    const r = correct / total;
-    if (r === 1)  return 'Perfekte Leistung! 🏆';
-    if (r >= 0.9) return 'Sehr stark! 🌟';
-    if (r >= 0.7) return 'Gut gemacht! 👍';
-    if (r >= 0.5) return 'Weiter lernen! 💪';
-    return 'Nicht aufgeben! 🌈';
-  }
-
-  function launchConfetti() {
-    const colors = ['#7EB8D4','#F4A435','#6DB68A','#B07EC8','#E85D75','#FFD166'];
-    const c = document.createElement('div');
-    c.className = 'confetti-container';
-    document.body.appendChild(c);
-    for (let i = 0; i < 60; i++) {
-      const p = document.createElement('div');
-      p.className = 'confetti-piece';
-      p.style.cssText = [
-        `left:${Math.random()*100}%`,
-        `background:${colors[Math.floor(Math.random()*colors.length)]}`,
-        `animation-delay:${(Math.random()*0.9).toFixed(2)}s`,
-        `animation-duration:${(1.2+Math.random()*1.4).toFixed(2)}s`,
-        `width:${6+Math.round(Math.random()*8)}px`,
-        `height:${6+Math.round(Math.random()*8)}px`,
-        `border-radius:${Math.random()>0.5?'50%':'3px'}`,
-        `transform:rotate(${Math.round(Math.random()*360)}deg)`,
-      ].join(';');
-      c.appendChild(p);
-    }
-    setTimeout(() => c.remove(), 3500);
-  }
-
-  // ─── Rendering ────────────────────────────────────────────────────────────
-
-  function renderHeader() {
-    const profile = Storage.getActiveProfile();
-    return `
-      <header class="workshop-header">
-        <button class="btn btn-back" id="back-to-village" title="Zurück">←</button>
-        <div class="workshop-title-block">
-          <span class="workshop-icon">🔬</span>
-          <h1>Forscherlabor</h1>
-        </div>
-        <div class="star-badge">⭐ <span id="header-stars">${profile ? profile.stars : 0}</span></div>
-      </header>
-    `;
-  }
-
-
-  function renderSessionModeSelector() {
-    return `
-      <div class="session-mode" role="group" aria-label="Spiellänge wählen">
-        <span class="session-mode-label">Wie lange?</span>
-        <button class="session-mode-btn${sessionLength === 5 ? ' selected' : ''}" data-session-length="5" type="button">Kurz: 5</button>
-        <button class="session-mode-btn${sessionLength === 10 ? ' selected' : ''}" data-session-length="10" type="button">Normal: 10</button>
-      </div>
-    `;
-  }
-
-  function bindSessionModeEvents() {
-    document.querySelectorAll('.session-mode-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const len = Number(btn.dataset.sessionLength);
-        sessionLength = len === 5 ? 5 : DEFAULT_SESSION_LENGTH;
-        renderMenu();
-      });
-    });
-  }
-
-  function renderExerciseCard(ex) {
-    const profile = Storage.getActiveProfile();
-    const stats = profile ? Storage.getSessionStats(profile.id, ex.id) : null;
-    let progressHtml;
-    if (stats) {
-      const bestTotal = stats.bestTotal || DEFAULT_SESSION_LENGTH;
-      const stars = getSessionStars(stats.bestScore, bestTotal);
-      const starStr = stars > 0 ? '⭐'.repeat(stars) : '–';
-      progressHtml = `<span class="ex-progress">${starStr} Beste: ${stats.bestScore}/${bestTotal}</span>`;
-    } else {
-      progressHtml = `<span class="ex-progress ex-not-played">Noch nicht gespielt</span>`;
-    }
-    return `
-      <button class="exercise-card" data-exercise="${ex.id}">
-        <span class="ex-icon">${ex.icon}</span>
-        <span class="ex-title">${ex.title}</span>
-        <span class="ex-desc">${ex.description}</span>
-        ${progressHtml}
-      </button>
-    `;
-  }
-
-  function renderMenu() {
-    const app = document.getElementById('app');
-    app.innerHTML = `
-      <div class="screen workshop-screen grade${Storage.getGrade() === 2 ? 2 : 1}">
-        ${renderHeader()}
-        <main class="exercise-menu">
-          <p class="menu-intro">Such dir ein Forscher-Spiel aus.</p>
-          ${renderSessionModeSelector()}
-          <div class="exercise-grid">
-            ${Object.values(exercises).map(renderExerciseCard).join('')}
-          </div>
-        </main>
-      </div>
-    `;
-    bindSessionModeEvents();
-
-    document.querySelectorAll('.exercise-card').forEach(card => {
-      card.addEventListener('click', () => {
-        resetSession();
-        currentExerciseId = card.dataset.exercise;
-        renderTask();
-      });
-    });
-    document.getElementById('back-to-village').addEventListener('click', () => App.showVillage());
-    setTimeout(() => {
-      const menu = document.querySelector('.exercise-menu');
-      if (menu) Oskar.show(menu, { placement:'inline-right', pool:'science', chance:0.7 });
-    }, 50);
-  }
-
-  function generateTask(exerciseId) {
-    const profile = Storage.getActiveProfile();
-    const difficulty = profile ? Adaptive.getDifficulty(profile.id, exerciseId) : 1;
-    const ex = exercises[exerciseId];
-    return { ...ex.generate(difficulty), difficulty };
-  }
-
-  function renderTask() {
-    const ex = exercises[currentExerciseId];
-    if (!ex) return;
-
-    sessionStats.total++;
-    currentTask = nextTask();
-    answered = false;
-
-    const isTrueFalse = currentTask.taskType === 'trueFalse';
-    const isChoice = currentTask.taskType === 'choice' || isTrueFalse;
-
-    let inputSection;
-    if (isTrueFalse) {
-      inputSection = `
-        <div class="tf-grid">
-          <button class="tf-btn tf-btn--wahr choice-btn" data-value="Wahr">✅ Wahr</button>
-          <button class="tf-btn tf-btn--falsch choice-btn" data-value="Falsch">❌ Falsch</button>
-        </div>
-      `;
-    } else {
-      inputSection = `
-        <div class="choice-grid" id="choice-grid">
-          ${currentTask.choices.map(c => `<button class="choice-btn" data-value="${encodeURIComponent(c)}">${c}</button>`).join('')}
-        </div>
-      `;
-    }
-
-    const app = document.getElementById('app');
-    app.innerHTML = `
-      <div class="screen task-screen grade${Storage.getGrade() === 2 ? 2 : 1}">
-        ${renderHeader()}
-        <main class="task-main">
-          <div class="task-card">
-            <div class="task-category">
-              <span>${ex.icon}</span><span>${ex.title}</span>
-              <span class="difficulty-indicator">${['⭐','⭐⭐','⭐⭐⭐'][currentTask.difficulty-1]||'⭐'}</span>
-            </div>
-            <div class="task-progress">
-              <div class="task-progress-bar">
-                <div class="task-progress-fill" style="width:${((sessionStats.total-1)/sessionLength)*100}%"></div>
-              </div>
-              <span class="task-progress-label">Aufgabe <strong>${sessionStats.total}</strong> von ${sessionLength}</span>
-            </div>
-            <div class="task-question">${currentTask.questionHtml}</div>
-            ${inputSection}
-            <div class="task-feedback hidden" id="task-feedback"></div>
-            <div class="task-actions">
-              ${currentTask.hint ? '<button class="btn btn-ghost" id="hint-btn">💡 Tipp</button>' : ''}
-            </div>
-          </div>
-        </main>
-      </div>
-    `;
-
-    document.querySelectorAll('.choice-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (answered) return;
-        evaluateAnswer(decodeURIComponent(btn.dataset.value));
-      });
-    });
-    const hintBtn = document.getElementById('hint-btn');
-    if (hintBtn) {
-      hintBtn.addEventListener('click', () => {
-        showFeedback(currentTask.hint, 'hint');
-      });
-    }
-    document.getElementById('back-to-village').addEventListener('click', () => {
-      resetSession();
-      App.showVillage();
-    });
-
-    setTimeout(() => {
-      const main = document.querySelector('.task-main');
-      if (main) Oskar.show(main, { placement:'task-companion', pool:'taskIntro', chance:0.2 });
-    }, 50);
-  }
-
-  function evaluateAnswer(value) {
-    if (answered) return;
-    answered = true;
-
-    const correct = value === currentTask.answer;
-    const profile = Storage.getActiveProfile();
-    if (profile) Storage.recordAttempt(profile.id, currentExerciseId, correct);
-
-    if (correct) {
-      sessionStats.correct++;
-      if (profile) {
-        Storage.addStars(profile.id, 1);
-        const el = document.getElementById('header-stars');
-        if (el) el.textContent = Storage.getActiveProfile().stars;
-      }
-      Oskar.say(randomFrom(Oskar.MESSAGES.correct));
-
-      const fill = document.querySelector('.task-progress-fill');
-      if (fill) fill.style.width = `${(sessionStats.total/sessionLength)*100}%`;
-
-      highlightChoices(value, true);
-      setTimeout(() => {
-        if (sessionStats.total >= sessionLength) renderSessionComplete();
-        else renderTask();
-      }, 1600);
-    } else {
-      answered = false;
-      Oskar.silence();
-      queueRetry();
-      showFeedback('Schau dir die grüne Antwort gut an – so merkst du sie dir! 🌟', 'wrong');
-      highlightChoices(value, false);
-      answered = true;
-
-      const actions = document.querySelector('.task-actions');
-      if (actions && !document.getElementById('next-btn')) {
-        const nb = document.createElement('button');
-        nb.className = 'btn btn-ghost';
-        nb.id = 'next-btn';
-        nb.textContent = 'Weiter →';
-        actions.appendChild(nb);
-        nb.addEventListener('click', () => {
-          if (sessionStats.total >= sessionLength) renderSessionComplete();
-          else renderTask();
-        });
-      }
-    }
-  }
-
-  function highlightChoices(selected, wasCorrect) {
-    document.querySelectorAll('.choice-btn').forEach(btn => {
-      btn.disabled = true;
-      const val = decodeURIComponent(btn.dataset.value);
-      if (val === currentTask.answer) btn.classList.add('choice-btn--correct');
-      else if (val === selected && !wasCorrect) btn.classList.add('choice-btn--wrong');
-    });
-  }
-
-  function showFeedback(msg, type) {
-    const fb = document.getElementById('task-feedback');
-    if (!fb) return;
-    fb.innerHTML = msg;
-    fb.className = `task-feedback feedback-${type}`;
-  }
-
-  function renderSessionComplete() {
-    launchConfetti();
-    const profile = Storage.getActiveProfile();
-    const correct = sessionStats.correct;
-    const total   = sessionLength;
-    const isPerfect = correct === total;
-
-    if (profile) {
-      Storage.saveSessionResult(profile.id, currentExerciseId, correct, total);
-      if (isPerfect) Storage.addStars(profile.id, 2); // Bonus für eine fehlerfreie Runde
-    }
-
-    const praise      = randomFrom(PRAISE_MESSAGES);
-    const performance = getPerformanceText(correct, total);
-    const stars       = getSessionStars(correct, total);
-    const starStr     = stars > 0 ? '⭐'.repeat(stars) : '☆☆☆';
-    const bonusHtml   = isPerfect
-      ? '<p class="complete-performance">🎁 +2 Bonus-Sterne für eine fehlerfreie Runde!</p>'
-      : '';
-
-    const app = document.getElementById('app');
-    app.innerHTML = `
-      <div class="screen complete-screen grade${Storage.getGrade() === 2 ? 2 : 1}">
-        ${renderHeader()}
-        <main class="complete-main">
-          <div class="complete-card">
-            <div class="complete-trophy">${stars>=3?'🏆':stars>=2?'🌟':'👍'}</div>
-            <h2 class="complete-praise">${praise}</h2>
-            <p class="complete-subtitle">Du hast <strong>${total} Aufgaben</strong> gespielt.</p>
-            <div class="complete-score-row">
-              <span class="complete-stars">${starStr}</span>
-              <span class="complete-score-text">Geschafft: <strong>${correct} von ${total}</strong></span>
-            </div>
-            <p class="complete-performance">${performance}</p>
-            ${bonusHtml}
-            <div class="complete-actions">
-              <button class="btn btn-primary" id="play-again-btn">🔄 Nochmal spielen</button>
-              <button class="btn btn-ghost" id="back-to-menu-btn">🏠 Zur Lernwelt</button>
-            </div>
-          </div>
-        </main>
-      </div>
-    `;
-
-    document.getElementById('play-again-btn').addEventListener('click', () => {
-      resetSession();
-      renderTask();
-    });
-    document.getElementById('back-to-menu-btn').addEventListener('click', () => App.showVillage());
-    document.getElementById('back-to-village').addEventListener('click', () => App.showVillage());
-
-    setTimeout(() => {
-      const main = document.querySelector('.complete-main');
-      if (main) Oskar.show(main, { placement:'task-companion', pool:'correct', chance:1 });
-    }, 100);
-  }
-
-  // ─── Public API ───────────────────────────────────────────────────────────
-
-  function mount() {
-    resetSession();
-    renderMenu();
-  }
-
-  return { mount };
+  return { KNOWLEDGE_QUESTIONS, TRUE_FALSE_DATA, MATCHING_DATA };
 })();
+
+if (typeof module !== 'undefined' && module.exports) module.exports = ScienceData;

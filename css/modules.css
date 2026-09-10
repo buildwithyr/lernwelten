@@ -73,12 +73,8 @@
 @media (hover: hover) {
   .choice-btn:hover:not(:disabled) {
     background: var(--cream);
-    border-color: var(--orange);
+    border-color: var(--accent, var(--orange));
     transform: translateY(-1px);
-  }
-  .grade2 .choice-btn:hover:not(:disabled) {
-    background: var(--g2-accent-light);
-    border-color: var(--g2-accent);
   }
 }
 
@@ -362,9 +358,6 @@
 .task-input-text:focus {
   border-color: var(--orange);
 }
-.grade2 .task-input-text:focus {
-  border-color: var(--g2-accent);
-}
 
 /* ─── Forscherlabor Frage-Bild ──────────────────────────────────────────── */
 
@@ -387,3 +380,234 @@
   color: #2a7a9e;
   margin-bottom: var(--sp-sm);
 }
+
+/* ============================================================
+   Darstellungen (ui/widgets.js) — Version 2
+   ============================================================ */
+
+/* ─── Zehnerstangen ──────────────────────────────────────────── */
+.ten-blocks {
+  display: flex; flex-wrap: wrap; align-items: flex-start;
+  gap: var(--sp-md); justify-content: center; margin: var(--sp-md) 0;
+}
+.tb-rods { display: flex; flex-wrap: wrap; gap: 6px; }
+.tb-rod {
+  display: grid; grid-template-rows: repeat(10, 1fr);
+  border: 2px solid var(--accent, var(--orange)); border-radius: 4px;
+  overflow: hidden;
+}
+.tb-cell {
+  width: 16px; height: 14px;
+  background: color-mix(in srgb, var(--accent, var(--orange)) 22%, white);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent, var(--orange)) 45%, white);
+}
+.tb-cell:last-child { border-bottom: none; }
+.tb-units { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; align-content: start; }
+.tb-unit {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--accent, var(--orange));
+}
+
+/* ─── Hunderterfeld ──────────────────────────────────────────── */
+.hundred-field {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  max-width: 340px;
+  margin: var(--sp-md) auto;
+}
+.hf-cell {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--white);
+  border: 1px solid var(--cream-dark);
+  border-radius: 3px;
+  font-size: 11px;
+  color: var(--text-mid);
+}
+.hf-cell--ten { background: var(--cream-dark); font-weight: 800; color: var(--text-dark); }
+.hf-cell--mark {
+  background: var(--accent, var(--orange));
+  color: var(--white);
+  font-weight: 900;
+  transform: scale(1.15);
+  border-color: var(--accent, var(--orange));
+  z-index: 1;
+}
+
+/* ─── Zahlenstrahl ───────────────────────────────────────────── */
+.number-line {
+  position: relative;
+  height: 76px;
+  margin: var(--sp-lg) 8px var(--sp-md);
+}
+.nl-axis {
+  position: absolute; left: 0; right: 0; top: 34px;
+  height: 4px; background: var(--text-mid); border-radius: 2px;
+}
+.nl-tick { position: absolute; top: 28px; width: 2px; height: 16px; background: var(--text-mid); transform: translateX(-50%); }
+.nl-tick--major { height: 22px; top: 25px; width: 3px; }
+.nl-label {
+  position: absolute; top: 24px; left: 50%; transform: translateX(-50%);
+  font-size: 11px; font-weight: 700; color: var(--text-mid); white-space: nowrap;
+}
+.nl-marker { position: absolute; top: 0; transform: translateX(-50%); text-align: center; }
+.nl-marker-dot {
+  display: block; width: 16px; height: 16px; margin: 0 auto;
+  background: var(--accent, var(--orange)); border-radius: 50%;
+  border: 3px solid var(--white); box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  position: relative; top: 26px;
+}
+.nl-marker-text {
+  display: block; position: relative; top: 22px;
+  font-family: var(--font-heading); font-weight: 900; font-size: var(--text-md);
+  color: var(--accent, var(--orange));
+}
+
+/* ─── Rechenmauer ────────────────────────────────────────────── */
+.pyramid { display: flex; flex-direction: column; align-items: center; gap: 4px; margin: var(--sp-md) 0; }
+.pyr-row { display: flex; gap: 4px; }
+.pyr-stone {
+  width: 62px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--cream-dark); border-radius: var(--r-sm);
+  font-family: var(--font-heading); font-weight: 800; font-size: var(--text-md);
+}
+.pyr-stone--blank {
+  background: var(--white);
+  border: 3px dashed var(--accent, var(--orange));
+  color: var(--accent, var(--orange));
+}
+
+/* ─── Gruppen und Punktefeld ─────────────────────────────────── */
+.groups-view { display: flex; flex-wrap: wrap; gap: var(--sp-sm); justify-content: center; margin: var(--sp-md) 0; }
+.grp-box {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: var(--cream); border: 2px solid var(--cream-dark);
+  border-radius: var(--r-md); padding: 8px; min-width: 62px; min-height: 56px;
+}
+.grp-container { font-size: 22px; }
+.grp-items { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; max-width: 72px; }
+.grp-item { font-size: 17px; }
+
+.point-field {
+  display: grid;
+  grid-template-columns: repeat(var(--pf-cols), 1fr);
+  gap: 6px; justify-content: center; margin: var(--sp-md) auto; width: max-content;
+}
+.pf-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--accent, var(--orange)); }
+
+/* ─── Geld ───────────────────────────────────────────────────── */
+.money-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: var(--sp-sm) 0; }
+.coin {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 46px; height: 46px; border-radius: 50%;
+  font-size: 12px; font-weight: 800; font-family: var(--font-heading);
+  border: 2px solid #B79A58; background: linear-gradient(160deg, #F5E3A8, #D8BE72); color: #5A470F;
+}
+.coin--50, .coin--20, .coin--10 { border-color: #C9A227; background: linear-gradient(160deg, #FBE9A8, #E0C158); }
+.coin--5, .coin--2, .coin--1 { border-color: #B07850; background: linear-gradient(160deg, #E7B58F, #C88C5F); color: #4A2A12; }
+.coin--1e, .coin--2e { border-color: #9AA0A6; background: linear-gradient(160deg, #E9EDF0, #C3CBD2); color: #333; }
+.note {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 62px; height: 38px; border-radius: 5px;
+  font-size: 13px; font-weight: 800; font-family: var(--font-heading);
+  border: 2px solid #7C8E9E; background: linear-gradient(160deg, #E3EEF7, #C6D9E8); color: #2A4055;
+}
+.note--10 { background: linear-gradient(160deg, #FBE2E2, #EFC0C0); border-color: #C08A8A; color: #6A2E2E; }
+.note--20 { background: linear-gradient(160deg, #E2F1E4, #BFDCC5); border-color: #86AE8E; color: #2C5334; }
+
+.price-tag {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--cream-card); border: 2px solid var(--cream-dark);
+  border-radius: var(--r-md); padding: 8px 12px;
+}
+.price-emoji { font-size: 26px; }
+.price-name { font-weight: 700; }
+.price-value {
+  font-family: var(--font-heading); font-weight: 900;
+  color: var(--accent, var(--orange)); margin-left: 4px;
+}
+
+/* ─── Tabellen und Diagramme ─────────────────────────────────── */
+.table-wrap { overflow-x: auto; margin: var(--sp-md) 0; }
+.data-table { border-collapse: collapse; width: 100%; min-width: 220px; }
+.data-table caption {
+  font-weight: 800; font-family: var(--font-heading);
+  padding-bottom: var(--sp-sm); font-size: var(--text-md);
+}
+.data-table th, .data-table td {
+  border: 1px solid var(--cream-dark); padding: 8px 12px; text-align: left;
+}
+.data-table thead th { background: var(--cream-dark); }
+.data-table tbody th { font-weight: 700; }
+
+.bar-chart {
+  display: flex; align-items: flex-end; gap: var(--sp-sm);
+  height: 180px; margin: var(--sp-md) 0; padding: 0 var(--sp-sm);
+}
+.bc-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; gap: 4px; }
+.bc-bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; }
+.bc-bar {
+  width: 100%; border-radius: 5px 5px 0 0;
+  background: linear-gradient(180deg, var(--accent, var(--orange)), color-mix(in srgb, var(--accent, var(--orange)) 65%, black));
+  min-height: 4px;
+}
+.bc-value { font-weight: 800; font-size: var(--text-sm); }
+.bc-label { font-size: var(--text-xs); color: var(--text-mid); text-align: center; line-height: 1.2; }
+
+/* ─── Spiegelraster ──────────────────────────────────────────── */
+.mirror-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--mg-size), 1fr);
+  gap: 3px; max-width: 280px; margin: var(--sp-md) auto;
+}
+.mg-cell {
+  aspect-ratio: 1; border-radius: 4px;
+  background: var(--white); border: 2px solid var(--cream-dark);
+  padding: 0; min-height: 0;
+}
+.mg-cell--axis { border-color: var(--accent, var(--orange)); border-style: dashed; }
+.mg-cell--on { background: var(--accent, var(--orange)); border-color: var(--accent, var(--orange)); }
+.mg-cell--clickable { cursor: pointer; }
+.mg-cell--solution { background: var(--green); border-color: var(--green); }
+
+/* ─── Sprache ────────────────────────────────────────────────── */
+.sentence-line {
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  text-align: center;
+  margin: var(--sp-md) 0;
+}
+.sentence-error {
+  background: #FBE4E4;
+  border-bottom: 3px solid #D46A6A;
+  border-radius: 3px;
+  padding: 0 3px;
+  font-weight: 700;
+}
+.short-text {
+  background: var(--cream-card);
+  border-left: 5px solid var(--accent, var(--orange));
+  border-radius: var(--r-sm);
+  padding: var(--sp-md);
+  text-align: left;
+  margin-bottom: var(--sp-md);
+}
+.short-text-title { font-size: var(--text-md); margin-bottom: 6px; }
+.short-text-body { line-height: 1.65; }
+.reading-instruction {
+  background: var(--yellow-light);
+  border-radius: var(--r-md);
+  padding: var(--sp-md);
+  font-size: var(--text-md);
+  line-height: 1.6;
+}
+.calc-way { display: flex; flex-direction: column; gap: 6px; align-items: center; margin: var(--sp-md) 0; }
+.cw-step {
+  background: var(--cream); border-radius: var(--r-sm); padding: 8px 16px;
+  font-family: var(--font-heading); font-weight: 800; font-size: var(--text-md);
+}
+.big-emoji { font-size: 56px; text-align: center; margin: var(--sp-sm) 0; }
+.shape-name { text-align: center; font-weight: 800; font-size: var(--text-md); }
+.q-sub { font-size: var(--text-sm); color: var(--text-mid); text-align: center; margin-top: 6px; }
