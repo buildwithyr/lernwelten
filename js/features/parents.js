@@ -263,11 +263,11 @@ const Parents = (() => {
     const seriesSel = UI.$('#bf-series');
     const volumeSel = UI.$('#bf-volume');
     if (seriesSel && volumeSel) {
-      function fillVolumes() {
-        const s = Topics.SERIES[seriesSel.value];
-        volumeSel.innerHTML = Object.keys(s.volumes).map(v =>
-          `<option value="${v}" ${String(profile.book.volume) === v ? 'selected' : ''}>${Util.escapeHtml(s.volumes[v])}</option>`).join('');
-      }
+      const fillVolumes = () => {
+        const series = Topics.SERIES[seriesSel.value];
+        volumeSel.innerHTML = Object.keys(series.volumes).map(v =>
+          `<option value="${v}" ${String(profile.book.volume) === v ? 'selected' : ''}>${Util.escapeHtml(series.volumes[v])}</option>`).join('');
+      };
       fillVolumes();
       seriesSel.addEventListener('change', fillVolumes);
 

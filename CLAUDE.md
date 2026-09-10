@@ -1,110 +1,348 @@
 # CLAUDE.md — Lernwelten
 
-## 1. Projekt-Übersicht
-
-**Name:** Lernwelten  
-**Zweck:** Spielerische Lern-App für Volksschulkinder (Klasse 1 & 2). Kinder erkunden ein Dorf mit vier Lerngebäuden und üben Mathe, Lesen, Logik und Sachwissen.  
-**Tech-Stack:**
-- Vanilla JavaScript (keine Frameworks, kein Build-Step)
-- CSS (mehrere Dateien, kein Preprocessor)
-- PWA (manifest.json, sw.js, installierbar auf Mobilgeräten)
-- Schriftart: Nunito via Google Fonts
-- Keine npm-Abhängigkeiten zur Laufzeit (README erwähnt `npm install`, aber es gibt keine package.json — ignorieren)
-- Hosting: unklar, aber als statische Seite deploybar (GitHub Pages, Netlify, etc.)
-
-**Sprache der UI:** Deutsch  
-**Zielgruppe:** Kinder ca. 6–8 Jahre → kindgerechtes Design, große Buttons, Emojis, Maskottchen Oskar (beide Klassenstufen)
+Anleitung für Menschen und KI-Agenten, die an diesem Projekt weiterarbeiten.
+Stand: Version 2 (Überarbeitung nach dem Analysebericht vom 09.09.2026).
 
 ---
 
-## 2. Dateistruktur
+## 1. Worum es geht
+
+**Lernwelten** ist eine Lern-App für die Volksschule (Klasse 1 und 2).
+Hauptnutzerin ist Luisa, 2. Klasse in Österreich. Die App läuft im Browser,
+ist als PWA installierbar und funktioniert offline.
+
+**Leitlinien** (aus dem Analysebericht):
+
+- Kurze, klare deutsche Anweisungen, österreichische Begriffe („Jänner", „Bub").
+- Wörter und kurze Sätze statt langer Geschichten.
+- Eindeutige Aufgaben, faire Rückmeldungen.
+- In Mathematik überwiegend eigene Zahleneingabe statt bloßes Auswählen.
+- Kurze Runden mit 5 oder 10 Aufgaben.
+- Lernhilfen, die den Lösungsweg zeigen — schrittweise, nicht sofort die Lösung.
+- Kein Zeitdruck, keine Ranglisten, keine Bestrafung für Lernpausen.
+- Keine externen Dienste. Kein Konto. Keine Datenübertragung nach außen.
+
+**Technik:** Vanilla JavaScript, HTML, CSS. Kein Build-Schritt, keine
+Laufzeit-Abhängigkeiten. Die einzige npm-Abhängigkeit ist Playwright für
+die Browsertests.
+
+---
+
+## 2. Architektur
 
 ```
-index.html              Einstiegspunkt; lädt alle CSS + JS; kommentiert Ladereihenfolge
-manifest.json           PWA-Manifest
-sw.js                   Service Worker (Offline-Caching)
-favicon.ico
-assets/
-  oskar-cartoon.png     Oskar-Maskottchen (beide Klassenstufen)
-  oskar-default.png     zweites Oskar-Bild (wo genau genutzt?)
-  icons/                PWA-Icons in allen Größen
+index.html            Einstiegspunkt; Ladereihenfolge ist dort dokumentiert
+sw.js                 Service Worker (Offline-Liste, Update-Verhalten)
+manifest.json         PWA-Manifest
+
 css/
-  main.css              Basisstyles, globale Variablen, Utility-Klassen
-  village.css           Dorfplatz-Screen (Gebäude-Grid, Header)
-  workshop.css          Lerngebäude-Screens (Quiz-Karten, Buttons)
-  oskar.css             Maskottchen-Positionierung und Sprechblase
-  modules.css           modulspezifische Styles (Dot-Grid, Pattern-Aufgaben etc.)
-js/
-  storage.js            Zentrales localStorage-Interface (alle Persistenz läuft hier durch)
-  adaptive.js           Schwierigkeitsgrad- und Gewichtungslogik (keine Cloud, lokal)
-  oskar.js              Maskottchen-Modul: Posen + Nachrichten-Pools für Oskar, DOM-Management
-  profile.js            Profilerstellung, Avatar-Auswahl, Setup-Screen
-  app.js                Haupt-Controller: Screen-Management, Dorfplatz, Overlays
-  pwa.js                PWA-Installbanner-Logik
-  modules/
-    math.js             Rechenwerkstatt (Zahlen erkennen, Zählen, Addition, Subtraktion)
-    words.js            Wörterhaus (fehlende Buchstaben, Buchstaben sortieren, Kategorien, Gegenteile)
-    puzzles.js          Rätselhöhle (Muster, Außenseiter, Gedächtnis, Mini-Sudoku)
-    science.js          Forscherlabor (Wissensquiz, Wahr/Falsch, Zuordnung)
+  fonts.css           lokale Schriften (SIL OFL, siehe assets/fonts/README.md)
+  main.css            Design-Tokens, Basis, Buttons, Dialoge, Zugänglichkeit
+  village.css         Dorfplatz und Profilanlage
+  workshop.css        Übungsmenüs, Aufgabenscreen, Abschluss, Extras
+  modules.css         Darstellungen (Zahlenstrahl, Hunderterfeld, Münzen …)
+  parents.css         Elternbereich
+  oskar.css           Maskottchen
+  print.css           Arbeitsblätter (nur media="print")
+
+js/core/              Fachlogik ohne DOM — vollständig in Node testbar
+  util.js             Zufall mit Startwert, Escaping, Datum, kleine Helfer
+  topics.js           Themenkatalog (Lernziele) + belegte Buchzuordnungen
+  answer.js           Antwortprüfung und -normalisierung
+  storage.js          Persistenz, Schema-Version, Migration, Export/Import
+  progress.js         Lernstand, Stufenanpassung, Wiederholungsplanung
+  rewards.js          Sterne und Sammelalbum
+  timers.js           zentrale Timer mit Sitzungskennung
+  session.js          gemeinsame Sitzungssteuerung (braucht das DOM)
+
+js/content/           reine Daten, keine Logik
+  words-data.js       Wortschatz, Buchstabenlücken, Gegenteile, Monate
+  german-data.js      Deutschinhalte Klasse 2 (Wortarten, Sätze, Rechtschreibung)
+  science-data.js     Sachwissen
+  logic-data.js       Wortgruppen, Formen, Spiegelvorlagen
+
+js/generators/        erzeugen Aufgaben, wechseln nie den Bildschirm
+  math-gen.js         Mathematik (Klasse 1 und 2)
+  german-gen.js       Deutsch
+  misc-gen.js         Sachwissen und Logik
+  index.js            Registry, stabile Aufgabenkennungen, Anti-Wiederholung
+
+js/ui/                Darstellung
+  clock.js            Analoguhr als HTML-String
+  widgets.js          Zahlenstrahl, Hunderterfeld, Zehnerstangen, Münzen,
+                      Rechenmauer, Punktefeld, Tabellen, Diagramme, Raster
+  dom.js              Bildschirmwechsel, Dialoge, Ansagen, Speicherfehler
+  taskview.js         14 Eingabearten
+  profile.js          Profilanlage und Profilkarte
+  workshop.js         Menü eines Lerngebäudes
+
+js/features/          eigenständige Bildschirme
+  daily.js            „Heute üben" und Kurz-Checks
+  parents.js          Elternbereich (Themen, Lernstand, Lernwörter, Daten, Profile)
+  toolbox.js          Oskars Werkzeugkiste
+  album.js            Sammelalbum
+  shop.js             Oskars Laden
+  mirror.js           Spiegelatelier
+  worksheet.js        druckbare Arbeitsblätter
+
+js/oskar.js           Maskottchen
+js/app.js             Start, Dorfplatz, Navigation
+js/pwa.js             Service-Worker-Registrierung, Update- und Installhinweis
+
+tests/
+  harness.js          lädt die Browser-Module in einen Node-Kontext
+  *.test.js           Modultests (npm test)
+  browser-run.js      Ende-zu-Ende-Durchlauf in Chromium
+  walkthrough-run.js  jede Übung und jeder Bildschirm im Browser
 ```
 
----
+### Verantwortlichkeiten — was gehört wohin
 
-## 3. Aktueller Stand
+| Frage | Zuständig |
+|---|---|
+| Welche Lernziele gibt es? Welche Buchseite gehört dazu? | `core/topics.js` |
+| Wie sieht eine konkrete Aufgabe aus? | `generators/*` |
+| Ist die Antwort richtig? | `core/answer.js` |
+| Wie wird das verbucht? | `core/progress.js` |
+| Wie läuft eine Runde ab? | `core/session.js` |
+| Wie sieht es aus? | `ui/*`, `css/*` |
+| Wo liegen die Daten? | `core/storage.js` |
 
-**Fertig/stabil:**
-- Alle 4 Lerngebäude sind aktiv und spielbar
-- Profil-System (Name + Avatar-Auswahl, lokal gespeichert)
-- Sterne & Level-System (alle 10 Sterne → nächstes Level)
-- Adaptives Lernsystem: Schwierigkeitsgrad 1–3 pro Übungsart, passt sich nach ≥5 Versuchen an (>85% Erfolg → schwerer, <50% → leichter)
-- Anti-Wiederholungs-Queue (letzte 5 Antworten werden nicht nochmal gestellt)
-- PWA: installierbar, Offline-Fähigkeit via Service Worker
-- Mobiles Layout: aktuell gefixt für schmale Displays (letzter Commit)
-- Maskottchen Oskar (Hund) erscheint auf dem Dorfplatz und in Modulen mit zufälligen Nachrichten, für beide Klassenstufen gleich
-- Klassenstufen-Auswahl (1./2. Klasse) beim App-Start, jederzeit über Button im Dorfplatz-Header wechselbar (`Storage.getGrade()/setGrade()`)
-
-**In Arbeit / bekannt offen:**
-- Oskar hat nur eine Pose (`oskar-cartoon.png`). Im Code sind `happy`, `thinking`, `wave` als auskommentierte Platzhalter in `oskar.js` — die PNG-Dateien fehlen noch
-- `oskar-default.png` existiert in assets/, aber unklar wo/ob genutzt (offene Frage)
-- Zweiter Branch `claude/clever-ride-85shxx` existiert — unklar was da drin ist, nicht gemergt
-
-**Nicht vorhanden (trotz README-Erwähnung):**
-- Kein `package.json`, kein `node_modules`, kein Build-System — die App ist reines Vanilla HTML/CSS/JS
+**Regel:** Ein Generator kennt kein DOM. Eine Darstellung kennt keinen
+Lernstand. Die Sitzungssteuerung ist die einzige Stelle, die beides verbindet.
 
 ---
 
-## 4. Technische Konventionen
+## 3. Datenmodell und Migration
 
-**Modul-Pattern:** Jedes JS-File ist ein IIFE (`const Foo = (() => { ... return {...}; })()`) — kein ES-Module-System, globale Variablen. Ladereihenfolge in `index.html` ist daher kritisch (in den HTML-Kommentaren dokumentiert).
+### Profil (Schema-Version 2)
 
-**Neues Lernfach hinzufügen:** `app.js` oben erklärt's: 1. `js/modules/<fach>.js` nach Muster von `math.js` erstellen, 2. im `BUILDINGS`-Array in `app.js` eintragen, 3. `<script>`-Tag in `index.html` ergänzen.
+```js
+{
+  id, schemaVersion: 2, name, avatarId, grade, createdAt,
+  stars, level,
+  settings:   { roundLength: 5|10, reduceMotion, showInstallHint },
+  unlocked:   { [topicId]: true },        // im Elternbereich freigegeben
+  focusTopics: [topicId],                 // Schwerpunkt für "Heute üben"
+  skills: {
+    [topicId]: {
+      level: 1..3, levelSince, roundsOnLevel,
+      firstTry: [1,0,…],                  // jüngste Erstversuche DIESER Stufe
+      solo, helped, failed, attempts,     // die drei Zustände
+      last, box: 1..5, dueAt,             // Wiederholungsplanung
+    }
+  },
+  sessions: {
+    [topicId]: { plays, best: { '5': {...}, '10': {...} }, last, history }
+  },
+  rounds:     [ … ],                      // gemischte Runden (Heute üben, Check)
+  retry:      [ { taskId, topicId, dueAt, tries, seed } ],
+  learnWords: [ { word, addedAt } ],
+  book:       { series, volume, page },
+  album:      { unlocked: [stickerId] },
+  daily:      { lastDay, rounds },
+  legacy_v1:  { adaptive, sessions, progress }   // Rohdaten aus Version 1
+}
+```
 
-**Neue Maskottchen-Pose:** PNG in `assets/` ablegen, in `CHARACTERS.oskar.poses` in `oskar.js` eintragen, dann per `Oskar.show(container, { pose: 'name' })` nutzen.
+### Migrationsregeln
 
-**Storage:** Alles geht durch `storage.js` — nie direkt `localStorage` anschreiben. Profil-Daten, Adaptive-Stats und Session-Ergebnisse sind getrennte Felder im Profil-Objekt.
+1. Vor der ersten Migration wird der unveränderte v1-Rohstand unter
+   `lw_backup_v1` gesichert. **Diese Sicherung wird nie automatisch gelöscht.**
+2. Ist keine Sicherung möglich (Speicher voll), wird **nicht** migriert.
+   Lieber alte Logik als Datenverlust.
+3. Alte Übungs-IDs (`additionRound100`, `missingLetter` …) werden über
+   `topic.legacyIds` auf neue Lernziele abgebildet.
+4. Unbekannte alte IDs bleiben in `legacy_v1` erhalten.
+5. Ein einzelnes fehlerhaftes Profil bricht die Migration nicht ab; es bleibt
+   unverändert bestehen und wird im Bericht gemeldet.
+6. **Es gibt keinen stillen Reset.** Nie.
 
-**CSS:** Keine CSS-Variablen-Architektur erkennbar außer inline style-Attributen bei Gebäudefarben (`--building-color`, `--building-bg`). Farben für die Module sind in `app.js` als Hex-Werte im `BUILDINGS`-Array definiert.
+### Ein neues Schema einführen
 
-**Sprachkonvention:** Code-Kommentare und Variablennamen sind gemischt (Deutsch und Englisch). UI ist komplett Deutsch.
+1. `SCHEMA_VERSION` in `core/storage.js` erhöhen.
+2. Eine Funktion `_migrateProfileV2toV3` schreiben, die nur ergänzt.
+3. In `runMigrations` einhängen — Sicherung zuerst.
+4. In `tests/storage.test.js` einen realistischen Altbestand ergänzen.
 
 ---
 
-## 5. Bekannte Eigenheiten / Stolpersteine
+## 4. Neue Aufgaben hinzufügen
 
-- **Kein Build-Step:** Änderungen sind sofort aktiv. Kein `npm run build` nötig/möglich.
-- **Service Worker cacht aggressiv:** Bei Änderungen kann der SW veraltete Assets ausliefern. `sw.js` hat eine Cache-Version — bei größeren Änderungen die Version hochzählen, sonst sehen Nutzer nichts.
-- **Ladereihenfolge in index.html ist Pflicht:** `storage.js` muss vor `adaptive.js` und `oskar.js` kommen, die müssen vor `profile.js` und den Modulen sein — das ist im HTML-Kommentar dokumentiert.
-- **`recentAnswers`-Queue ist nur im RAM:** Wird beim Seitenladen zurückgesetzt. Kein Problem für den Normalbetrieb, aber beim Testing auffällig.
-- **Kein echtes Routing:** Alle Screens werden per `innerHTML` in `#app` gerendert. Browser-Back-Button funktioniert nicht wie erwartet.
-- **Adaptive-Stats und Session-Stats sind zwei verschiedene Datentöpfe:** `profile.adaptive[exerciseId]` (für Schwierigkeit) und `profile.sessions[exerciseId]` (für Bestscores/Sterne) — nicht verwechseln.
-- **MAX_WRONG_ATTEMPTS = 3** ist in jedem Modul einzeln definiert (`math.js`, `words.js`, `puzzles.js`) — wenn man das ändern will, muss man es an mehreren Stellen tun.
+### Neues Lernziel
+
+1. **Eintrag in `js/core/topics.js`:**
+
+```js
+{
+  id: 'm2.meinThema',            // niemals später umbenennen: steckt in Nutzerdaten
+  subject: 'math', grade: 2,
+  group: 'Plus und Minus bis 100',
+  title: 'Mein Thema', short: 'Kurzbeschreibung', icon: '🎯',
+  gen: 'meinGenerator',
+  unlock: 'default',             // 'always' | 'default' | 'off'
+  goal: 'Was das Kind danach kann.',
+  book: [zr(2, '135–143', 'Fundstelle im Buch')],   // nur wenn belegt!
+}
+```
+
+2. **Generator in `js/generators/math-gen.js`:**
+
+```js
+const meinGenerator = {
+  generate(ctx) {                       // ctx = { level, rng, seed, profile, args }
+    const a = Util.randomInt(10, 90, ctx.rng);
+    return {
+      signature: `mt-${a}`,             // stabil, beschreibt die Aufgabe
+      prompt: `Was ist ${a} plus 10?`,  // reiner Text, wird angesagt
+      questionHtml: Widgets.equation([a, '+', 10, '=', '?']),
+      input: { kind: 'number', max: 100 },
+      answerMode: AnswerCheck.MODE.NUMBER,
+      answer: a + 10,
+      hints: [
+        'Was passiert mit den Zehnern?',   // qualitativ
+        `${a} und ein Zehner mehr.`,       // konkreter
+        `${a} + 10 = ${a + 10}.`,          // Lösungsweg
+      ],
+      tool: 'hunderterfeld',            // optional, Oskars Werkzeugkiste
+    };
+  },
+};
+// … und im return-Block exportieren
+```
+
+3. Fertig. Menü, Lernstand, Elternbereich, Arbeitsblatt und Tests greifen
+   automatisch. `npm test` prüft den neuen Generator sofort mit.
+
+### Regeln für Aufgaben (nicht verhandelbar)
+
+- **Genau eine richtige Lösung.** Ist eine zweite denkbar, gehört sie in
+  `accept` oder die Aufgabe braucht einen eingrenzenden Hinweis im Text
+  (so wie bei `H_RZ` → „Es schlägt in deiner Brust.").
+- **Mindestens zwei Hilfen, gestuft.** Die erste darf die Lösung nicht nennen.
+  `tests/generators.test.js` prüft das.
+- **`signature` beschreibt die Aufgabe, nicht die Antwort.** `15 + 5` und
+  `10 + 10` müssen verschiedene Kennungen haben.
+- **Schwierigkeit heißt nicht „größere Zahlen".** Sie unterscheidet
+  Anforderungen: mit/ohne Zehnerübergang, Anzahl Schritte, Stützpunkte.
+- **Zahlenraum und Anforderung sind getrennte Themen.** „bis 100" ist etwas
+  anderes als „mit Zehnerübergang".
+- **Groß-/Kleinschreibung nur prüfen, wenn sie das Lernziel ist**
+  (`strictCase: true`). Sonst tolerant vergleichen.
+- **Uhrzeit:** Wird eine 24-Stunden-Antwort erwartet, muss die Aufgabe die
+  Tageszeit nennen. Ein Zifferblatt allein unterscheidet Vormittag und
+  Nachmittag nicht.
 
 ---
 
-## 6. Was NICHT ohne Rückfrage geändert werden soll
+## 5. Themen und Buchseiten zuordnen
 
-- **`storage.js`** — alle anderen Module hängen daran. Schema-Änderungen am Profil-Objekt können bestehende localStorage-Daten von Nutzern korrupten.
-- **Ladereihenfolge in `index.html`** — bitte nicht umstellen ohne die Abhängigkeiten zu prüfen.
-- **`sw.js` / PWA-Logik** — Caching-Bugs sind schwer zu debuggen und betreffen installierte App-Nutzer direkt.
-- **Bestehende `exerciseIds`** in `app.js` (`numberRecognition`, `counting`, etc.) — diese sind Keys in den gespeicherten Nutzerdaten. Umbenennen würde alle Fortschritte zurücksetzen.
-- **`BUILDINGS`-Array in `app.js`** — `active: false` sollte nicht leichtfertig auf `true` gesetzt werden, solange das Modul noch nicht implementiert ist.
+Im Elternbereich unter „Themen" gibt es eine Suche „Buchseite nachschlagen".
+Sie greift auf `topic.book` in `core/topics.js` zu.
+
+**Die wichtigste Regel:** Dort stehen **ausschließlich Seitenangaben, die im
+Analysebericht belegt sind.** Es wird nichts geraten. Findet die Suche zu
+einer Seite nichts, sagt die App das ausdrücklich („keine belegte Zuordnung")
+— sie erfindet keine Zuordnung.
+
+Format einer Referenz:
+
+```js
+{ series: 'zahlenreise2', volume: 1, printed: '45–48', pdf: null, label: '…' }
+```
+
+`pdf: null` heißt: Die PDF-Seite ist nicht belegt. Nicht schätzen.
+
+Belegt sind derzeit (Quelle: Bericht, Abschnitte 4, 5 und 7):
+
+- Zahlenreise 2, Teil 1: S. 21, 27–29, 33, 41, 45–48, 51–59, 61–66, 68,
+  72–76, 77–78, 79–90, 84
+- Zahlenreise 2, Teil 2: S. 112–114, 116, 117–119, 123–125, 126–132,
+  134, 135–143, 144–147, 150, 165, 166–171, 180, 181, 186–190, 191–195, 197
+- Flex und Flora 2: Sprache untersuchen S. 4–9, 16–25, 28–35, 38–55, 58–63;
+  Richtig schreiben S. 8–15, 16–42, 43–49; Lesen S. 4–17, 36–47;
+  Texte verfassen S. 11–29, 58–61; Mein Trainingsheft S. 5–8
+
+Die zehn Mathe-Checks stehen in `Topics.CHECKS` mit gedruckter Seite, PDF-Seite
+und Band. Sie dienen als **Themenraster** — die App stellt eigene Aufgaben zu
+den dort genannten Lernzielen, sie reproduziert keine Buchseiten.
+
+---
+
+## 6. Tests, lokaler Start, Bereitstellung
+
+```bash
+npm test              # 215 Modultests (Node, kein Browser nötig)
+npm run test:browser  # 30 Prüfungen in Chromium (Ende zu Ende)
+node tests/walkthrough-run.js          # jede Übung im Browser durchspielen
+node tests/walkthrough-run.js --topic m2.symmetrie   # nur ein Thema
+
+npm start             # python3 -m http.server 8080
+```
+
+Für den Service Worker braucht es einen echten Server — `file://` genügt nicht.
+
+**Bereitstellung:** statisches Hosting, kein Build. Der Ordner wird
+unverändert ausgeliefert.
+
+**Achtung bei einem Domainwechsel:** `localStorage` hängt an der Adresse.
+Vor einem Umzug im Elternbereich eine Sicherung herunterladen und danach
+wieder einspielen.
+
+---
+
+## 7. Offline- und Update-Verhalten
+
+- `sw.js` listet **alle** Dateien der App in `STATIC_ASSETS`.
+  `tests/offline.test.js` prüft diese Liste gegen `index.html` — eine
+  vergessene Datei fällt sofort auf, nicht erst offline beim Kind.
+- Der Service Worker ruft **kein** `self.skipWaiting()` im Install-Handler.
+  Eine neue Version wartet.
+- `js/pwa.js` bietet das Update erst an, wenn `Session.isActive()` falsch ist
+  — also am Dorfplatz oder nach einer abgeschlossenen Runde. Angewendet wird
+  es erst auf Tippen.
+- Nach inhaltlichen Änderungen die `CACHE_VERSION` erhöhen, sonst sehen
+  installierte Nutzerinnen nichts.
+- Der Installationshinweis erscheint frühestens nach einer abgeschlossenen
+  Runde und lässt sich im Elternbereich abschalten.
+
+---
+
+## 8. Stolpersteine
+
+- **Kein Build-Schritt.** Änderungen sind sofort aktiv.
+- **Ladereihenfolge in `index.html` ist Pflicht.** Sie ist dort kommentiert.
+  `tests/offline.test.js` prüft, dass jede JS-Datei eingebunden ist.
+- **`const` auf oberster Ebene** landet im lexikalischen Gültigkeitsbereich,
+  nicht auf `window`. Deshalb holt `tests/harness.js` die Module ausdrücklich
+  heraus.
+- **Topic-IDs sind Nutzerdaten.** Umbenennen setzt Fortschritte zurück.
+  Braucht ein Thema einen neuen Namen: `title` ändern, `id` behalten.
+- **Alle Nutzereingaben durch `Util.escapeHtml`.** Profilname, Lernwörter,
+  importierte Daten. Nie roh in ein Template.
+- **Timer nur über `Timers.after` / `Timers.every`.** Ein direktes
+  `setTimeout` überlebt den Bildschirmwechsel und öffnet nachträglich einen
+  Aufgabenscreen.
+- **`MAX_WRONG_ATTEMPTS` steht nur in `core/session.js`.** Nicht kopieren.
+- **Sterne werden am Rundenende vergeben**, nicht pro Antwort — sonst zählt
+  eine abgebrochene Runde doppelt.
+
+---
+
+## 9. Was ohne Rückfrage nicht geändert werden sollte
+
+- **`core/storage.js`** — Schema-Änderungen können bestehende Lernstände
+  beschädigen. Immer mit Migration und Test.
+- **Topic-IDs und `legacyIds`** in `core/topics.js`.
+- **`sw.js` und `js/pwa.js`** — Caching-Fehler treffen installierte Nutzer
+  direkt und sind schwer zu debuggen.
+- **Buchzuordnungen** — nichts hinzufügen, was nicht belegt ist.
+- **Die drei Zustände solo / helped / failed** — sie tragen die gesamte
+  Bewertung. Wer sie zusammenlegt, macht den Lernstand wertlos.
+
+---
+
+## 10. Aktueller Stand und offene Punkte
+
+Siehe `ARBEITSSTAND.md` im Projektstamm. Dort stehen erledigte Arbeiten,
+offene Fehler und die nächsten konkreten Schritte.

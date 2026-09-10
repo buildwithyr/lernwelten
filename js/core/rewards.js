@@ -108,11 +108,17 @@ const Rewards = (() => {
 
   /** Zähler, aus denen sich Freischaltungen ergeben. */
   function counters(profile) {
-    let rounds = 0;
+    // `totalRounds` zählt echte Runden. Ältere Profile haben das Feld nicht —
+    // dann wird aus den Durchgängen je Thema geschätzt (eine gemischte Runde
+    // zählt dort mehrfach, deshalb ist das nur die Rückfallebene).
     let topics = 0;
-    Object.keys(profile.sessions || {}).forEach(id => {
-      rounds += (profile.sessions[id].plays || 0);
-    });
+    let rounds = profile.totalRounds;
+    if (typeof rounds !== 'number') {
+      rounds = 0;
+      Object.keys(profile.sessions || {}).forEach(id => {
+        rounds += (profile.sessions[id].plays || 0);
+      });
+    }
     Object.keys(profile.skills || {}).forEach(id => {
       const s = profile.skills[id];
       if (s.attempts >= 6 && s.solo / s.attempts >= 0.8) topics++;

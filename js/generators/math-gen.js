@@ -783,13 +783,32 @@ const MathGen = (() => {
 
   // ══ Malnehmen und Teilen ════════════════════════════════════════════════
 
+  // Jedes Thema bringt seine eigenen Satzbausteine mit — sonst entstehen
+  // grammatikalisch falsche Sätze wie "4 Vasen. Auf jedem liegen 9 Blumen."
   const GROUP_THEMES = [
-    { emoji: '🍎', container: '🍽️', name: 'Äpfel', place: 'Teller' },
-    { emoji: '🌸', container: '🏺', name: 'Blumen', place: 'Vasen' },
-    { emoji: '🍬', container: '🧺', name: 'Bonbons', place: 'Körbe' },
-    { emoji: '⚽', container: '📦', name: 'Bälle', place: 'Kisten' },
-    { emoji: '🐟', container: '🪣', name: 'Fische', place: 'Kübel' },
+    { emoji: '🍎', container: '🍽️', items: 'Äpfel', itemsDat: 'Äpfeln',
+      placePl: '{n} Teller', placeDat: '{n} Tellern', placeAcc: '{n} Teller',
+      eachHas: 'Auf jedem Teller liegen {n} Äpfel.',
+      intoEach: 'Wie viele Äpfel kommen auf einen Teller?' },
+    { emoji: '🌸', container: '🏺', items: 'Blumen', itemsDat: 'Blumen',
+      placePl: '{n} Vasen', placeDat: '{n} Vasen', placeAcc: '{n} Vasen',
+      eachHas: 'In jeder Vase stehen {n} Blumen.',
+      intoEach: 'Wie viele Blumen kommen in eine Vase?' },
+    { emoji: '🍬', container: '🧺', items: 'Bonbons', itemsDat: 'Bonbons',
+      placePl: '{n} Körbe', placeDat: '{n} Körben', placeAcc: '{n} Körbe',
+      eachHas: 'In jedem Korb liegen {n} Bonbons.',
+      intoEach: 'Wie viele Bonbons kommen in einen Korb?' },
+    { emoji: '⚽', container: '📦', items: 'Bälle', itemsDat: 'Bällen',
+      placePl: '{n} Kisten', placeDat: '{n} Kisten', placeAcc: '{n} Kisten',
+      eachHas: 'In jeder Kiste liegen {n} Bälle.',
+      intoEach: 'Wie viele Bälle kommen in eine Kiste?' },
+    { emoji: '🐟', container: '🪣', items: 'Fische', itemsDat: 'Fischen',
+      placePl: '{n} Kübel', placeDat: '{n} Kübeln', placeAcc: '{n} Kübel',
+      eachHas: 'In jedem Kübel schwimmen {n} Fische.',
+      intoEach: 'Wie viele Fische kommen in einen Kübel?' },
   ];
+
+  function fill(template, n) { return String(template).replace('{n}', n); }
 
   const malGruppen = {
     generate(ctx) {
@@ -803,7 +822,7 @@ const MathGen = (() => {
       if (asEquation) {
         return {
           signature: `mg-eq-${count}x${each}`,
-          prompt: `Welche Malaufgabe passt zu ${count} ${theme.place} mit je ${each} ${theme.name}?`,
+          prompt: `Welche Malaufgabe passt zu ${fill(theme.placeDat, count)} mit je ${each} ${theme.itemsDat}?`,
           questionHtml: `
             <p class="q-label">Welche Malaufgabe passt zum Bild?</p>
             ${Widgets.groups(count, each, theme.emoji, theme.container)}`,
@@ -822,17 +841,18 @@ const MathGen = (() => {
         };
       }
 
+      const intro = `${fill(theme.placePl, count)}. ${fill(theme.eachHas, each)}`;
       return {
         signature: `mg-${count}x${each}`,
-        prompt: `${count} ${theme.place}. Auf jedem liegen ${each} ${theme.name}. Wie viele sind es zusammen?`,
+        prompt: `${intro} Wie viele ${theme.items} sind es zusammen?`,
         questionHtml: `
-          <p class="q-label">${count} ${theme.place}. In jedem sind ${each} ${theme.name}.<br>Wie viele ${theme.name} sind es zusammen?</p>
+          <p class="q-label">${intro}<br>Wie viele ${theme.items} sind es zusammen?</p>
           ${Widgets.groups(count, each, theme.emoji, theme.container)}`,
         input: { kind: 'number', max: 100 },
         answerMode: AnswerCheck.MODE.NUMBER,
         answer: total,
         hints: [
-          `Zähle in ${each}er-Schritten weiter.`,
+          'Zähle nicht einzeln — nimm immer eine ganze Gruppe auf einmal.',
           `Das ist die Malaufgabe ${count} · ${each}.`,
           `${count} · ${each} = ${total}.`,
         ],
@@ -1001,13 +1021,14 @@ const MathGen = (() => {
       const groupsCount = level === 1 ? R(2, 3, rng) : level === 2 ? R(2, 5, rng) : R(3, 8, rng);
       const each = level === 1 ? R(2, 4, rng) : level === 2 ? R(2, 6, rng) : R(2, 9, rng);
       const total = groupsCount * each;
+      const intro = `${total} ${theme.items} werden gerecht auf ${fill(theme.placeAcc, groupsCount)} verteilt.`;
       return {
         signature: `tv-${total}-${groupsCount}`,
-        prompt: `${total} ${theme.name} werden gerecht auf ${groupsCount} ${theme.place} verteilt. Wie viele sind in einem?`,
+        prompt: `${intro} ${theme.intoEach}`,
         questionHtml: `
-          <p class="q-label">${total} ${theme.name} werden gerecht auf ${groupsCount} ${theme.place} verteilt.</p>
+          <p class="q-label">${intro}</p>
           ${Widgets.groups(groupsCount, 0, theme.emoji, theme.container)}
-          <p class="q-sub">Wie viele ${theme.name} kommen in jeden ${theme.place.replace(/e$/, '')}?</p>`,
+          <p class="q-sub">${theme.intoEach}</p>`,
         input: { kind: 'number', max: 100 },
         answerMode: AnswerCheck.MODE.NUMBER,
         answer: each,
@@ -1030,16 +1051,16 @@ const MathGen = (() => {
       const total = groupsCount * each;
       return {
         signature: `tg-${total}-${each}`,
-        prompt: `Wie viele Gruppen zu je ${each} kannst du aus ${total} bilden?`,
+        prompt: `Du hast ${total} ${theme.items}. Immer ${each} kommen in eine Gruppe. Wie viele Gruppen werden das?`,
         questionHtml: `
-          <p class="q-label">Du hast ${total} ${theme.name}.</p>
+          <p class="q-label">Du hast ${total} ${theme.items}.</p>
           <p class="q-sub">Immer ${each} kommen zusammen in eine Gruppe.<br>Wie viele Gruppen werden das?</p>
-          ${Widgets.dotGrid(total, { label: total + ' ' + theme.name })}`,
+          ${Widgets.dotGrid(total, { label: total + ' ' + theme.items })}`,
         input: { kind: 'number', max: 100 },
         answerMode: AnswerCheck.MODE.NUMBER,
         answer: groupsCount,
         hints: [
-          `Nimm immer ${each} weg und zähle mit, wie oft das geht.`,
+          'Nimm immer gleich viele weg und zähle mit, wie oft das geht.',
           `Das ist die Aufgabe ${total} : ${each}.`,
           `${total} : ${each} = ${groupsCount}.`,
         ],
@@ -1091,19 +1112,21 @@ const MathGen = (() => {
 
   // ══ Geld ════════════════════════════════════════════════════════════════
 
+  // `acc` ist die Akkusativform mit Artikel — sie passt in Sätze wie
+  // "Du kaufst …". Ohne sie entstehen Sätze wie "Du kaufst Kuscheltier".
   const SHOP_ITEMS = [
-    { name: 'Heft', emoji: '📓', price: 120 },
-    { name: 'Bleistift', emoji: '✏️', price: 80 },
-    { name: 'Radiergummi', emoji: '🧽', price: 50 },
-    { name: 'Apfel', emoji: '🍎', price: 60 },
-    { name: 'Semmel', emoji: '🥐', price: 45 },
-    { name: 'Milch', emoji: '🥛', price: 110 },
-    { name: 'Ball', emoji: '⚽', price: 350 },
-    { name: 'Buch', emoji: '📗', price: 500 },
-    { name: 'Sticker', emoji: '⭐', price: 30 },
-    { name: 'Saft', emoji: '🧃', price: 90 },
-    { name: 'Kuscheltier', emoji: '🧸', price: 750 },
-    { name: 'Schere', emoji: '✂️', price: 200 },
+    { name: 'Heft',        acc: 'ein Heft',         emoji: '📓', price: 120 },
+    { name: 'Bleistift',   acc: 'einen Bleistift',  emoji: '✏️', price: 80 },
+    { name: 'Radiergummi', acc: 'einen Radiergummi',emoji: '🧽', price: 50 },
+    { name: 'Apfel',       acc: 'einen Apfel',      emoji: '🍎', price: 60 },
+    { name: 'Semmel',      acc: 'eine Semmel',      emoji: '🥐', price: 45 },
+    { name: 'Milch',       acc: 'eine Milch',       emoji: '🥛', price: 110 },
+    { name: 'Ball',        acc: 'einen Ball',       emoji: '⚽', price: 350 },
+    { name: 'Buch',        acc: 'ein Buch',         emoji: '📗', price: 500 },
+    { name: 'Sticker',     acc: 'einen Sticker',    emoji: '⭐', price: 30 },
+    { name: 'Saft',        acc: 'einen Saft',       emoji: '🧃', price: 90 },
+    { name: 'Kuscheltier', acc: 'ein Kuscheltier',  emoji: '🧸', price: 750 },
+    { name: 'Schere',      acc: 'eine Schere',      emoji: '✂️', price: 200 },
   ];
 
   const geldMuenzen = {
@@ -1197,22 +1220,26 @@ const MathGen = (() => {
       const item = F(SHOP_ITEMS, rng);
       let price, paid;
       if (level === 1) {
+        // Ganze Euro, Rückgeld höchstens 4 €.
         price = R(1, 4, rng) * 100;
-        paid = (price / 100 + R(1, 3, rng)) * 100;
+        paid = price + R(1, 4, rng) * 100;
       } else if (level === 2) {
+        // Halbe Euro, mit 5 € bezahlt.
         price = R(1, 4, rng) * 100 + F([0, 50], rng);
-        paid = F([500, 1000], rng);
+        paid = 500;
       } else {
-        price = R(120, 890, rng);
-        price = price - (price % 10);
-        paid = F([1000, 2000], rng);
+        // Zehnerschritte bei den Cent, mit 10 € bezahlt — das Rückgeld
+        // bleibt einstellig. Größere Beträge sind kein sinnvoller
+        // Schwierigkeitszuwachs für die 2. Klasse.
+        price = R(21, 95, rng) * 10;
+        paid = 1000;
       }
       const back = paid - price;
       return {
         signature: `gr-${price}-${paid}`,
-        prompt: `Du zahlst ${Util.formatEuro(paid)} für ${Util.formatEuro(price)}. Wie viel bekommst du zurück?`,
+        prompt: `Du kaufst ${item.acc} für ${Util.formatEuro(price)} und zahlst mit ${Util.formatEuro(paid)}. Wie viel bekommst du zurück?`,
         questionHtml: `
-          <p class="q-label">Du kaufst etwas und zahlst mit ${Util.formatEuro(paid)}.</p>
+          <p class="q-label">Du kaufst das hier und zahlst mit ${Util.formatEuro(paid)}.</p>
           ${Widgets.priceTag(price, item.emoji, item.name)}
           <p class="q-sub">Wie viel Geld bekommst du zurück?</p>`,
         input: { kind: 'money', unit: 'euro' },
@@ -1583,10 +1610,12 @@ const MathGen = (() => {
             h: ['Wie weit ist es vom Preis bis zu deinem Geld?', `Rechne ${paid / 100} − ${price / 100}.`] };
         },
         (r, lv) => {
-          const start = R(1, 5, r);
-          const dur = R(1, 4, r);
-          return { t: `Der Film beginnt um ${start} Uhr am Nachmittag und dauert ${dur} ${Util.plural(dur, 'Stunde', 'Stunden')}.<br>Um wie viel Uhr ist er zu Ende? (Antwort: Stunde am Nachmittag)`, a: start + dur,
-            h: ['Zähle die Stunden dazu.', `Rechne ${start} + ${dur}.`] };
+          // Nur Vormittagszeiten: Dann ist die Uhrzeit eindeutig, ohne dass
+          // die Aufgabe zusätzlich die 24-Stunden-Zählung erklären muss.
+          const start = R(7, 9, r);
+          const dur = R(1, 3, r);
+          return { t: `Die Schule beginnt um ${start} Uhr am Vormittag.<br>Der Unterricht dauert ${dur} ${Util.plural(dur, 'Stunde', 'Stunden')}.<br>Um wie viel Uhr ist Schluss?`, a: start + dur,
+            h: ['Zähle die Stunden von der Anfangszeit weiter.', `Rechne ${start} + ${dur}.`] };
         },
       ];
       const idx = R(0, templates.length - 1, rng);

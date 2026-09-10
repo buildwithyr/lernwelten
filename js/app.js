@@ -64,7 +64,7 @@ const App = (() => {
     const buildings = BUILDING_ORDER.map(id => Workshop.get(id));
     const canDaily = Daily.canStart(profile);
     const dueCount = Progress.dueRetries(profile).length;
-    const previewTopics = canDaily ? Daily.preview(profile).slice(0, 3) : [];
+    const dailyText = canDaily ? Daily.describe(profile) : '';
 
     UI.render(`
       <div class="screen village-screen village-screen--grade${profile.grade}">
@@ -92,9 +92,7 @@ const App = (() => {
               <span class="daily-icon" aria-hidden="true">🌞</span>
               <span class="daily-body">
                 <span class="daily-title">Heute üben</span>
-                <span class="daily-sub">${previewTopics.length
-                  ? Util.escapeHtml(previewTopics.map(t => t.title).join(' · '))
-                  : 'Eine kurze, passende Runde'}</span>
+                <span class="daily-sub">${Util.escapeHtml(dailyText)}</span>
                 ${dueCount ? `<span class="daily-badge">${dueCount} ${Util.plural(dueCount, 'Wiederholung', 'Wiederholungen')} fällig</span>` : ''}
               </span>
               <span class="daily-go" aria-hidden="true">▶</span>

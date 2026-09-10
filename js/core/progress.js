@@ -82,8 +82,9 @@ const Progress = (() => {
     else skill.failed++;
 
     // Erstversuchsfenster nur führen, wenn die Aufgabe auf der aktuellen
-    // Stufe gestellt wurde — sonst verfälschen Check-Runden das Bild.
-    if (!result.level || result.level === skill.level) {
+    // Stufe gestellt wurde. Kurz-Checks bleiben ganz außen vor: Dort gibt es
+    // nur einen Versuch und keine Hilfe — das wäre kein fairer Vergleich.
+    if (result.mode !== 'check' && (!result.level || result.level === skill.level)) {
       skill.firstTry.push(result.outcome === OUTCOME.SOLO ? 1 : 0);
       while (skill.firstTry.length > FIRST_TRY_WINDOW) skill.firstTry.shift();
     }

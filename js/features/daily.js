@@ -24,10 +24,20 @@ const Daily = (() => {
     return pool(profile).length > 0;
   }
 
-  /** Vorschau: welche Themen kämen heute dran? */
-  function preview(profile) {
-    const plan = buildPlan(profile);
-    return Util.uniq(plan).map(id => Topics.get(id)).filter(Boolean);
+  /**
+   * Kurzbeschreibung für den Dorfplatz.
+   * Bewusst KEINE Liste der Aufgaben, die kommen — die Mischung wird beim
+   * Start neu gezogen. Eine Vorschau, die dann nicht stimmt, wäre gelogen.
+   */
+  function describe(profile) {
+    const focus = (profile.focusTopics || [])
+      .map(id => Topics.get(id)).filter(Boolean);
+    if (focus.length) {
+      return 'Schwerpunkt: ' + focus.slice(0, 2).map(t => t.title).join(' und ')
+        + (focus.length > 2 ? ' und mehr' : '');
+    }
+    const n = pool(profile).length;
+    return `Eine kurze Runde aus ${n} ${Util.plural(n, 'Thema', 'Themen')}`;
   }
 
   function buildPlan(profile) {
@@ -145,5 +155,5 @@ const Daily = (() => {
     }
   }
 
-  return { pool, canStart, preview, buildPlan, start, openCheckPicker, startCheck, availableChecks, checkTopics };
+  return { pool, canStart, describe, buildPlan, start, openCheckPicker, startCheck, availableChecks, checkTopics };
 })();

@@ -131,17 +131,20 @@ const GermanGen = (() => {
       const pool = G.NOUNS.filter(n => n.pl);
       const easy = pool.filter(n => n.pl.indexOf(n.sg) === 0);   // nur Endung angehängt
       const n = level === 1 ? F(easy, rng) : F(pool, rng);
+      // "ein Suppe" wäre falsch — der unbestimmte Artikel richtet sich
+      // nach dem Begleiter des Namenworts.
+      const one = n.art === 'die' ? 'eine' : 'ein';
       return {
         signature: `mz-${n.sg}`,
-        prompt: `ein ${n.sg} – viele was?`,
+        prompt: `${one} ${n.sg} – viele was?`,
         questionHtml: `
           <p class="q-label">Wie heißt die Mehrzahl?</p>
-          <p class="word-main">ein ${n.sg} &nbsp;–&nbsp; viele <span class="math-blank">?</span></p>`,
+          <p class="word-main">${one} ${n.sg} &nbsp;–&nbsp; viele <span class="math-blank">?</span></p>`,
         input: { kind: 'text', maxLength: 16, autocap: 'words' },
         answerMode: AnswerCheck.MODE.TEXT,
         answer: n.pl,
         hints: [
-          'Sag den Satz laut: „ein Hund – viele Hunde".',
+          'Sag es laut: „ein Hund – viele Hunde".',
           n.pl.indexOf(n.sg) === 0
             ? 'Hier wird nur eine Endung angehängt.'
             : 'Achtung: Der Selbstlaut ändert sich zu einem Umlaut.',

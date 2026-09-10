@@ -245,7 +245,7 @@ const Session = (() => {
       const fill = UI.$('.task-progress-fill');
       if (fill) fill.style.width = `${((state.index + 1) / state.length) * 100}%`;
 
-      Timers.after(ADVANCE_DELAY_OK, advance);
+      Timers.after(ADVANCE_DELAY_OK, advanceUnlessPaused);
       return;
     }
 
@@ -277,7 +277,7 @@ const Session = (() => {
     showFeedback(msg, 'wrong');
     UI.announce(msg);
 
-    if (view.mark && task.input.kind === 'choice') {
+    if (view.mark && (task.input.kind === 'choice' || task.input.kind === 'memory')) {
       // Bei Auswahlaufgaben ist ein zweiter Versuch sinnlos: Lösung zeigen.
       c.locked = true;
       view.lock(task);
@@ -302,6 +302,17 @@ const Session = (() => {
       const btn = UI.$('#hint-btn');
       if (btn) btn.classList.add('btn-ghost--pulse');
     }
+  }
+
+  /**
+   * Wechselt zur nächsten Aufgabe — außer die Runde ist gerade angehalten,
+   * weil eine Rückfrage offen ist. Sonst würde unter dem Dialog schon die
+   * nächste Aufgabe erscheinen.
+   */
+  function advanceUnlessPaused() {
+    if (!state) return;
+    if (state.paused) { state.advanceQueued = true; return; }
+    advance();
   }
 
   function showNextButton() {
@@ -420,6 +431,8 @@ const Session = (() => {
       stars = Rewards.starsForRound(counts);
       profile.stars = (profile.stars || 0) + stars.total;
       profile.level = Math.floor(profile.stars / 10) + 1;
+
+      profile.totalRounds = (profile.totalRounds || 0) + 1;
 
       const today = Util.dayKey();
       if (!profile.daily || profile.daily.lastDay !== today) profile.daily = { lastDay: today, rounds: 0 };
@@ -547,9 +560,15 @@ const Session = (() => {
 
   function exitWithConfirm() {
     if (!state || state.index === 0) { leave(); return; }
+    state.paused = true;
     UI.confirm('Deine Runde ist noch nicht fertig. Möchtest du wirklich aufhören?', {
       icon: '🚪', title: 'Übung verlassen?', yes: 'Ja, aufhören', no: 'Weiterüben',
-    }).then(ok => { if (ok) leave(); });
+    }).then(ok => {
+      if (ok) { leave(); return; }
+      if (!state) return;
+      state.paused = false;
+      if (state.advanceQueued) { state.advanceQueued = false; advance(); }
+    });
   }
 
   function leave() {
