@@ -439,6 +439,12 @@
 .number-line {
   position: relative;
   height: 76px;
+  width: 100%;
+  /* .task-question ist ein Flex-Container mit align-items:center — ohne
+     explizite Breite schrumpft dieses Element auf 0, weil alle Kinder
+     (Striche, Markierung) absolut positioniert sind und daher keine
+     eigene Breite beitragen. Der Zahlenstrahl war dadurch faktisch
+     unsichtbar. */
   margin: var(--sp-lg) 8px var(--sp-md);
 }
 .nl-axis {
@@ -542,18 +548,34 @@
 .data-table thead th { background: var(--cream-dark); }
 .data-table tbody th { font-weight: 700; }
 
+/* Säulen aus einzelnen Kästchen — ein Kästchen je Einheit. Nur so kann ein
+   Kind einen Wert wirklich abzählen statt zu schätzen. Links die Skala,
+   Zeile für Zeile auf gleicher Höhe wie die Kästchen. */
 .bar-chart {
+  --bc-unit: 16px;
+  --bc-gap: 3px;
   display: flex; align-items: flex-end; gap: var(--sp-sm);
-  height: 180px; margin: var(--sp-md) 0; padding: 0 var(--sp-sm);
+  margin: var(--sp-md) 0; padding: 0 var(--sp-sm);
 }
-.bc-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; gap: 4px; }
-.bc-bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; }
+.bc-scale {
+  display: flex; flex-direction: column-reverse; gap: var(--bc-gap);
+  font-size: 11px; color: var(--text-mid); text-align: right;
+  /* Auf Höhe der Kästchen ausrichten: Wert- und Beschriftungszeile darunter. */
+  margin-bottom: calc(1.2em + var(--text-sm) + 8px);
+}
+.bc-scale-step { height: var(--bc-unit); line-height: var(--bc-unit); }
+.bc-cols { flex: 1; display: flex; align-items: flex-end; gap: var(--sp-sm); }
+.bc-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bc-bar-wrap { width: 100%; display: flex; align-items: flex-end; }
 .bc-bar {
-  width: 100%; border-radius: 5px 5px 0 0;
-  background: linear-gradient(180deg, var(--accent, var(--orange)), color-mix(in srgb, var(--accent, var(--orange)) 65%, black));
-  min-height: 4px;
+  width: 100%;
+  display: flex; flex-direction: column-reverse; gap: var(--bc-gap);
 }
-.bc-value { font-weight: 800; font-size: var(--text-sm); }
+.bc-unit {
+  height: var(--bc-unit); border-radius: 3px;
+  background: linear-gradient(180deg, var(--accent, var(--orange)), color-mix(in srgb, var(--accent, var(--orange)) 70%, black));
+}
+.bc-value { font-weight: 800; font-size: var(--text-sm); min-height: 1em; }
 .bc-label { font-size: var(--text-xs); color: var(--text-mid); text-align: center; line-height: 1.2; }
 
 /* ─── Spiegelraster ──────────────────────────────────────────── */

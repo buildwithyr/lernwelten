@@ -88,7 +88,8 @@ body {
 .hundred-field { max-width: 90mm; }
 .hf-cell { font-size: 7pt; }
 .number-line { height: 24mm; }
-.bar-chart { height: 45mm; }
+.bar-chart { --bc-unit: 4mm; --bc-gap: 0.8mm; }
+.bc-unit { background: #444 !important; }
 .point-field .pf-dot { background: #444 !important; }
 .tb-cell { background: #ddd !important; }
 .tb-unit { background: #444 !important; }

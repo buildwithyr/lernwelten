@@ -140,7 +140,10 @@ const MathGen = (() => {
         answer: [t, o],
         hints: [
           'Zähle immer bis 10 — das ist ein Bündel.',
-          `Aus ${n} kannst du ${t} volle Zehner machen.`,
+          // Akkusativ: bei genau einem Zehner "1 vollen Zehner", sonst
+          // "… volle Zehner" — mit "1 volle Zehner" stimmt der Kasus nicht.
+          t === 1 ? `Aus ${n} kannst du 1 vollen Zehner machen.`
+                  : `Aus ${n} kannst du ${t} volle Zehner machen.`,
           `${n} = ${t} Zehner und ${o} einzelne.`,
         ],
         tool: 'zehnerstangen',
@@ -155,21 +158,21 @@ const MathGen = (() => {
       const ask = level >= 2 && rng() < 0.5 ? 'neighbour' : 'read';
 
       if (ask === 'neighbour') {
-        const dir = F(['darunter', 'darüber'], rng);
-        const base = dir === 'darunter' ? Math.min(n, 90) : Math.max(n, 11);
-        const answer = dir === 'darunter' ? base + 10 : base - 10;
+        const dir = F(['unter', 'über'], rng);
+        const base = dir === 'unter' ? Math.min(n, 90) : Math.max(n, 11);
+        const answer = dir === 'unter' ? base + 10 : base - 10;
         return {
           signature: `hf-nb-${base}-${dir}`,
-          prompt: `Welche Zahl steht im Hunderterfeld ${dir} von ${base}?`,
+          prompt: `Welche Zahl steht im Hunderterfeld direkt ${dir} der ${base}?`,
           questionHtml: `
-            <p class="q-label">Welche Zahl steht im Hunderterfeld <strong>${dir}</strong> von ${base}?</p>
+            <p class="q-label">Welche Zahl steht im Hunderterfeld direkt <strong>${dir}</strong> der ${base}?</p>
             ${Widgets.hundredField(base)}`,
           input: { kind: 'number', max: 100 },
           answerMode: AnswerCheck.MODE.NUMBER,
           answer,
           hints: [
             'Eine Zeile weiter unten ist ein Zehner mehr, eine Zeile weiter oben ein Zehner weniger.',
-            `${base} ${dir === 'darunter' ? '+ 10' : '− 10'} rechnen.`,
+            `${base} ${dir === 'unter' ? '+ 10' : '− 10'} rechnen.`,
             `Die Zahl ist ${answer}.`,
           ],
           tool: 'hunderterfeld',
@@ -199,24 +202,38 @@ const MathGen = (() => {
     generate(ctx) {
       const { rng, level } = ctx;
       // Stufe 1: Vielfache von 10 · 2: Vielfache von 5 · 3: beliebige Zahlen
-      const from = 0, to = 100;
       const value = level === 1 ? R(1, 9, rng) * 10
                   : level === 2 ? R(1, 19, rng) * 5
                   : R(1, 99, rng);
+      // Der Pfeil muss auf einem Strich stehen, sonst ist die Zahl nicht
+      // abzulesen, sondern nur zu schätzen. Auf Stufe 3 wird dafür ein
+      // Ausschnitt von 20 mit Einerstrichen gezeigt.
+      let from = 0, to = 100, step = 10;
+      let firstHint = 'Schau, auf welchem Strich der Pfeil steht.';
+      let secondHint;
+      if (level === 2) {
+        step = 5;
+        secondHint = 'Zwischen zwei beschrifteten Zehnern liegt genau ein kleiner Strich — der ist die Zahl mit 5 am Ende.';
+      } else if (level === 3) {
+        from = Util.clamp(Math.floor(value / 10) * 10 - 10, 0, 80);
+        to = from + 20;
+        step = 1;
+        firstHint = 'Such den beschrifteten Strich links vom Pfeil.';
+        const base = Math.floor(value / 10) * 10;
+        secondHint = `Zähle von der ${base} aus die kleinen Striche weiter.`;
+      } else {
+        secondHint = 'Alle Striche sind beschriftet — lies die Zahl direkt ab.';
+      }
       return {
         signature: `zs-${value}`,
         prompt: 'Welche Zahl zeigt der Pfeil am Zahlenstrahl?',
         questionHtml: `
           <p class="q-label">Welche Zahl zeigt der Pfeil?</p>
-          ${Widgets.numberLine(from, to, { step: 10, mark: value })}`,
+          ${Widgets.numberLine(from, to, { step, labelEvery: 10, mark: value })}`,
         input: { kind: 'number', max: 100 },
         answerMode: AnswerCheck.MODE.NUMBER,
         answer: value,
-        hints: [
-          'Schau, zwischen welchen beiden Zehnern der Pfeil steht.',
-          `Der Pfeil liegt zwischen ${Math.floor(value / 10) * 10} und ${Math.floor(value / 10) * 10 + 10}.`,
-          `Es ist die ${value}.`,
-        ],
+        hints: [firstHint, secondHint, `Es ist die ${value}.`],
         tool: 'zahlenstrahl',
       };
     },
@@ -688,8 +705,12 @@ const MathGen = (() => {
       const step2 = b - step1;
       const correct = a + b;
       // Ein Rechenweg wird gezeigt; in der Hälfte der Fälle mit Fehler.
-      const hasError = rng() < 0.5;
-      const shownResult = hasError ? correct + F([1, -1, 10], rng) : correct;
+      // Der falsche Wert muss trotzdem im Zahlenraum bis 100 bleiben — sonst
+      // fällt der Fehler nur noch durch den Bereichsbruch auf, nicht durch
+      // den Rechenweg selbst.
+      const errorOptions = [1, -1, 10].filter(d => correct + d >= 0 && correct + d <= 100);
+      const hasError = rng() < 0.5 && errorOptions.length > 0;
+      const shownResult = hasError ? correct + F(errorOptions, rng) : correct;
       const wayHtml = `
         <div class="calc-way">
           <div class="cw-step">${a} + ${step1} = ${nextTen}</div>
@@ -1186,8 +1207,10 @@ const MathGen = (() => {
           answerMode: AnswerCheck.MODE.NUMBER,
           answer: totalCents,
           hints: [
-            '1 Euro sind 100 Cent.',
-            `${euros} Euro sind ${euros * 100} Cent.`,
+            'Überlege: Wie viele Cent hat 1 Euro?',
+            // Bei euros===1 wäre "1 Euro sind 100 Cent" sonst wortgleich
+            // mit dem Basiswissen-Hinweis — deshalb hier nur bei >1 Euro.
+            euros > 1 ? `${euros} Euro sind ${euros * 100} Cent.` : '1 Euro sind 100 Cent.',
             `${Util.formatEuro(totalCents)} = ${totalCents} Cent.`,
           ],
           tool: 'muenzen',
@@ -1217,30 +1240,26 @@ const MathGen = (() => {
   const geldRueckgeld = {
     generate(ctx) {
       const { rng, level } = ctx;
-      const item = F(SHOP_ITEMS, rng);
-      let price, paid;
-      if (level === 1) {
-        // Ganze Euro, Rückgeld höchstens 4 €.
-        price = R(1, 4, rng) * 100;
-        paid = price + R(1, 4, rng) * 100;
-      } else if (level === 2) {
-        // Halbe Euro, mit 5 € bezahlt.
-        price = R(1, 4, rng) * 100 + F([0, 50], rng);
-        paid = 500;
-      } else {
-        // Zehnerschritte bei den Cent, mit 10 € bezahlt — das Rückgeld
-        // bleibt einstellig. Größere Beträge sind kein sinnvoller
-        // Schwierigkeitszuwachs für die 2. Klasse.
-        price = R(21, 95, rng) * 10;
-        paid = 1000;
-      }
+      // Echte Preise aus SHOP_ITEMS — dieselbe Quelle wie "Oskars Laden"
+      // (js/features/shop.js), statt eines unabhängig gewürfelten Preises.
+      // Sonst kämen absurde Kombinationen wie "ein Sticker für 7,90 €" vor.
+      const count = level === 1 ? 1 : 2;
+      const basket = Util.sample(SHOP_ITEMS, count, rng);
+      const price = Util.sum(basket.map(i => i.price));
+      // Bezahlt wird mit dem kleinsten passenden Schein — genau wie im Laden.
+      const payOptions = [500, 1000, 2000].filter(v => v >= price);
+      const paid = payOptions.length ? payOptions[0] : Math.ceil(price / 100) * 100;
       const back = paid - price;
+      const itemText = basket.length === 1
+        ? basket[0].acc
+        : basket.map(i => i.acc).join(' und ');
+      const label = basket.map(i => `${i.emoji} ${i.name}`).join(' + ');
       return {
-        signature: `gr-${price}-${paid}`,
-        prompt: `Du kaufst ${item.acc} für ${Util.formatEuro(price)} und zahlst mit ${Util.formatEuro(paid)}. Wie viel bekommst du zurück?`,
+        signature: `gr-${basket.map(i => i.name).join('_')}-${paid}`,
+        prompt: `Du kaufst ${itemText} für ${Util.formatEuro(price)} und zahlst mit ${Util.formatEuro(paid)}. Wie viel bekommst du zurück?`,
         questionHtml: `
           <p class="q-label">Du kaufst das hier und zahlst mit ${Util.formatEuro(paid)}.</p>
-          ${Widgets.priceTag(price, item.emoji, item.name)}
+          ${Widgets.priceTag(price, basket[0].emoji, label)}
           <p class="q-sub">Wie viel Geld bekommst du zurück?</p>`,
         input: { kind: 'money', unit: 'euro' },
         answerMode: AnswerCheck.MODE.NUMBER,
@@ -1257,10 +1276,12 @@ const MathGen = (() => {
 
   // ══ Uhr und Kalender ════════════════════════════════════════════════════
 
+  // `noun` für "Es ist Vormittag.", `label` (mit "am") für Nebensätze wie
+  // "Am Nachmittag zählt man 12 dazu." — "Es ist am Vormittag." klingt falsch.
   const DAYPARTS = [
-    { label: 'am Vormittag', offset: 0, hours: [8, 9, 10, 11] },
-    { label: 'am Nachmittag', offset: 12, hours: [1, 2, 3, 4, 5] },
-    { label: 'am Abend', offset: 12, hours: [6, 7, 8, 9] },
+    { noun: 'Vormittag', label: 'am Vormittag', offset: 0, hours: [8, 9, 10, 11] },
+    { noun: 'Nachmittag', label: 'am Nachmittag', offset: 12, hours: [1, 2, 3, 4, 5] },
+    { noun: 'Abend', label: 'am Abend', offset: 12, hours: [6, 7, 8, 9] },
   ];
 
   function clockAnswerText(hour24, minute) {
@@ -1287,9 +1308,9 @@ const MathGen = (() => {
         ], rng);
         return {
           signature: `uhr24-${h24}-${minute}`,
-          prompt: `Es ist ${part.label}. Wie spät ist es?`,
+          prompt: `Es ist ${part.noun}. Wie spät ist es?`,
           questionHtml: `
-            <p class="q-label">Es ist <strong>${part.label}</strong>. Wie spät ist es?</p>
+            <p class="q-label">Es ist <strong>${part.noun}</strong>. Wie spät ist es?</p>
             ${Clock.render(h12, minute, { size: 150 })}
             <p class="q-sub">Antworte in der 24-Stunden-Zeit.</p>`,
           input: { kind: 'choice', choices },
@@ -1446,6 +1467,26 @@ const MathGen = (() => {
           hints: ['Denk daran, wie das Wetter in diesem Monat ist.', `${season.months.join(', ')} gehören zusammen.`],
         };
       }
+      if (kind === 'dateAfter') {
+        // Monatslängen ohne Schaltjahr — für die 2. Klasse ausreichend, ein
+        // Tag +7 bleibt dank der Einschränkung unten immer im selben Monat.
+        const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        const mi = R(0, 11, rng);
+        const day = R(1, DAYS_IN_MONTH[mi] - 7, rng);
+        return {
+          signature: `kal-dateafter-${mi}-${day}`,
+          prompt: `Welches Datum ist eine Woche nach dem ${day}. ${M[mi]}?`,
+          questionHtml: `<p class="q-label">Welches Datum ist eine <strong>Woche nach</strong> dem ${day}. ${M[mi]}?</p>`,
+          input: { kind: 'number', max: 31 },
+          answerMode: AnswerCheck.MODE.NUMBER,
+          answer: day + 7,
+          hints: [
+            'Eine Woche hat 7 Tage.',
+            `${day} + 7 = ?`,
+            `${day}. ${M[mi]} + 7 Tage = ${day + 7}. ${M[mi]}.`,
+          ],
+        };
+      }
       // monthNumber
       const i = R(0, 11, rng);
       return {
@@ -1511,8 +1552,11 @@ const MathGen = (() => {
         answerMode: AnswerCheck.MODE.CHOICE,
         answer: e.right,
         hints: [
-          'Vergleiche mit deinem Lineal: Es ist 30 cm oder 3 dm lang.',
-          'Ein Meter ist ungefähr so lang wie ein großer Schritt.',
+          'Überlege: Ist das eher kürzer als dein Arm, oder viel länger als du selbst?',
+          // Ein großer Schritt als Vergleich, bewusst kein Gegenstand aus
+          // LENGTH_ESTIMATES — sonst würde der Tipp bei genau diesem
+          // Gegenstand die Antwort direkt verraten.
+          'Ein großer Schritt ist ungefähr 1 m lang.',
         ],
         tool: 'laengen',
       };
@@ -1565,8 +1609,11 @@ const MathGen = (() => {
         answerMode: AnswerCheck.MODE.CHOICE,
         answer: e.right,
         hints: [
-          'Ein Sackerl Mehl wiegt 1 kg — vergleiche damit.',
-          '100 dag sind genau 1 kg.',
+          'Überlege: Könntest du es leicht mit einer Hand hochheben?',
+          // Ein Liter Milch als Vergleich, bewusst kein Gegenstand aus
+          // WEIGHT_ESTIMATES — sonst würde der Tipp bei genau diesem
+          // Gegenstand die Antwort direkt verraten.
+          'Ein Liter Milch wiegt ungefähr 1 kg.',
         ],
         tool: 'gewichte',
       };
@@ -1605,14 +1652,18 @@ const MathGen = (() => {
         },
         (r, lv) => {
           const price = R(2, 6, r) * 100;
-          const paid = price + R(1, 4, r) * 100;
+          // Bezahlt wird mit einem echten Schein (5, 10 oder 20 €), nicht mit
+          // krummen Beträgen wie "3,00 €" oder "8,00 €".
+          const notes = [500, 1000, 2000].filter(v => v > price);
+          const paid = notes[0] || 2000;
           return { t: `Ein Buch kostet ${Util.formatEuro(price)}. Du zahlst mit ${Util.formatEuro(paid)}.<br>Wie viel Euro bekommst du zurück?`, a: (paid - price) / 100,
             h: ['Wie weit ist es vom Preis bis zu deinem Geld?', `Rechne ${paid / 100} − ${price / 100}.`] };
         },
         (r, lv) => {
           // Nur Vormittagszeiten: Dann ist die Uhrzeit eindeutig, ohne dass
           // die Aufgabe zusätzlich die 24-Stunden-Zählung erklären muss.
-          const start = R(7, 9, r);
+          // Schulbeginn in Österreich ist meist 8 Uhr.
+          const start = 8;
           const dur = R(1, 3, r);
           return { t: `Die Schule beginnt um ${start} Uhr am Vormittag.<br>Der Unterricht dauert ${dur} ${Util.plural(dur, 'Stunde', 'Stunden')}.<br>Um wie viel Uhr ist Schluss?`, a: start + dur,
             h: ['Zähle die Stunden von der Anfangszeit weiter.', `Rechne ${start} + ${dur}.`] };
@@ -1638,15 +1689,18 @@ const MathGen = (() => {
 
   // ══ Formen und Daten ════════════════════════════════════════════════════
 
+  // `fem` steuert den unbestimmten Artikel („eine Kugel" statt „ein Kugel").
+  // Die Merksätze müssen jede Form von allen anderen im selben Topf
+  // unterscheiden — „gegenüber gleich lang" träfe auch auf das Quadrat zu.
   const SHAPES_2D = [
-    { name: 'Quadrat', emoji: '🟦', note: 'vier gleich lange Seiten' },
-    { name: 'Rechteck', emoji: '▭', note: 'vier Ecken, gegenüber gleich lang' },
+    { name: 'Quadrat', emoji: '🟦', note: 'vier Ecken, alle vier Seiten gleich lang' },
+    { name: 'Rechteck', emoji: '▭', note: 'vier Ecken, aber nicht alle Seiten gleich lang' },
     { name: 'Dreieck', emoji: '🔺', note: 'drei Ecken' },
     { name: 'Kreis', emoji: '⚪', note: 'ganz rund, keine Ecke' },
   ];
   const SHAPES_3D = [
     { name: 'Würfel', emoji: '🎲', note: 'sechs gleiche quadratische Flächen' },
-    { name: 'Kugel', emoji: '⚽', note: 'rollt in jede Richtung' },
+    { name: 'Kugel', emoji: '⚽', note: 'rollt in jede Richtung', fem: true },
     { name: 'Zylinder', emoji: '🥫', note: 'wie eine Dose' },
     { name: 'Quader', emoji: '📦', note: 'wie eine Schachtel' },
   ];
@@ -1658,9 +1712,11 @@ const MathGen = (() => {
       if (kind === 'classify') {
         const is3d = rng() < 0.5;
         const s = F(is3d ? SHAPES_3D : SHAPES_2D, rng);
+        const ein = s.fem ? 'eine' : 'ein';
+        const Ein = s.fem ? 'Eine' : 'Ein';
         return {
           signature: `fk-cls-${s.name}`,
-          prompt: `Ist ein ${s.name} eine Fläche oder ein Körper?`,
+          prompt: `Ist ${ein} ${s.name} eine Fläche oder ein Körper?`,
           questionHtml: `
             <p class="q-label">Ist das eine Fläche oder ein Körper?</p>
             <p class="big-emoji">${s.emoji}</p>
@@ -1669,9 +1725,11 @@ const MathGen = (() => {
           answerMode: AnswerCheck.MODE.CHOICE,
           answer: is3d ? 'Körper' : 'Fläche',
           hints: [
-            'Eine Fläche ist flach wie ein Blatt Papier.',
-            'Einen Körper kannst du in die Hand nehmen — er hat ein Innen.',
-            `Ein ${s.name} ist ${is3d ? 'ein Körper' : 'eine Fläche'}.`,
+            // Nicht "Eine Fläche ist flach…" als ersten Tipp — das würde bei
+            // einer Fläche als Lösung die Antwort schon vorwegnehmen.
+            'Überlege: Kannst du das in die Hand nehmen, weil es ein Innen hat — oder ist es nur flach wie ein Blatt Papier?',
+            'Ein Körper hat ein Innen, eine Fläche ist nur die Außenhaut.',
+            `${Ein} ${s.name} ist ${is3d ? 'ein Körper' : 'eine Fläche'}.`,
           ],
         };
       }
@@ -1704,7 +1762,7 @@ const MathGen = (() => {
       const expected = left.filter(([r, c]) => c < axis).map(([r, c]) => [r, 2 * axis - c]);
       return {
         signature: `sym-${p.name}`,
-        prompt: `Ergänze das Spiegelbild von ${p.name} auf der rechten Seite.`,
+        prompt: `Ergänze das Spiegelbild ${p.von} auf der rechten Seite.`,
         questionHtml: `
           <p class="q-label">Ergänze das Spiegelbild.</p>
           <p class="q-sub">Die Mittellinie ist die Spiegelachse. Tippe rechts die Felder an.</p>`,
@@ -1732,12 +1790,27 @@ const MathGen = (() => {
     generate(ctx) {
       const { rng, level } = ctx;
       const topic = F(DIAGRAM_TOPICS, rng);
-      const values = topic.labels.map(() => R(1, level === 1 ? 8 : 12, rng));
+      const top = level === 1 ? 8 : 12;
+      const values = topic.labels.map(() => R(1, top, rng));
+      // Bei „am häufigsten" und beim Unterschied muss es genau eine höchste
+      // und genau eine niedrigste Säule geben — sonst wäre eine richtige
+      // Antwort als falsch gewertet worden.
+      let maxIdx = values.indexOf(Math.max.apply(null, values));
+      if (values.filter(v => v === values[maxIdx]).length > 1) {
+        values[maxIdx] = Math.min(top, values[maxIdx] + 1);
+        if (values.filter(v => v === values[maxIdx]).length > 1) values[maxIdx] -= 2;
+        maxIdx = values.indexOf(Math.max.apply(null, values));
+      }
+      let minIdx = values.indexOf(Math.min.apply(null, values));
+      if (values.filter(v => v === values[minIdx]).length > 1) {
+        values[minIdx] = Math.max(1, values[minIdx] - 1);
+        if (values.filter(v => v === values[minIdx]).length > 1) values[minIdx] += 2;
+        minIdx = values.indexOf(Math.min.apply(null, values));
+        maxIdx = values.indexOf(Math.max.apply(null, values));
+      }
       const data = topic.labels.map((l, i) => ({ label: l, value: values[i] }));
       const kinds = level === 1 ? ['read', 'max'] : ['read', 'max', 'diff', 'sum'];
       const kind = F(kinds, rng);
-      const maxIdx = values.indexOf(Math.max.apply(null, values));
-      const minIdx = values.indexOf(Math.min.apply(null, values));
 
       if (kind === 'max') {
         return {

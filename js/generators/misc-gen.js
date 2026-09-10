@@ -79,13 +79,16 @@ const MiscGen = (() => {
       const [thing, right, wrong] = item;
       return {
         signature: `mt-${thing}`,
-        prompt: `Was gehört zu ${thing}?`,
+        // "Was passt zu …?" funktioniert für alle Themenblöcke (Tiere,
+        // Berufe, Materialien, Orte …) — "Was gehört zu Bäcker?" klang bei
+        // Berufen und Orten schief.
+        prompt: `Was passt zu ${thing}?`,
         questionHtml: `
-          <p class="q-label">Was gehört zu <strong>${Util.escapeHtml(thing)}</strong>?</p>`,
+          <p class="q-label">Was passt zu <strong>${Util.escapeHtml(thing)}</strong>?</p>`,
         input: { kind: 'choice', choices: S([right].concat(wrong), rng) },
         answerMode: AnswerCheck.MODE.CHOICE,
         answer: right,
-        hints: ['Überlege, wozu das gehört.', `Denk an das Wichtigste an ${thing}.`],
+        hints: ['Überlege, was am besten dazu passt.', `Was fällt dir zuerst zu „${thing}" ein?`],
       };
     },
   };
@@ -165,6 +168,13 @@ const MiscGen = (() => {
       const inSeq = Util.uniq(seq).filter(s => s !== answer);
       const outside = S(LogicData.SHAPES.filter(s => s !== answer && !inSeq.includes(s)), rng);
       const wrong = inSeq.concat(outside).slice(0, 2);
+      // Echte Periode ermitteln (2 bei A B A B …, 3 bei A B C A B C …) — die
+      // Hälfte der Länge stimmt nur bei dreier Mustern; bei zweier Mustern
+      // (A B A) würde ein falsches drittes Element mitgezeigt.
+      let period = seq.length;
+      for (let p = 1; p < seq.length; p++) {
+        if (seq.every((s, i) => s === seq[i % p])) { period = p; break; }
+      }
       return {
         signature: `sp-${seq.join('')}`,
         prompt: 'Welche Form kommt danach?',
@@ -176,7 +186,7 @@ const MiscGen = (() => {
         answer,
         hints: [
           'Schau, wo sich das Muster wiederholt.',
-          `Das Muster ist ${seq.slice(0, seq.length / 2).join(' ')} — und dann von vorne.`,
+          `Das Muster ist ${seq.slice(0, period).join(' ')} — und dann von vorne.`,
         ],
       };
     },
@@ -291,7 +301,7 @@ const MiscGen = (() => {
       const expected = left.filter(([r, c]) => c < axis).map(([r, c]) => [r, 2 * axis - c]);
       return {
         signature: `mir-${p.name}`,
-        prompt: `Spiegle das Bild ${p.name} an der Mittellinie.`,
+        prompt: `Spiegle ${p.akk} an der Mittellinie.`,
         questionHtml: `
           <p class="q-label">Spiegle das Bild an der Mittellinie.</p>
           <p class="q-sub">Tippe rechts die Felder an, die fehlen.</p>`,

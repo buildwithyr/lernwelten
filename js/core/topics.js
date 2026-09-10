@@ -391,7 +391,7 @@ const Topics = (() => {
     {
       id: 'm2.geldMuenzen', legacyIds: ['euroCent'],
       subject: 'math', grade: 2, group: 'Geld, Uhr und Größen',
-      title: 'Münzen legen', short: 'Wie viel ist das?', icon: '🪙',
+      title: 'Geld legen', short: 'Wie viel ist das?', icon: '🪙',
       gen: 'geldMuenzen', unlock: 'default',
       goal: 'Münzen und Scheine zusammenzählen.',
       book: [zr(2, '117–119', 'Geld')],

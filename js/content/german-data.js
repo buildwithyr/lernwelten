@@ -238,7 +238,7 @@ const GermanData = (() => {
     { thing: 'Zucker',           emoji: '🍬', right: 'süß',     wrong: ['kalt', 'laut'] },
     { thing: 'Eine Zitrone',     emoji: '🍋', right: 'sauer',   wrong: ['weich', 'dunkel'] },
     { thing: 'Ein Stein',        emoji: '🪨', right: 'hart',    wrong: ['süß', 'nass'] },
-    { thing: 'Ein Kissen',       emoji: '🛏️', right: 'weich',   wrong: ['sauer', 'laut'] },
+    { thing: 'Ein Bett',         emoji: '🛏️', right: 'weich',   wrong: ['sauer', 'laut'] },
     { thing: 'Die Nacht',        emoji: '🌙', right: 'dunkel',  wrong: ['süß', 'nass'] },
     { thing: 'Ein Donner',       emoji: '⛈️', right: 'laut',    wrong: ['süß', 'trocken'] },
   ];
@@ -546,30 +546,43 @@ const GermanData = (() => {
 
   // ─── Tabellen lesen ───────────────────────────────────────────────────────
 
+  // `askRow(label)` formuliert die Leseaufgabe für eine Zeile. Bei "Ziegen",
+  // "Äpfel" passt "Wie viele Ziegen?", weil das Zeilenwort selbst die
+  // gezählte Sache ist. Bei "1a" oder "März" ist das Zeilenwort dagegen ein
+  // Name — dort muss die gesuchte Größe (Bücher, Tage) explizit genannt
+  // werden, sonst entsteht Unsinn wie "Wie viele März?".
   const TABLES = [
     {
       title: 'Tiere im Streichelzoo',
       columns: ['Tier', 'Anzahl'],
       rows: [['Ziegen', 6], ['Schafe', 4], ['Hasen', 9], ['Enten', 7]],
-      unit: '',
+      askRow: label => `Wie viele ${label}?`,
+      maxQuestion: 'Wovon gibt es am meisten?',
+      diffQuestion: (a, b) => `Wie viel mehr gibt es von „${a}" als von „${b}"?`,
     },
     {
       title: 'Obst im Korb',
       columns: ['Obst', 'Stück'],
       rows: [['Äpfel', 8], ['Birnen', 5], ['Bananen', 3], ['Zitronen', 2]],
-      unit: '',
+      askRow: label => `Wie viele ${label}?`,
+      maxQuestion: 'Wovon gibt es am meisten?',
+      diffQuestion: (a, b) => `Wie viel mehr gibt es von „${a}" als von „${b}"?`,
     },
     {
       title: 'Ausgeliehene Bücher',
       columns: ['Klasse', 'Bücher'],
       rows: [['1a', 12], ['1b', 9], ['2a', 15], ['2b', 11]],
-      unit: '',
+      askRow: label => `Wie viele Bücher hat die Klasse ${label} ausgeliehen?`,
+      maxQuestion: 'Welche Klasse hat die meisten Bücher ausgeliehen?',
+      diffQuestion: (a, b) => `Wie viel mehr Bücher hat die Klasse „${a}" ausgeliehen als die Klasse „${b}"?`,
     },
     {
       title: 'Regentage im Monat',
       columns: ['Monat', 'Tage'],
       rows: [['März', 9], ['April', 14], ['Mai', 7], ['Juni', 5]],
-      unit: '',
+      askRow: label => `Wie viele Regentage hatte der ${label}?`,
+      maxQuestion: 'In welchem Monat hat es am meisten geregnet?',
+      diffQuestion: (a, b) => `Wie viel mehr hat es im ${a} geregnet als im ${b}?`,
     },
   ];
 

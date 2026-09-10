@@ -42,7 +42,7 @@ const WordsData = (() => {
     { masked: 'H_RZ',  letter: 'E', word: 'HERZ',  clue: 'Es schlägt in deiner Brust.', level: 1 },
     { masked: 'HOS_',  letter: 'E', word: 'HOSE',  clue: 'Die ziehst du über die Beine.', level: 1 },
     { masked: 'K_SE',  letter: 'Ä', word: 'KÄSE',  clue: 'Er wird aus Milch gemacht und hat manchmal Löcher.', level: 1 },
-    { masked: 'LO_H',  letter: 'C', word: 'LOCH',  clue: 'Ein Riss im Socken.', level: 1 },
+    { masked: 'LO_H',  letter: 'C', word: 'LOCH',  clue: 'Im Käse sind viele davon.', level: 1 },
     { masked: 'MU_D',  letter: 'N', word: 'MUND',  clue: 'Damit sprichst du und isst.', level: 1 },
     { masked: 'N_ST',  letter: 'E', word: 'NEST',  clue: 'Darin legt ein Vogel seine Eier.', level: 1 },
     { masked: '_BST',  letter: 'O', word: 'OBST',  clue: 'Äpfel, Birnen und Bananen zusammen.', level: 1 },

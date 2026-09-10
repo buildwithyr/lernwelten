@@ -17,6 +17,35 @@ const GermanGen = (() => {
   const G = GermanData;
   const W = WordsData;
 
+  const ORDINAL = ['erste', 'zweite', 'dritte', 'vierte', 'fünfte', 'sechste', 'siebte'];
+
+  /**
+   * Mischt, bis die Reihenfolge nicht zufällig schon die gesuchte ist.
+   * Ohne das bekommt ein Kind die Lösung gelegentlich fertig serviert —
+   * bei drei Elementen in jedem sechsten Fall.
+   */
+  function shuffledNot(items, solution, rng) {
+    const same = arr => arr.length === solution.length &&
+      arr.every((v, i) => String(v) === String(solution[i]));
+    let out = S(items, rng);
+    for (let i = 0; i < 12 && same(out); i++) out = S(items, rng);
+    if (same(out) && out.length > 1) {          // Notbremse: einfach tauschen
+      out = out.slice();
+      const t = out[0]; out[0] = out[out.length - 1]; out[out.length - 1] = t;
+    }
+    return out;
+  }
+
+  /** Kleinster Buchstabenplatz, an dem sich die Wörter unterscheiden. */
+  function decidingPosition(words) {
+    const low = words.map(w => String(w).toLowerCase());
+    const len = Math.min.apply(null, low.map(w => w.length));
+    for (let i = 0; i < len; i++) {
+      if (low.some(w => w[i] !== low[0][i])) return i;
+    }
+    return len;
+  }
+
   // ══ ABC ═════════════════════════════════════════════════════════════════
 
   const abcOrdnen = {
@@ -33,6 +62,13 @@ const GermanGen = (() => {
         words = S(group, rng).slice(0, 4);
       }
       const sorted = words.slice().sort((a, b) => a.localeCompare(b, 'de'));
+      words = shuffledNot(words, sorted, rng);
+      // Welcher Buchstabe wirklich entscheidet, hängt von den Wörtern ab —
+      // bei „Hand/Haus" ist es der dritte, nicht pauschal der zweite.
+      const pos = decidingPosition(sorted);
+      const middleHint = pos === 0
+        ? 'Sag das ABC leise mit: A, B, C, D …'
+        : `Alle beginnen mit „${sorted[0].slice(0, pos)}" — dann entscheidet der ${ORDINAL[pos] || (pos + 1) + '.'} Buchstabe.`;
       return {
         signature: `abc-${sorted.join('_')}`,
         prompt: `Ordne nach dem ABC: ${words.join(', ')}`,
@@ -44,9 +80,7 @@ const GermanGen = (() => {
         answer: sorted,
         hints: [
           'Schau zuerst auf den ersten Buchstaben.',
-          level >= 2
-            ? 'Alle beginnen gleich — dann entscheidet der zweite Buchstabe.'
-            : 'Sag das ABC leise mit: A, B, C, D …',
+          middleHint,
           `Richtig ist: ${sorted.join(' – ')}`,
         ],
         tool: 'abc',
@@ -94,7 +128,7 @@ const GermanGen = (() => {
         answerMode: AnswerCheck.MODE.CHOICE,
         answer: String(s.target),
         hints: [
-          'Suche das Wort, das groß geschrieben ist und nicht am Satzanfang steht.',
+          'Suche das Wort, das mitten im Satz großgeschrieben ist.',
           'Namenwörter sind Dinge, Tiere, Menschen oder Pflanzen.',
           `Das Namenwort ist „${s.words[s.target]}".`,
         ],
@@ -118,7 +152,11 @@ const GermanGen = (() => {
         answer: n.art,
         hints: [
           'Sprich das Wort laut mit der, die und das — was klingt richtig?',
-          `Die Mehrzahl heißt „die ${n.pl || n.sg}". Das hilft nicht immer weiter — hier hilft nur Merken.`,
+          // Ohne Mehrzahlform (Sonne, Mond, Schnee, Honig, Wolle) gäbe es
+          // sonst „die Mond" als Tipp.
+          n.pl
+            ? `Die Mehrzahl heißt „die ${n.pl}". Das hilft nicht immer weiter — hier hilft nur Merken.`
+            : 'Von diesem Wort gibt es keine Mehrzahl — den Begleiter muss man sich merken.',
           `Richtig ist „${n.art} ${n.sg}".`,
         ],
       };
@@ -144,10 +182,14 @@ const GermanGen = (() => {
         answerMode: AnswerCheck.MODE.TEXT,
         answer: n.pl,
         hints: [
-          'Sag es laut: „ein Hund – viele Hunde".',
-          n.pl.indexOf(n.sg) === 0
-            ? 'Hier wird nur eine Endung angehängt.'
-            : 'Achtung: Der Selbstlaut ändert sich zu einem Umlaut.',
+          // Der erste Tipp darf die Lösung nicht enthalten — bei „Hund"
+          // stünde sonst „viele Hunde" darin.
+          'Denk an mehrere davon und sprich es laut aus.',
+          n.pl === n.sg
+            ? 'Achtung: Hier ändert sich gar nichts — Einzahl und Mehrzahl klingen gleich.'
+            : n.pl.indexOf(n.sg) === 0
+              ? 'Hier wird nur eine Endung angehängt.'
+              : 'Achtung: Der Selbstlaut ändert sich zu einem Umlaut.',
           `Richtig ist „${n.pl}".`,
         ],
       };
@@ -159,13 +201,15 @@ const GermanGen = (() => {
       const { rng, level } = ctx;
       const c = F(G.COMPOUNDS, rng);
       const mode = level === 1 ? 'join' : (rng() < 0.5 ? 'join' : 'split');
+      // "Turn", "Schul", "Fahr" … sind für sich keine eigenständigen Wörter
+      // (Fugenformen) — daher "Wortteile", nicht "Wörter".
       if (mode === 'split') {
         const others = S(G.COMPOUNDS.filter(x => x.word !== c.word), rng).slice(0, 2);
         return {
           signature: `zw-split-${c.word}`,
-          prompt: `Aus welchen zwei Wörtern besteht ${c.word}?`,
+          prompt: `Aus welchen zwei Wortteilen besteht ${c.word}?`,
           questionHtml: `
-            <p class="q-label">Aus welchen zwei Wörtern besteht dieses Wort?</p>
+            <p class="q-label">Aus welchen zwei Wortteilen besteht dieses Wort?</p>
             <p class="word-main">${c.word}</p>`,
           input: { kind: 'choice', choices: S([`${c.a} + ${c.b}`].concat(others.map(o => `${o.a} + ${o.b}`)), rng) },
           answerMode: AnswerCheck.MODE.CHOICE,
@@ -183,7 +227,7 @@ const GermanGen = (() => {
         answerMode: AnswerCheck.MODE.TEXT,
         answer: c.word,
         hints: [
-          'Schreibe die beiden Wörter einfach hintereinander.',
+          'Schreibe die beiden Wortteile einfach hintereinander.',
           'Das neue Wort ist ein Namenwort und wird großgeschrieben.',
           `Richtig ist „${c.word}".`,
         ],
@@ -206,7 +250,7 @@ const GermanGen = (() => {
         answer: String(s.target),
         hints: [
           'Frage dich: Was tut jemand in diesem Satz?',
-          'Zeitwörter schreibt man klein.',
+          'Zeitwörter stehen mitten im Satz klein.',
           `Das Zeitwort ist „${s.words[s.target]}".`,
         ],
       };
@@ -257,7 +301,7 @@ const GermanGen = (() => {
           answer: String(s.target),
           hints: [
             'Frage dich: Wie ist es?',
-            'Eigenschaftswörter schreibt man klein.',
+            'Eigenschaftswörter stehen mitten im Satz klein.',
             `Das Eigenschaftswort ist „${s.words[s.target]}".`,
           ],
         };
@@ -336,7 +380,7 @@ const GermanGen = (() => {
       const parts = s.parts.slice();
       // Regel: Genau der erste Baustein ist großgeschrieben — er gehört
       // an den Satzanfang. Dadurch ist die Lösung eindeutig.
-      const shuffled = S(parts, rng);
+      const shuffled = shuffledNot(parts, parts, rng);
       const sentence = parts.join(' ') + '.';
       return {
         signature: `sb-${parts.join('_')}`,
@@ -684,12 +728,13 @@ const GermanGen = (() => {
       const minIdx = values.indexOf(Math.min.apply(null, values));
 
       if (kind === 'max') {
+        const maxQ = t.maxQuestion || 'Wovon gibt es am meisten?';
         return {
           signature: `tab-max-${t.title}`,
-          prompt: `Wovon gibt es am meisten? ${t.title}`,
+          prompt: `${maxQ} ${t.title}`,
           questionHtml: `
             ${Widgets.table(t.columns, t.rows, { caption: t.title })}
-            <p class="q-sub">Wovon gibt es am meisten?</p>`,
+            <p class="q-sub">${Util.escapeHtml(maxQ)}</p>`,
           input: { kind: 'choice', choices: S(t.rows.map(r => r[0]), rng) },
           answerMode: AnswerCheck.MODE.CHOICE,
           answer: t.rows[maxIdx][0],
@@ -697,24 +742,30 @@ const GermanGen = (() => {
         };
       }
       if (kind === 'diff') {
+        const diffQ = t.diffQuestion
+          ? t.diffQuestion(t.rows[maxIdx][0], t.rows[minIdx][0])
+          : `Wie viel mehr gibt es von „${t.rows[maxIdx][0]}" als von „${t.rows[minIdx][0]}"?`;
         return {
           signature: `tab-diff-${t.title}`,
           prompt: `Wie groß ist der Unterschied zwischen dem größten und dem kleinsten Wert?`,
           questionHtml: `
             ${Widgets.table(t.columns, t.rows, { caption: t.title })}
-            <p class="q-sub">Wie viel mehr gibt es von „${t.rows[maxIdx][0]}" als von „${t.rows[minIdx][0]}"?</p>`,
+            <p class="q-sub">${Util.escapeHtml(diffQ)}</p>`,
           input: { kind: 'number', max: 100 },
           answerMode: AnswerCheck.MODE.NUMBER,
           answer: values[maxIdx] - values[minIdx],
           hints: ['Lies beide Zahlen ab.', `${values[maxIdx]} − ${values[minIdx]} = ?`],
         };
       }
+      // "Wie viele März?" wäre Unsinn — askRow formuliert je Tabelle
+      // passend (Zeilenwort selbst zählbar vs. Zeilenwort ist ein Name).
+      const readQ = t.askRow ? t.askRow(t.rows[idx][0]) : `Wie viele ${t.rows[idx][0]}?`;
       return {
         signature: `tab-read-${t.title}-${idx}`,
-        prompt: `Wie viele ${t.rows[idx][0]}?`,
+        prompt: readQ,
         questionHtml: `
           ${Widgets.table(t.columns, t.rows, { caption: t.title })}
-          <p class="q-sub">Wie viele ${Util.escapeHtml(String(t.rows[idx][0]))} sind es?</p>`,
+          <p class="q-sub">${Util.escapeHtml(readQ)}</p>`,
         input: { kind: 'number', max: 100 },
         answerMode: AnswerCheck.MODE.NUMBER,
         answer: t.rows[idx][1],
@@ -756,7 +807,7 @@ const GermanGen = (() => {
     generate(ctx) {
       const { rng } = ctx;
       const s = F(G.STEP_SEQUENCES, rng);
-      const shuffled = S(s.steps, rng);
+      const shuffled = shuffledNot(s.steps, s.steps, rng);
       return {
         signature: `rf-${s.title}`,
         prompt: `${s.title}: Bringe die Schritte in die richtige Reihenfolge.`,
@@ -893,7 +944,12 @@ const GermanGen = (() => {
         input: { kind: 'choice', choices: S([opposite].concat(wrong), rng) },
         answerMode: AnswerCheck.MODE.CHOICE,
         answer: opposite,
-        hints: [`Das gesuchte Wort beginnt mit „${opposite[0].toUpperCase()}".`],
+        hints: [
+          'Überlege: Was ist genau das Gegenteil davon?',
+          // Buchstabe in echter Schreibweise zeigen — sonst suggeriert der
+          // Hinweis bei Eigenschaftswörtern fälschlich eine Großschreibung.
+          `Das gesuchte Wort beginnt mit „${opposite[0]}".`,
+        ],
       };
     },
   };

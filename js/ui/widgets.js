@@ -62,7 +62,12 @@ const Widgets = (() => {
 
   /**
    * Zahlenstrahl von `from` bis `to`.
+   * step:  Abstand der kleinen Striche — bestimmt, was ablesbar ist.
+   * labelEvery: Abstand der beschrifteten Striche (Vorgabe: wie step).
    * mark: Wert, der mit einem Pfeil markiert wird (null = keiner)
+   *
+   * Wichtig: Ein Pfeil darf nur auf einen Wert zeigen, der auch einen Strich
+   * hat. Sonst ist die Aufgabe nicht ablesbar, sondern nur zu schätzen.
    */
   function numberLine(from, to, opts) {
     const o = opts || {};
@@ -194,20 +199,34 @@ const Widgets = (() => {
       <thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
   }
 
-  /** Einfaches Säulendiagramm. data: [{label, value}] */
+  /**
+   * Säulendiagramm. data: [{label, value}]
+   *
+   * Die Säulen bestehen aus einzelnen Kästchen — eines je Einheit. Nur so
+   * lässt sich ein Wert wirklich ablesen; ein glatter Balken ohne Achse wäre
+   * bloß zu schätzen. Links steht zusätzlich eine bezifferte Skala.
+   */
   function barChart(data, opts) {
     const o = opts || {};
     const max = Math.max.apply(null, data.map(d => d.value).concat([1]));
+    // Aufsteigend erzeugt, per `column-reverse` steht die 1 unten — genau
+    // auf Höhe des untersten Kästchens.
+    const scale = [];
+    for (let v = 1; v <= max; v++) scale.push(`<span class="bc-scale-step">${v}</span>`);
     const bars = data.map(d => {
-      const h = Math.round((d.value / max) * 100);
+      const units = [];
+      for (let i = 0; i < d.value; i++) units.push('<span class="bc-unit"></span>');
       return `<div class="bc-col">
-        <div class="bc-bar-wrap"><div class="bc-bar" style="height:${h}%"></div></div>
+        <div class="bc-bar-wrap"><div class="bc-bar">${units.join('')}</div></div>
         <div class="bc-value">${o.hideValues ? '' : d.value}</div>
         <div class="bc-label">${esc(d.label)}</div>
       </div>`;
     }).join('');
     const label = o.label || 'Säulendiagramm';
-    return `<div class="bar-chart" role="img" aria-label="${esc(label)}">${bars}</div>`;
+    return `<div class="bar-chart" role="img" aria-label="${esc(label)}">
+      <div class="bc-scale" aria-hidden="true">${scale.join('')}</div>
+      <div class="bc-cols">${bars}</div>
+    </div>`;
   }
 
   // ─── Formen und Raster ────────────────────────────────────────────────────
