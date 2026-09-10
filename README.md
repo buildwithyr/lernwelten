@@ -55,6 +55,21 @@ die selbstständigen Erstversuche.
 
 ---
 
+## So sieht das aus
+
+| Dorfplatz | Aufgabe | Satz bauen |
+|---|---|---|
+| ![Dorfplatz](docs/screenshots/01-dorfplatz.png) | ![Zehner und Einer](docs/screenshots/03-aufgabe-stellenwert.png) | ![Satz bauen](docs/screenshots/05-satzbau.png) |
+
+| Werkzeugkiste | Sammelalbum | Elternbereich |
+|---|---|---|
+| ![Werkzeugkiste](docs/screenshots/06-werkzeugkiste.png) | ![Sammelalbum](docs/screenshots/07-sammelalbum.png) | ![Lernstand](docs/screenshots/08-elternbereich-lernstand.png) |
+
+Die Bilder entstehen mit `node tests/screenshots-run.js` direkt aus der App
+im iPhone-Hochformat — sie zeigen immer den aktuellen Stand.
+
+---
+
 ## „Heute üben"
 
 Auf dem Dorfplatz gibt es einen großen Knopf **„Heute üben"**. Er startet
