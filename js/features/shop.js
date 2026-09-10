@@ -7,7 +7,7 @@
  *   2. Bezahlen: Münzen und Scheine antippen, bis der Betrag stimmt.
  *   3. Rückgeld ausrechnen, wenn zu viel gegeben wurde.
  *
- * Die Ergebnisse fließen in die Lernziele "Münzen legen", "Euro und Cent"
+ * Die Ergebnisse fließen in die Lernziele "Geld legen", "Euro und Cent"
  * und "Rückgeld" ein — dieselbe Bewertung wie in normalen Runden.
  */
 
