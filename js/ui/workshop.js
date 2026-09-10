@@ -58,6 +58,9 @@ const Workshop = (() => {
     const profile = Storage.getActiveProfile();
     const grade = profile ? profile.grade : 1;
     return Topics.forSubject(subject, grade).filter(t => {
+      // Ohne eingetragene Lernwörter gäbe es nur einen Hinweisbildschirm —
+      // besser gar nicht anbieten als eine leere Übung.
+      if (t.needsLearnWords && !((profile && profile.learnWords) || []).length) return false;
       if (Topics.isAlwaysOn(t.id)) return true;
       return !!(profile && profile.unlocked[t.id]);
     });
@@ -66,8 +69,9 @@ const Workshop = (() => {
   function lockedCount(subject) {
     const profile = Storage.getActiveProfile();
     const grade = profile ? profile.grade : 1;
-    return Topics.forSubject(subject, grade).filter(t =>
-      !Topics.isAlwaysOn(t.id) && !(profile && profile.unlocked[t.id])).length;
+    const available = availableTopics(subject).map(t => t.id);
+    return Topics.forSubject(subject, grade)
+      .filter(t => !available.includes(t.id)).length;
   }
 
   // ─── Menü ─────────────────────────────────────────────────────────────────
