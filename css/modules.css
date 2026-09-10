@@ -73,12 +73,8 @@
 @media (hover: hover) {
   .choice-btn:hover:not(:disabled) {
     background: var(--cream);
-    border-color: var(--orange);
+    border-color: var(--accent, var(--orange));
     transform: translateY(-1px);
-  }
-  .grade2 .choice-btn:hover:not(:disabled) {
-    background: var(--g2-accent-light);
-    border-color: var(--g2-accent);
   }
 }
 
@@ -361,9 +357,6 @@
 
 .task-input-text:focus {
   border-color: var(--orange);
-}
-.grade2 .task-input-text:focus {
-  border-color: var(--g2-accent);
 }
 
 /* ─── Forscherlabor Frage-Bild ──────────────────────────────────────────── */
