@@ -32,11 +32,20 @@ const MIME = {
   '.md': 'text/markdown; charset=utf-8',
 };
 
+// Für den Update-Banner-Test überschreibbar: liefert sw.js aus dem Speicher
+// statt von der Festplatte, sobald gesetzt — simuliert ein neues Deployment.
+let swOverride = null;
+
 function startServer() {
   return new Promise(resolve => {
     const server = http.createServer((req, res) => {
       let rel = decodeURIComponent(req.url.split('?')[0]);
       if (rel === '/') rel = '/index.html';
+      if (rel === '/sw.js' && swOverride !== null) {
+        res.writeHead(200, { 'Content-Type': MIME['.js'], 'Cache-Control': 'no-store' });
+        res.end(swOverride);
+        return;
+      }
       const file = path.join(ROOT, rel);
       if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
         res.writeHead(404); res.end('not found'); return;
@@ -124,6 +133,73 @@ const results = [];
 function check(name, ok, detail) {
   results.push({ name, ok, detail });
   console.log(`${ok ? '✔' : '✖'} ${name}${ok || !detail ? '' : ' — ' + detail}`);
+}
+
+/**
+ * Simuliert ein echtes Deployment: ein zweiter Service Worker mit neuer
+ * Cache-Version wird angeboten, während die Seite offen ist. Geprüft wird
+ * der volle Ablauf aus sw.js + js/pwa.js — nicht nur, dass der Code
+ * irgendwo die richtigen Bausteine enthält.
+ */
+async function testUpdateBanner(browser, base) {
+  const originalSw = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
+  const versionMatch = originalSw.match(/CACHE_VERSION\s*=\s*'([^']+)'/);
+  if (!versionMatch) {
+    check('Update-Banner: CACHE_VERSION in sw.js gefunden', false);
+    return;
+  }
+  const oldVersion = versionMatch[1];
+  const newVersion = oldVersion + '-test';
+
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    locale: 'de-AT',
+  });
+  const page = await context.newPage();
+  const errors = [];
+  page.on('pageerror', e => errors.push(String(e)));
+
+  try {
+    await page.goto(base, { waitUntil: 'networkidle' });
+    await page.waitForSelector('.setup-screen', { timeout: 5000 });
+
+    const noBannerAtStart = await page.$('.update-banner');
+    check('Erstbesuch zeigt kein Update-Banner', !noBannerAtStart);
+
+    await page.evaluate(() => navigator.serviceWorker.ready);
+
+    // "Deployment": der Server liefert ab jetzt eine neue sw.js aus.
+    swOverride = originalSw.replace(`'${oldVersion}'`, `'${newVersion}'`);
+    await page.evaluate(() =>
+      navigator.serviceWorker.getRegistration().then(r => r && r.update()));
+
+    await page.waitForSelector('.update-banner', { timeout: 15000 });
+    const bannerText = await page.textContent('.update-banner');
+    check('Update-Banner erscheint, sobald der neue Worker installiert ist',
+      /neue Version/i.test(bannerText), bannerText);
+
+    const applyBtn = await page.$('.update-banner .ub-apply');
+    check('Update-Banner hat einen Reload-Button', !!applyBtn);
+
+    const navigation = page.waitForNavigation({ waitUntil: 'load', timeout: 10000 });
+    await page.click('.update-banner .ub-apply');
+    await navigation;
+    check('Klick auf „Jetzt laden" lädt die Seite neu', true);
+
+    await page.waitForSelector('.setup-screen, .village-screen', { timeout: 5000 });
+    const activeCaches = await page.evaluate(() => caches.keys());
+    check('Neue Cache-Version ist nach dem Reload aktiv',
+      activeCaches.includes(newVersion), activeCaches.join(', '));
+    check('Alte Cache-Version wurde aufgeräumt',
+      !activeCaches.includes(oldVersion), activeCaches.join(', '));
+
+    check('Update-Ablauf ohne JavaScript-Fehler', errors.length === 0, errors.slice(0, 3).join(' | '));
+  } catch (err) {
+    check('Update-Banner-Ablauf ohne Ausnahme', false, err.message);
+  } finally {
+    swOverride = null;
+    await context.close();
+  }
 }
 
 async function run() {
@@ -395,6 +471,9 @@ async function run() {
     check('Tabulator erreicht ein Bedienelement', focused === 'BUTTON' || focused === 'A', focused);
 
     check('Keine JavaScript-Fehler im Ablauf', errors.length === 0, errors.slice(0, 3).join(' | '));
+
+    // ── Update-Banner: echter Service-Worker-Lebenszyklus ─────────────────
+    await testUpdateBanner(browser, base);
 
   } catch (err) {
     check('Durchlauf ohne Ausnahme', false, err.message);
