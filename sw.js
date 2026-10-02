@@ -11,7 +11,7 @@
  *    tests/offline.test.js diese Liste gegen index.html.
  */
 
-const CACHE_VERSION = 'lernwelten-v4';
+const CACHE_VERSION = 'lernwelten-v5';
 
 const STATIC_ASSETS = [
   './',
