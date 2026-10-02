@@ -21,6 +21,22 @@
   mix-blend-mode: multiply;
 }
 
+/* Oskar bleibt während Aufgaben bewusst ruhig. Nur bei Erfolg gibt es
+   eine kurze, kleine Reaktion — keine Daueranimation. */
+.oskar--calm .oskar-img {
+  transform-origin: 50% 100%;
+}
+
+.oskar--celebrate .oskar-img {
+  animation: oskar-celebrate 0.65s ease-out 1;
+}
+
+@keyframes oskar-celebrate {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  35% { transform: translateY(-7px) rotate(-2deg); }
+  65% { transform: translateY(-2px) rotate(2deg); }
+}
+
 /* ─── Sprechblasen ───────────────────────────────────────────── */
 /* Standardmäßig unsichtbar — nur mit .oskar-bubble--visible sichtbar */
 .oskar-bubble {
@@ -110,6 +126,13 @@
   top: auto;
   bottom: -8px;
   transform: rotate(135deg);
+}
+
+/* Betriebssystem-Einstellung respektieren: keine Bewegung erzwingen. */
+@media (prefers-reduced-motion: reduce) {
+  .oskar--celebrate .oskar-img {
+    animation: none;
+  }
 }
 
 /* ─── Responsive ─────────────────────────────────────────────── */
