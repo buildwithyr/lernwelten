@@ -1,33 +1,9 @@
 /* ============================================================
    print.css — Arbeitsblätter zum Ausdrucken
-   Wird nur beim Drucken geladen (media="print").
+   Gemeinsames Blattlayout für Vorschau und Druck.
    ============================================================ */
 
-@page {
-  size: A4 portrait;
-  margin: 16mm 14mm;
-}
-
-body {
-  background: #fff !important;
-  color: #000 !important;
-  font-size: 12pt;
-}
-
-/* Alles ausblenden, was nicht auf das Blatt gehört. */
-.no-print,
-.workshop-header,
-.village-header,
-.oskar-companion,
-#pwa-install-banner,
-.update-banner,
-.storage-warning,
-.confetti-container,
-.overlay { display: none !important; }
-
-#app, .screen { display: block !important; min-height: 0 !important; }
-
-.print-sheet { display: block; }
+.print-sheet { display: block; min-width: 0; color: #222; font-size: 12pt; line-height: 1.5; }
 
 .ps-head { border-bottom: 2px solid #000; padding-bottom: 6mm; margin-bottom: 8mm; }
 .ps-head h1 { font-size: 18pt; margin: 0; }
@@ -39,13 +15,19 @@ body {
   page-break-inside: avoid;
   break-inside: avoid;
 }
-/* Alles im Aufgabenblock linksbündig — die Bildschirm-Zentrierung sieht
-   auf A4 aus, als stünde der Text zufällig irgendwo auf der Seite. */
+/* Text beginnt an derselben Linie; Zellen und Diagramme behalten ihr Layout. */
 .ps-task,
-.ps-task * { text-align: left !important; }
+.ps-task .q-label,
+.ps-task .q-sub,
+.ps-task .math-eq,
+.ps-task .word-main,
+.ps-task .word-masked,
+.ps-task .letter-scramble,
+.ps-task .sentence-line { text-align: left; }
 .ps-task .q-label { font-size: 12pt; font-weight: 700; margin-bottom: 1mm; color: #000; }
 .ps-task .q-sub { font-size: 10pt; color: #333; margin-bottom: 1mm; }
-.ps-task .math-eq { font-size: 15pt; font-weight: 700; margin: 1mm 0; }
+.ps-task .math-eq { font-size: 15pt; font-weight: 700; letter-spacing: 0.02em; margin: 1mm 0; }
+.ps-task .q-word { font-size: 15pt; }
 .ps-task .word-main,
 .ps-task .word-masked,
 .ps-task .letter-scramble { font-size: 15pt; font-weight: 700; margin: 1mm 0; }
@@ -85,11 +67,54 @@ body {
 .ps-source { margin-top: 6mm; font-size: 7pt; color: #777; word-break: break-all; }
 
 /* Darstellungen bleiben lesbar, aber sparsam im Druck. */
-.hundred-field { max-width: 90mm; }
-.hf-cell { font-size: 7pt; }
-.number-line { height: 24mm; }
-.bar-chart { height: 45mm; }
-.point-field .pf-dot { background: #444 !important; }
-.tb-cell { background: #ddd !important; }
-.tb-unit { background: #444 !important; }
-.coin, .note { border-color: #666 !important; background: #eee !important; color: #000 !important; }
+.ps-task .hundred-field { max-width: 90mm; }
+.ps-task .hf-cell { font-size: 7pt; }
+.ps-task .number-line { height: 24mm; }
+.ps-task .bar-chart { height: 45mm; }
+
+@media screen {
+  .print-sheet {
+    width: calc(100% - 32px);
+    max-width: 800px;
+    margin: 8px auto 32px;
+    padding: clamp(18px, 4vw, 40px);
+    background: #fff;
+    border: 1px solid var(--cream-dark);
+    border-radius: 12px;
+    box-shadow: 0 6px 24px rgba(90, 60, 20, 0.1);
+  }
+  .ps-task { padding-bottom: 20px; border-bottom: 1px solid #eee; }
+  .ps-task:last-child { border-bottom: 0; }
+  .ps-task::marker { font-weight: 700; }
+  .ps-head h1 { line-height: 1.3; }
+  .ps-meta { overflow-wrap: anywhere; }
+  .ps-solutions { margin-top: 24px; }
+  .ps-source { display: none; }
+  .ws-line { max-width: 100%; }
+  .ws-field { display: inline-flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+  .ws-toolbar, .ws-note { width: 100%; max-width: 832px; margin-inline: auto; }
+  .ps-task .hundred-field { max-width: 100%; }
+}
+
+@media print {
+  @page { size: A4 portrait; margin: 16mm 14mm; }
+  body { background: #fff !important; color: #000 !important; font-size: 12pt; }
+  .no-print,
+  .workshop-header,
+  .village-header,
+  .oskar-companion,
+  #pwa-install-banner,
+  .update-banner,
+  .storage-warning,
+  .confetti-container,
+  .overlay { display: none !important; }
+  #app, .screen { display: block !important; min-height: 0 !important; }
+  .screen { animation: none !important; }
+  .ps-task { margin-bottom: 6mm; }
+  .ps-task .point-field .pf-dot { background: #444 !important; }
+  .ps-task .tb-cell { background: #ddd !important; }
+  .ps-task .tb-unit { background: #444 !important; }
+  .ps-task .coin, .ps-task .note {
+    border-color: #666 !important; background: #eee !important; color: #000 !important;
+  }
+}
