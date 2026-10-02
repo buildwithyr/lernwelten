@@ -11,7 +11,7 @@
  *    tests/offline.test.js diese Liste gegen index.html.
  */
 
-const CACHE_VERSION = 'lernwelten-v5';
+const CACHE_VERSION = 'lernwelten-v6';
 
 const STATIC_ASSETS = [
   './',
@@ -82,6 +82,8 @@ const STATIC_ASSETS = [
   './js/pwa.js',
 
   // Bilder
+  './assets/oskar-sprites.webp',
+  './assets/oskar-pet.png',
   './assets/oskar-cartoon.png',
   './assets/oskar-default.png',
   './assets/icons/icon-16x16.png',

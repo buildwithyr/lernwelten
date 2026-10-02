@@ -157,7 +157,7 @@ const Session = (() => {
             <div class="task-feedback hidden" id="task-feedback" role="status"></div>
 
             <div class="task-actions">
-              ${isCheck ? '' : `<button class="btn btn-ghost" id="hint-btn" type="button">💡 Tipp</button>`}
+              ${isCheck ? '' : `<button class="btn btn-ghost" id="hint-btn" type="button">🐶 Frag Oskar</button>`}
               ${task.tool && !isCheck ? `<button class="btn btn-ghost" id="tool-btn" type="button">🧰 Hilfsmittel</button>` : ''}
               <button class="btn btn-primary" id="next-btn" type="button" style="display:none">Weiter →</button>
             </div>
@@ -182,7 +182,11 @@ const Session = (() => {
     Timers.after(60, () => {
       const main = UI.$('.task-main');
       if (main && typeof Oskar !== 'undefined') {
-        Oskar.show(main, { placement: 'task-companion', pool: 'taskIntro', chance: 0.25 });
+        Oskar.show(main, {
+          placement: 'task-companion', message: !isCheck && state.length >= 6 && state.index === Math.floor(state.length / 2)
+            ? 'Halbzeit! Wenn du magst, streck dich kurz. 🐶' : null, animate: false,
+          onHelp: !isCheck && (task.hints || []).length ? showNextHint : null,
+        });
       }
     });
   }
@@ -204,8 +208,12 @@ const Session = (() => {
     const step = `Tipp ${c.hintIndex} von ${hints.length}`;
     showFeedback(`<span class="hint-step">${step}</span> ${hint}`, 'hint');
     UI.announce(hint);
+    if (typeof Oskar !== 'undefined') {
+      Oskar.react('thinking', 'Schau dir den Tipp in Ruhe an.');
+      Oskar.setHelpEnabled(c.hintIndex < hints.length);
+    }
     const btn = UI.$('#hint-btn');
-    if (btn && c.hintIndex >= hints.length) btn.textContent = '💡 Kein Tipp mehr';
+    if (btn && c.hintIndex >= hints.length) btn.textContent = '🐾 Alle Tipps gezeigt';
   }
 
   // ─── Auswertung ───────────────────────────────────────────────────────────
@@ -240,7 +248,14 @@ const Session = (() => {
         : 'Richtig — und mit Hilfe geschafft. Das zählt auch! 👍';
       showFeedback(praise, 'correct');
       UI.announce(outcome === OUT.SOLO ? 'Richtig.' : 'Richtig, mit Hilfe geschafft.');
-      if (typeof Oskar !== 'undefined') Oskar.say(Util.randomFrom(Oskar.MESSAGES.correct));
+      if (typeof Oskar !== 'undefined') {
+        const done = state.index + 1;
+        const halfway = state.length === 10 && done === 5;
+        Oskar.setHelpEnabled(false);
+        Oskar.react('happy', halfway
+          ? '5 von 10 Aufgaben geübt. In deinem Tempo!'
+          : outcome === OUT.HELPED ? 'Mit dem Tipp hast du es geschafft!' : 'Du hast die Aufgabe gelöst!');
+      }
 
       const fill = UI.$('.task-progress-fill');
       if (fill) fill.style.width = `${((state.index + 1) / state.length) * 100}%`;
@@ -251,7 +266,9 @@ const Session = (() => {
 
     // Falsche Antwort
     c.wrongAttempts++;
-    if (typeof Oskar !== 'undefined') Oskar.silence();
+    if (typeof Oskar !== 'undefined') {
+      Oskar.react('encourage', 'Wir schauen noch einmal in Ruhe hin.');
+    }
 
     if (c.wrongAttempts >= MAX_WRONG_ATTEMPTS) {
       c.locked = true;
@@ -321,6 +338,10 @@ const Session = (() => {
   }
 
   function showNextButton() {
+    if (typeof Oskar !== 'undefined') {
+      Oskar.setHelpEnabled(false);
+      Oskar.react('review', 'Wir üben das später noch einmal.');
+    }
     const btn = UI.$('#next-btn');
     if (btn) { btn.style.display = ''; btn.focus(); }
   }
@@ -530,7 +551,10 @@ const Session = (() => {
     Timers.after(120, () => {
       const main = UI.$('.complete-main');
       if (main && typeof Oskar !== 'undefined') {
-        Oskar.show(main, { placement: 'task-companion', pool: 'correct', chance: 1 });
+        Oskar.show(main, {
+          placement: 'task-companion', pose: isCheck ? 'default' : 'happy', animate: !isCheck,
+          message: 'Runde geschafft! Eine kleine Pause tut gut.',
+        });
       }
     });
 

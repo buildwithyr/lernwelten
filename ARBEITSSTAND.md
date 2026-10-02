@@ -113,7 +113,6 @@ Arbeitsblätter mit getrennter Lösungsseite.
 | Punkt | Grund |
 |---|---|
 | **Vorlesen (Sprachausgabe)** | Der Bericht empfiehlt vorab geprüfte Audiodateien für einen verlässlichen Offline-Modus. Die müssten aufgenommen werden. `SpeechSynthesis` wäre online-abhängig und auf iOS unzuverlässig — das wurde bewusst nicht eingebaut, statt eine wackelige Lösung zu liefern. Vorbereitet ist alles: Jede Aufgabe hat ein `prompt`-Feld mit reinem Text. |
-| **Oskar-Posen (winken, nachdenken, jubeln)** | Es gibt weiterhin nur `assets/oskar-cartoon.png`. Die Registry in `js/oskar.js` nimmt weitere Posen sofort auf — die Bilder fehlen. Es wurden keine erfunden. |
 | **Illustrierte Gebäude am Dorfplatz** | Der Bericht nennt das als Idee, nicht als Bedarf. Ohne Zeichnungen bleibt es bei farbigen Karten. |
 | **„Gemeinsam üben"-Modus** | Kleiner Nutzen gegenüber dem Aufwand; der Elternbereich zeigt Lösungen bereits über die Arbeitsblätter. Zurückgestellt. |
 | **Geräteübergreifende Synchronisation** | Wie im Bericht: erst Export/Import (erledigt), Synchronisation später. Braucht ein Backend — ausdrücklich nicht Teil dieser Überarbeitung. |
@@ -174,8 +173,10 @@ erfolgt von Hand. **Es wird nichts geraten.**
    Gewichte sind gesperrt.
 5. **Fehlende Buchzuordnungen ergänzen**, sobald die Originale vorliegen —
    Format siehe `CLAUDE.md`, Abschnitt 5.
-6. **Oskar-Posen zeichnen lassen** (winken, nachdenken, jubeln) und in
-   `CHARACTERS.oskar.poses` eintragen.
+6. **Oskar ist als animierter Lernbegleiter integriert** (02.10.2026): Das originale
+   lokale Sprite-Sheet enthält Winken, Laufen, Springen und 16 Blickrichtungen.
+   Beim Lösen und in Kurz-Checks bleibt er ruhig; Tipps und Rückmeldungen lösen
+   kurze Reaktionen aus. Offline-Dateien und Cache-Version v6 sind aktualisiert.
 
 ---
 
