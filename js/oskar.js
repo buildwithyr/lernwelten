@@ -1,35 +1,13 @@
 /**
  * oskar.js
- * Maskottchen der Lernwelt — Oskar begleitet beide Klassenstufen.
- *
- * Architektur-Überblick:
- *   CHARACTERS  — Registry der Maskottchen (Posen + Nachrichten-Pools).
- *   _active()   — liefert die aktuelle Figur (aktuell immer Oskar).
- *   Oskar.show  — Zeigt das aktive Maskottchen in einem Container mit Placement
- *                 und optionaler Sprechblase.
- *   Oskar.say   — Aktualisiert die Sprechblase ohne Neupositionierung.
- *   Oskar.silence — Versteckt die Sprechblase, das Maskottchen bleibt sichtbar.
- *   Oskar.remove  — Entfernt das Maskottchen komplett aus dem DOM.
- *
- * Neue Pose hinzufügen:
- *   1. PNG in assets/ ablegen, z.B. assets/oskar-happy.png
- *   2. Eintrag in CHARACTERS.oskar.poses ergänzen: happy: 'assets/oskar-happy.png'
- *   3. Im Aufruf: Oskar.show(container, { pose: 'happy', ... })
+ * Oskar begleitet die Lernwelt als ruhiges, motivierendes Maskottchen.
  */
 
 const Oskar = (() => {
-
-  // ─── Figuren-Registry ─────────────────────────────────────────────────────
-  // Jede Figur hat eigene Posen und eigene Nachrichten-Pools.
-  // null-Einträge in den Pools = die Figur erscheint still (ruhige Begleitung).
   const CHARACTERS = {
-
     oskar: {
       poses: {
-        default:  'assets/oskar-cartoon.png',
-        // happy:    'assets/oskar-happy.png',    // zukünftig: für Erfolgserlebnisse
-        // thinking: 'assets/oskar-think.png',    // zukünftig: für Aufgabenintro
-        // wave:     'assets/oskar-wave.png',     // zukünftig: für Begrüßung
+        default: 'assets/oskar-cartoon.png',
       },
       messages: {
         greeting: [
@@ -75,6 +53,17 @@ const Oskar = (() => {
           'Heute warst du richtig schlau! 🧠',
           '10 von 10 – perfekt! 🏆',
         ],
+        encourage: [
+          'Fast! Schau noch einmal genau hin. 🐶',
+          'Kein Problem – probier es noch einmal.',
+          'Du bist nah dran. Ganz in Ruhe noch einmal!',
+          'Fehler helfen beim Lernen. Weiter geht’s!',
+        ],
+        pause: [
+          'Halbzeit! Wenn du magst, streck dich kurz. 🐶',
+          'Schon die Hälfte geschafft! Einmal kurz durchatmen?',
+          'Halbzeit! Augen kurz weg vom Bildschirm und dann weiter.',
+        ],
         words: [
           'Wörter machen Spaß! 📖',
           'Du lernst so viel!',
@@ -98,31 +87,24 @@ const Oskar = (() => {
         ],
       },
     },
-
   };
 
-  // Es gibt aktuell nur eine Figur (Oskar) für beide Klassenstufen.
   function _active() {
     return CHARACTERS.oskar;
   }
 
-  // ─── Interner State ───────────────────────────────────────────────────────
-  let _el = null; // aktuell montiertes DOM-Element
-
-  // ─── Hilfsfunktionen ──────────────────────────────────────────────────────
+  let _el = null;
+  let _lastFeedback = '';
 
   function _pick(arr) {
+    if (!arr || !arr.length) return null;
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  // Wählt eine Nachricht mit Wahrscheinlichkeit `chance`.
-  // null-Einträge im Pool zählen als "die Figur bleibt still".
   function _pickWithChance(pool, chance) {
     if (Math.random() > chance) return null;
     return _pick(_active().messages[pool] || []);
   }
-
-  // ─── DOM ──────────────────────────────────────────────────────────────────
 
   function _build(placement, pose) {
     const el = document.createElement('div');
@@ -134,15 +116,9 @@ const Oskar = (() => {
 
     el.innerHTML = `
       <div class="oskar-bubble" id="oskar-bubble"></div>
-      <img
-        class="oskar-img"
-        src="${imgSrc}"
-        alt=""
-        draggable="false"
-      />
+      <img class="oskar-img" src="${imgSrc}" alt="" draggable="false" />
     `;
 
-    // Wenn das PNG noch nicht vorhanden ist, die Figur graceful ausblenden
     el.querySelector('.oskar-img').addEventListener('error', () => {
       el.style.display = 'none';
     });
@@ -150,49 +126,55 @@ const Oskar = (() => {
     return el;
   }
 
-  // ─── Public API ───────────────────────────────────────────────────────────
+  function _isCheck() {
+    return typeof document !== 'undefined' && !!document.querySelector('.check-badge');
+  }
 
-  /**
-   * Zeigt Oskar in einem Container.
-   *
-   * @param {HTMLElement} container - Ziel-Element, an das die Figur angehängt wird
-   * @param {object}      opts
-   *   placement  {string}  CSS-Modifizierer, z.B. 'inline-right', 'setup-peek'
-   *   pose       {string}  Schlüssel aus den Posen der aktiven Figur
-   *   pool       {string}  Schlüssel aus den Nachrichten der aktiven Figur (null = immer still)
-   *   chance     {number}  Wahrscheinlichkeit für Sprechblase (0–1, default 1)
-   *   message    {string|null}  Explizite Nachricht (überschreibt pool + chance)
-   */
+  function _isHalfTime() {
+    if (typeof document === 'undefined') return false;
+    const label = document.querySelector('.task-progress-label');
+    if (!label) return false;
+    const m = label.textContent.match(/Aufgabe\s+(\d+)\s+von\s+(\d+)/i);
+    if (!m) return false;
+    const current = Number(m[1]);
+    const total = Number(m[2]);
+    return total >= 6 && current === Math.floor(total / 2) + 1;
+  }
+
   function show(container, opts = {}) {
     const {
       placement = 'inline-right',
-      pose      = 'default',
-      pool      = null,
-      chance    = 1,
-      message   = undefined,  // undefined = pool-Auswahl, null = erzwingt Stille
+      pose = 'default',
+      pool = null,
+      chance = 1,
+      message = undefined,
     } = opts;
 
-    remove(); // altes Element sauber entfernen
+    remove();
 
     const el = _build(placement, pose);
     _el = el;
     container.appendChild(el);
 
-    // Nachricht bestimmen
     let text;
     if (message !== undefined) {
       text = message;
+    } else if (placement === 'task-companion' && _isCheck()) {
+      text = null;
+      el.classList.add('oskar--calm');
+    } else if (placement === 'task-companion' && _isHalfTime()) {
+      text = _pick(_active().messages.pause);
+      el.classList.add('oskar--calm');
     } else if (pool) {
       text = _pickWithChance(pool, chance);
     } else {
       text = null;
     }
 
-    if (text) {
-      _showBubble(el, text);
-    } else {
-      _hideBubble(el);
-    }
+    if (placement === 'task-companion') el.classList.add('oskar--calm');
+
+    if (text) _showBubble(el, text);
+    else _hideBubble(el);
   }
 
   function _showBubble(el, text) {
@@ -207,19 +189,25 @@ const Oskar = (() => {
     if (bubble) bubble.classList.remove('oskar-bubble--visible');
   }
 
-  /** Sprechblase aktualisieren (die Figur bleibt, wo sie ist). */
   function say(text) {
-    if (!_el) return;
+    if (!_el || !text) return;
     _showBubble(_el, text);
+
+    if (_active().messages.correct.indexOf(text) !== -1) {
+      _el.classList.remove('oskar--celebrate');
+      void _el.offsetWidth;
+      _el.classList.add('oskar--celebrate');
+      setTimeout(() => {
+        if (_el) _el.classList.remove('oskar--celebrate');
+      }, 800);
+    }
   }
 
-  /** Sprechblase ausblenden — die Figur bleibt sichtbar, schweigt. */
   function silence() {
     if (!_el) return;
     _hideBubble(_el);
   }
 
-  /** Figur vollständig aus dem DOM entfernen. */
   function remove() {
     if (_el) {
       if (_el.parentNode) _el.parentNode.removeChild(_el);
@@ -227,11 +215,57 @@ const Oskar = (() => {
     }
   }
 
+  function _enhanceTaskUi() {
+    if (typeof document === 'undefined') return;
+
+    const hintBtn = document.getElementById('hint-btn');
+    if (hintBtn && hintBtn.textContent.indexOf('Frag Oskar') === -1) {
+      if (hintBtn.textContent.indexOf('Kein Tipp mehr') !== -1) {
+        hintBtn.textContent = '🐶 Oskar hat keinen Tipp mehr';
+      } else {
+        hintBtn.textContent = '🐶 Frag Oskar';
+      }
+    }
+
+    const feedback = document.getElementById('task-feedback');
+    if (!feedback || feedback.classList.contains('hidden')) return;
+
+    const key = `${feedback.className}|${feedback.textContent}`;
+    if (!feedback.textContent || key === _lastFeedback) return;
+    _lastFeedback = key;
+
+    if (feedback.classList.contains('feedback-hint')) {
+      say(feedback.textContent.replace(/^Tipp\s+\d+\s+von\s+\d+\s*/i, '').trim());
+      if (hintBtn && hintBtn.textContent.indexOf('Kein Tipp') === -1) {
+        hintBtn.textContent = '🐶 Frag Oskar nochmal';
+      }
+    } else if (feedback.classList.contains('feedback-wrong')) {
+      say(_pick(_active().messages.encourage));
+    } else if (feedback.classList.contains('feedback-solution')) {
+      say('Macht nichts. Die Aufgabe kommt später noch einmal. 🐶');
+    }
+  }
+
+  function _installCoach() {
+    if (typeof document === 'undefined' || typeof MutationObserver === 'undefined') return;
+    _enhanceTaskUi();
+    const observer = new MutationObserver(_enhanceTaskUi);
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+  }
+
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _installCoach);
+    else _installCoach();
+  }
+
   return {
     show, say, silence, remove,
-    // Getter statt statischer Werte: einige Aufrufstellen greifen direkt auf
-    // Oskar.MESSAGES/Oskar.POSES zu (z.B. `randomFrom(Oskar.MESSAGES.correct)`)
-    // — das muss live die aktuell aktive Figur widerspiegeln.
     get MESSAGES() { return _active().messages; },
     get POSES() { return _active().poses; },
   };
