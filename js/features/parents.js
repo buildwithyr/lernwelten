@@ -560,7 +560,7 @@ const Parents = (() => {
           <input type="checkbox" id="opt-motion" ${profile.settings.reduceMotion ? 'checked' : ''} />
           <span class="tt-body">
             <span class="tt-title">Weniger Bewegung</span>
-            <span class="tt-goal">Kein Konfetti, keine Wackel-Animationen.</span>
+            <span class="tt-goal">Oskar bleibt ruhig. Kein Konfetti, keine Wackel-Animationen.</span>
           </span>
         </label>
         <label class="topic-toggle">

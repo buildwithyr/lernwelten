@@ -12,30 +12,38 @@
   flex-shrink: 0;
 }
 
-.oskar-img {
+.oskar-sprite {
   width: 88px;
-  height: auto;
+  aspect-ratio: 12 / 13;
   flex-shrink: 0;
   display: block;
-  /* Weißen PNG-Hintergrund auf warmen Flächen ausblenden */
-  mix-blend-mode: multiply;
+  background-image: url('../assets/oskar-sprites.webp');
+  background-size: 800% 1100%;
+  background-position: 0 0;
+  background-repeat: no-repeat;
 }
-
-/* Oskar bleibt während Aufgaben bewusst ruhig. Nur bei Erfolg gibt es
-   eine kurze, kleine Reaktion — keine Daueranimation. */
-.oskar--calm .oskar-img {
-  transform-origin: 50% 100%;
+.oskar-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
 }
-
-.oskar--celebrate .oskar-img {
-  animation: oskar-celebrate 0.65s ease-out 1;
+.oskar-sprite--ready .oskar-img { visibility: hidden; }
+.oskar-help {
+  border: 0;
+  padding: 4px;
+  border-radius: 14px;
+  color: var(--text-dark);
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  font: inherit;
+  flex-shrink: 0;
 }
-
-@keyframes oskar-celebrate {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  35% { transform: translateY(-7px) rotate(-2deg); }
-  65% { transform: translateY(-2px) rotate(2deg); }
-}
+.oskar-help:focus-visible { outline: 3px solid var(--accent, #3865aa); outline-offset: 3px; }
+.oskar-help:disabled { cursor: default; }
+.oskar-help:disabled .oskar-help-label { visibility: hidden; }
+.oskar-help-label { display: block; font-size: 14px; font-weight: 700; margin-top: 2px; }
 
 /* ─── Sprechblasen ───────────────────────────────────────────── */
 /* Standardmäßig unsichtbar — nur mit .oskar-bubble--visible sichtbar */
@@ -109,7 +117,7 @@
   z-index: 5;
 }
 
-.oskar--setup-peek .oskar-img {
+.oskar--setup-peek .oskar-sprite {
   width: 96px;
   transform: translateY(10px); /* leicht in den unteren Rand eintauchen */
 }
@@ -128,28 +136,21 @@
   transform: rotate(135deg);
 }
 
-/* Betriebssystem-Einstellung respektieren: keine Bewegung erzwingen. */
-@media (prefers-reduced-motion: reduce) {
-  .oskar--celebrate .oskar-img {
-    animation: none;
-  }
-}
-
 /* ─── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 380px) {
-  .oskar-img                        { width: 72px; }
-  .oskar--setup-peek .oskar-img     { width: 78px; }
+  .oskar-sprite                     { width: 72px; }
+  .oskar--setup-peek .oskar-sprite     { width: 78px; }
   .oskar-bubble                     { font-size: var(--text-xs); max-width: 150px; padding: 8px 10px; }
   .oskar--setup-peek                { right: var(--sp-md); }
 }
 
 @media (min-width: 600px) {
-  .oskar-img                        { width: 100px; }
-  .oskar--setup-peek .oskar-img     { width: 108px; }
+  .oskar-sprite                     { width: 100px; }
+  .oskar--setup-peek .oskar-sprite     { width: 108px; }
   .oskar-bubble                     { font-size: var(--text-base); max-width: 210px; }
   .oskar--task-companion .oskar-bubble { font-size: var(--text-md); max-width: 230px; }
 }
 
 @media (min-width: 900px) {
-  .oskar-img                        { width: 110px; }
+  .oskar-sprite                     { width: 110px; }
 }

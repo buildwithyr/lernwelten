@@ -125,7 +125,7 @@ const ProfileUI = (() => {
     Timers.after(60, () => {
       const screen = UI.$('.setup-screen');
       if (screen && typeof Oskar !== 'undefined') {
-        Oskar.show(screen, { placement: 'setup-peek', pool: 'greeting', chance: 1 });
+        Oskar.show(screen, { placement: 'setup-peek', pose: 'wave', pool: 'greeting', chance: 1 });
       }
     });
   }

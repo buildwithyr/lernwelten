@@ -26,6 +26,7 @@ const MIME = {
   '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
   '.png': 'image/png',
+  '.webp': 'image/webp',
   '.ico': 'image/x-icon',
   '.woff2': 'font/woff2',
   '.txt': 'text/plain; charset=utf-8',
@@ -271,6 +272,19 @@ async function run() {
     await page.waitForSelector('.task-card', { timeout: 5000 });
     check('Aufgabe wird angezeigt', true);
 
+    await page.waitForSelector('.oskar-sprite--ready');
+    const resting = await page.getAttribute('.oskar-companion', 'data-pose');
+    check('Oskar bleibt beim Lösen ruhig', resting === 'default');
+    await page.click('.oskar-help');
+    const helped = await page.evaluate(() => Session._state().current.helpUsed);
+    check('Frag Oskar öffnet einen echten gestuften Tipp', !!helped);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.waitForTimeout(220);
+    check('Weniger Bewegung hält Oskar im Ruhebild',
+      await page.getAttribute('.oskar-sprite', 'data-row') === '0' &&
+      await page.getAttribute('.oskar-sprite', 'data-frame') === '0');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+
     // Fünf Aufgaben lösen — Lösung direkt aus dem App-Zustand holen.
     let solved = 0;
     for (let i = 0; i < 8; i++) {
@@ -461,6 +475,9 @@ async function run() {
     await page.waitForTimeout(800);
     const offlineOk = await page.$('.village-screen, .setup-screen');
     check('App startet offline', !!offlineOk);
+    await page.waitForSelector('.oskar-sprite--ready');
+    check('Oskars Animation ist offline verfügbar',
+      await page.evaluate(async () => (await fetch('assets/oskar-sprites.webp')).ok));
     await context.setOffline(false);
 
     // ── Tastaturbedienung ─────────────────────────────────────────────────

@@ -134,7 +134,7 @@ const App = (() => {
     Timers.after(60, () => {
       const main = UI.$('.village-main');
       if (main && typeof Oskar !== 'undefined') {
-        Oskar.show(main, { placement: 'inline-right', pool: 'village', chance: 0.6 });
+        Oskar.show(main, { placement: 'inline-right', pose: 'wave', pool: 'village', chance: 0.6 });
       }
     });
 
