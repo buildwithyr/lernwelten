@@ -8,6 +8,7 @@ function fixture() {
   let reduced = false;
   const callbacks = new Set();
   const delays = new Set();
+  const pauses = [];
   const listeners = new Map();
   const sprite = { style: {}, dataset: {}, classList: { add() {} } };
   const bubble = { textContent: '', classList: { add() {}, remove() {} } };
@@ -22,10 +23,11 @@ function fixture() {
     Image: class { complete = true; naturalWidth = 1536; addEventListener() {} },
     Timers: {
       every(_, fn) { callbacks.add(fn); return () => callbacks.delete(fn); },
-      after(_, fn) { delays.add(fn); return () => delays.delete(fn); },
+      after(ms, fn) { pauses.push(ms); delays.add(fn); return () => delays.delete(fn); },
     } });
   vm.runInContext(fs.readFileSync('js/oskar.js', 'utf8') + '\nthis.pet = Oskar;', ctx);
-  return { pet: ctx.pet, sprite, bubble, button, listeners, callbacks, delays, document,
+  return { pet: ctx.pet, sprite, bubble, button, listeners, callbacks, delays, pauses, document,
+    pose() { return el.dataset.pose; },
     container: { appendChild() {} }, reduce(value) { reduced = value; listeners.get('motion')?.(); },
     tick() { [...callbacks].forEach(fn => fn()); },
     idle() { [...delays].forEach(fn => { delays.delete(fn); fn(); }); } };
@@ -75,4 +77,40 @@ test('Menu motions use all original gaze directions and stop on navigation or re
   f.pet.remove();
   assert.equal(f.callbacks.size + f.delays.size, 0);
   assert.equal(f.listeners.size, 0);
+});
+
+test('Idle motion rounds include every variant without consecutive repeats', () => {
+  const f = fixture();
+  f.pet.show(f.container, { pose: 'wave' });
+  const finish = () => { for (let i = 0; i < 32 && f.callbacks.size; i++) f.tick(); };
+  finish();
+  let previous = 'wave';
+  const expected = ['default', 'look', 'runRight', 'runLeft', 'wave', 'happy',
+    'paw', 'curious', 'lookLeft', 'lookRight', 'lookUp', 'lookDown'].sort();
+  for (let round = 0; round < 3; round++) {
+    const seen = [];
+    for (let i = 0; i < 12; i++) {
+      f.idle();
+      const pose = f.pose();
+      assert.notEqual(pose, previous);
+      seen.push(pose); previous = pose;
+      finish();
+      assert.equal(f.delays.size, 1);
+    }
+    assert.deepEqual(seen.sort(), expected);
+  }
+  assert.ok(f.pauses.every(ms => ms >= 2800 && ms < 5500));
+  f.pet.remove();
+  assert.equal(f.callbacks.size + f.delays.size, 0);
+});
+
+test('Running repeats the same row, and tasks never schedule ambient movements', () => {
+  const f = fixture();
+  f.pet.show(f.container, { placement: 'task-companion', pose: 'runRight' });
+  for (let i = 0; i < 8; i++) f.tick();
+  assert.equal(f.sprite.dataset.row, '1');
+  assert.equal(f.sprite.dataset.frame, '0');
+  for (let i = 0; i < 8; i++) f.tick();
+  assert.equal(f.sprite.dataset.row, '0');
+  assert.equal(f.callbacks.size + f.delays.size, 0);
 });

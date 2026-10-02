@@ -91,15 +91,24 @@ const Oskar = (() => {
     encourage: { row: 6, frames: 6, ms: 160 },
     thinking: { row: 8, frames: 6, ms: 180 },
     review: { row: 8, frames: 6, ms: 180 },
-    runRight: { row: 1, frames: 8, ms: 110 },
-    runLeft: { row: 2, frames: 8, ms: 110 },
+    runRight: { row: 1, frames: 8, ms: 110, cycles: 2 },
+    runLeft: { row: 2, frames: 8, ms: 110, cycles: 2 },
     look: { row: 9, frames: 16, ms: 160 },
+    paw: { row: 6, frames: 6, ms: 190 },
+    curious: { row: 7, frames: 6, ms: 180 },
+    lookLeft: { sequence: [[10, 3], [10, 4], [10, 5], [10, 4], [10, 3]], frames: 5, ms: 240 },
+    lookRight: { sequence: [[9, 5], [9, 4], [9, 3], [9, 4], [9, 5]], frames: 5, ms: 240 },
+    lookUp: { sequence: [[10, 7], [9, 0], [9, 1], [9, 0], [10, 7]], frames: 5, ms: 240 },
+    lookDown: { sequence: [[9, 7], [10, 0], [10, 1], [10, 0], [9, 7]], frames: 5, ms: 240 },
   };
+  const IDLE_MOTIONS = ['default', 'look', 'runRight', 'runLeft', 'wave', 'happy',
+    'paw', 'curious', 'lookLeft', 'lookRight', 'lookUp', 'lookDown'];
   let _el = null;
   let _cancelMotion = null;
   let _cancelAmbient = null;
   let _ambient = false;
-  let _idleIndex = 0;
+  let _idleQueue = [];
+  let _lastIdle = null;
   let _onVisibility = null;
   let _onMotionPreference = null;
   let _media = null;
@@ -125,6 +134,26 @@ const Oskar = (() => {
     sprite.dataset.row = String(row);
     sprite.dataset.frame = String(frame);
   }
+  function _motionFrame(motion, frame) {
+    const index = frame % motion.frames;
+    const cell = motion.sequence && motion.sequence[index];
+    _frame(cell ? cell[0] : motion.row + Math.floor(index / 8), cell ? cell[1] : index % 8);
+  }
+  function _nextIdle() {
+    if (!_idleQueue.length) {
+      _idleQueue = IDLE_MOTIONS.slice();
+      for (let i = _idleQueue.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [_idleQueue[i], _idleQueue[j]] = [_idleQueue[j], _idleQueue[i]];
+      }
+      // Each motion appears once per round, without a repeat at the boundary.
+      if (_idleQueue[0] === _lastIdle) {
+        [_idleQueue[0], _idleQueue[1]] = [_idleQueue[1], _idleQueue[0]];
+      }
+    }
+    _lastIdle = _idleQueue.shift();
+    return _lastIdle;
+  }
   function _play(pose, animate) {
     _stopMotion();
     _motion = MOTIONS[pose] ? pose : 'default';
@@ -137,23 +166,23 @@ const Oskar = (() => {
     }
     const motion = MOTIONS[_motion];
     let frame = 0;
-    _frame(motion.row, frame);
+    _motionFrame(motion, frame);
     _cancelMotion = Timers.every(motion.ms, () => {
       if (!_el || !_el.isConnected) { _stopMotion(); return; }
       frame++;
-      if (frame >= motion.frames) {
+      if (frame >= motion.frames * (motion.cycles || 1)) {
         _stopMotion();
         _frame(0, 0); // A calm, planted dog after each short reaction.
         _motion = 'default';
         _animate = _ambient;
         _el.dataset.pose = 'default';
         if (_ambient) {
-          const idle = ['default', 'look', 'runRight', 'runLeft'];
-          _cancelAmbient = Timers.after(6500, () => _play(idle[_idleIndex++ % idle.length], true));
+          const pause = 2800 + Math.floor(Math.random() * 2700);
+          _cancelAmbient = Timers.after(pause, () => _play(_nextIdle(), true));
         }
         return;
       }
-      _frame(motion.row + Math.floor(frame / 8), frame % 8);
+      _motionFrame(motion, frame);
     });
   }
   function _ready() {
@@ -205,7 +234,8 @@ const Oskar = (() => {
 
     remove(); // altes Element sauber entfernen
     _ambient = ambient && animate;
-    _idleIndex = 0;
+    _idleQueue = [];
+    _lastIdle = pose;
 
     const el = _build(placement, onHelp);
     _el = el;

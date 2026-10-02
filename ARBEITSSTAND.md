@@ -176,7 +176,10 @@ erfolgt von Hand. **Es wird nichts geraten.**
 6. **Oskar ist als animierter Lernbegleiter integriert** (02.10.2026): Das originale
    lokale Sprite-Sheet enthält Winken, Laufen, Springen und 16 Blickrichtungen.
    Beim Lösen und in Kurz-Checks bleibt er ruhig; Tipps und Rückmeldungen lösen
-   kurze Reaktionen aus. Offline-Dateien und Cache-Version v6 sind aktualisiert.
+   kurze Reaktionen aus. Im Menü wechseln zwölf Bewegungsvarianten in gemischter
+   Reihenfolge mit wechselnden Pausen: zusätzlich Pfoteheben, neugieriges
+   Schnuppern, kurze Blicke in vier Richtungen, Winken und Springen.
+   Offline-Dateien und Cache-Version v7 sind aktualisiert.
 
 ---
 
